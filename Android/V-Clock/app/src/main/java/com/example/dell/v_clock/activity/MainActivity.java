@@ -16,6 +16,7 @@ import com.example.dell.v_clock.R;
 This is the main interface, including four parts Messages, GuestList, History and Me.
  这是程序的主界面, 包括消息，嘉宾列表，到达记录和我的四个部分。
  */
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
