@@ -9,35 +9,36 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
 
 public class HttpGetandPost {
 	// 发送get请求
-	public String sendGet(String url, String param, String imgStr) {
+	public String sendGet(String url, String param) {
 		String result = "";
 		BufferedReader in = null;
 		String urlStringName = url + "?" + param;
 		try {
 			URL realUrl = new URL(urlStringName);
 			// 打开和url之间的连接
-			URLConnection connection = realUrl.openConnection();
-			// 设置请求通用的属性(可忽略)
-			connection.setRequestProperty("accept", "*/*");
-			connection.setRequestProperty("connection", "Keep-Alive");
+			HttpURLConnection conn = (HttpURLConnection) realUrl
+					.openConnection();
+
+//			conn.setRequestMethod("GET");
+//			conn.setDoOutput(true);
+//			conn.setDoInput(true);
+//			conn.setUseCaches(false);
 			// 建立实际的连接
-			connection.connect();
-			// 获取所有响应头字段
-			Map<String, List<String>> map = connection.getHeaderFields();
-			// 遍历所有响应头字段
-			for (String key : map.keySet()) {
-				System.out.println(key + "-->" + map.get(key));
-			}
+			conn.connect();
+			// get请求
+//			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+//			out.writeBytes(param);
+//			out.flush();
+//			out.close();
 			// 定义BufferedReader输入流来读取url的响应
-			in = new BufferedReader(new InputStreamReader(
-					connection.getInputStream()));
+			in = new BufferedReader(
+					new InputStreamReader(conn.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
+				line = new String(line.getBytes(), "utf-8");
 				result += line;
 			}
 		} catch (Exception e) {
