@@ -1,4 +1,4 @@
-package com.example.dell.v_clock;
+package com.example.dell.v_clock.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +10,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dell.v_clock.R;
 
+/**
+This is the main interface, including four parts Messages, GuestList, History and Me.
+ 这是程序的主界面, 包括消息，嘉宾列表，到达记录和我的四个部分。
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
