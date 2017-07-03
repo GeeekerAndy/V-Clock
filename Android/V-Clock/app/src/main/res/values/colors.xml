@@ -5,4 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
+    <color name="backgroundOfLogin">#0277bd</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gery">#ACACAC</color>
 </resources>

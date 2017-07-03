@@ -134,7 +134,8 @@
                         android:gravity="center"
                         android:textColorHint="@color/colorPrimary"
                         android:maxLines="1"
-                        android:inputType="phone"
+                        android:inputType="number"
+                        android:maxLength="11"
                         android:textColor="@color/colorBlack"/>
                 </LinearLayout>
             </LinearLayout>
