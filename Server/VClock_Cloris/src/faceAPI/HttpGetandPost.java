@@ -1,4 +1,4 @@
-package fAPI;
+package faceAPI;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -8,7 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class HttpGetandPost {
 	// ∑¢ÀÕget«Î«Û
