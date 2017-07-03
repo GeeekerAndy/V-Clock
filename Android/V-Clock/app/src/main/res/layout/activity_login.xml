@@ -1,22 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundOfLogin"
     tools:context="com.example.dell.v_clock.activity.LoginActivity">
 
-    <Button
-        android:id="@+id/bt_temp_button"
+    <ImageView
+        android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="注册"/>
-    <TextView
-        android:id="@+id/tv_temp_show_json"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="test"
-        android:textColor="@color/colorBlack"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_50"
+        android:src="@mipmap/logo_login" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_40"
+        android:src="@mipmap/title" />
+
+    <EditText
+        android:id="@+id/edit_text_phone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_30"
+        android:inputType="number"
+        android:maxLength="11"
+        android:layout_above="@+id/linear_button"
+        android:layout_marginBottom="@dimen/margin_40"
+        android:layout_marginLeft="@dimen/margin_50"
+        android:layout_marginRight="@dimen/margin_50"
+        android:background="@color/white"
+        android:hint="@string/Message"
+        android:textSize="15sp" />
+
+
+    <LinearLayout
+        android:id="@+id/linear_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_100"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/bt_next"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:background="@drawable/next_selector"
+            android:text="@string/next" />
+
+        <TextView
+            android:id="@+id/tv_sign_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/height_30"
+            android:text="@string/signUp"
+            android:textColor="@drawable/sign_up_selector"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>
