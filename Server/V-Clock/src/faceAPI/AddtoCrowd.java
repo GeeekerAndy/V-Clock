@@ -6,9 +6,9 @@ public class AddtoCrowd {
 	public AddtoCrowd() {
 		rf = new RecognizeFace();
 	}
-	public boolean add(String photoFilePath,String personName) throws Exception{
-		String face_id=rf.computeFaceID(photoFilePath);
-		String result=rf.createOnePeople(face_id, personName);
+	public boolean add(String photoStr,String personName,int peopleType) throws Exception{
+		String face_id=rf.computeFaceID(photoStr);
+		String result=rf.createOnePeople(face_id, personName,peopleType);
 		//System.out.println(result);
 		JSONObject object=JSONObject.fromObject(result);
 		int done=object.getInt("added_crowd");

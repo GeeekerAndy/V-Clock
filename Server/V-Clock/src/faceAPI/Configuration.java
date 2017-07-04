@@ -25,6 +25,14 @@ public class Configuration {
 		return url6;
 	}
 
+	public String getUrl7() {
+		return url7;
+	}
+
+	public String getUrl8() {
+		return url8;
+	}
+
 	public String getAppID() {
 		return appID;
 	}
@@ -33,18 +41,22 @@ public class Configuration {
 		return appKey;
 	}
 
-	// ¼ì²âÍ¼Æ¬(Image)ÖĞµÄÈËÁ³(Face)µÄÎ»ÖÃºÍÏàÓ¦µÄÈËÁ³ÊôĞÔ£¬°üÀ¨¶àÈËÁ³¼ì²â
+	// æ£€æµ‹å›¾ç‰‡(Image)ä¸­çš„äººè„¸(Face)çš„ä½ç½®å’Œç›¸åº”çš„äººè„¸å±æ€§
 	private String url1 = "http://api.eyekey.com/face/Check/checking";
-	// ¼ÆËãÁ½¸öFaceµÄÏàËÆ¶È£¬·ÖÖµ°Ù·ÖÖÆ
+	// è®¡ç®—ä¸¤ä¸ªFaceçš„ç›¸ä¼¼åº¦ï¼Œåˆ†å€¼ç™¾åˆ†åˆ¶
 	private String url2 = "http://api.eyekey.com/face/Match/match_compare";
-	// ´´½¨people £¨face_id£©
+	// åˆ›å»ºä¸€ä¸ªPeople
 	private String url3 = "http://api.eyekey.com/People/people_create";
-	// ´´½¨crowd
+	// åˆ›å»ºä¸€ä¸ªcrowd
 	private String url4 = "http://api.eyekey.com/Crowd/crowd_create";
-	// ½«Ò»¸öPeople¼ÓÈëµ½Ò»¸öCrowdÖĞ
+	// å°†ä¸€ä¸ªpeopleåŠ å…¥åˆ°ä¸€ä¸ªcrowdä¸­
 	private String url5 = "http://api.eyekey.com/Crowd/crowd_add";
-	// Ö¸¶¨Ò»¸öÈËÁ³Face£¬ÔÚÒ»¸öCrowdÖĞ²éÑ¯³öÈËÁ³ÁĞ±íÖĞ×îÏàËÆµÄPeople
+	// æŒ‡å®šä¸€ä¸ªäººè„¸Faceåˆ—è¡¨ï¼Œåœ¨ä¸€ä¸ªCrowdä¸­æŸ¥è¯¢å‡ºäººè„¸åˆ—è¡¨ä¸­æœ€ç›¸ä¼¼çš„People
 	private String url6 = "http://api.eyekey.com/face/Match/match_identify";
+	// å°†ä¸€ä¸ªæˆ–ä¸€ç»„FaceåŠ å…¥åˆ°ä¸€ä¸ªPeopleä¸­ã€‚æ³¨æ„ï¼Œ åŒä¸€ä¸ªFaceåªèƒ½è¢«åŠ å…¥åˆ°ä¸€ä¸ªPeopleä¸­
+	private String url7 = "http://api.eyekey.com/People/people_add";
+	// åˆ é™¤Peopleä¸­çš„ä¸€ä¸ªæˆ–å¤šä¸ªFace
+	private String url8 = "http://api.eyekey.com/People/people_remove";
 
 	private String appID = "efb84878045e4ee79994f1ed232ff17f";
 	private String appKey = "6f8d0d8879d2402aadc804e30810269e";
