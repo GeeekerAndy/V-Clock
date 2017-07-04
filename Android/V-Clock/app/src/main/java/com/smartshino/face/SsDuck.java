@@ -19,4 +19,5 @@ public class SsDuck {
      00005adc T Java_com_smartshino_face_SsDuck_SsSetDatFile
      */
 //    public native int SsMobiDexit(void *hEnvSet);
+    public native int SsMobiVersn(int nType,String szInfo);
 }

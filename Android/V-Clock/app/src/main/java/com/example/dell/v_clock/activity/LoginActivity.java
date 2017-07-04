@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.v_clock.R;
+import com.smartshino.face.SsDuck;
 
 /**
  * This activity is the interface for the stuff to login which can jump to RegisterActivity.
@@ -48,6 +49,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ImageView iv_title;
     //权限申请RequestCode
     private final int MY_PERMISSION_REQUEST_CAMERA = 1;
+    //用户注册的手机号
+    String phoneNum = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         //初始化控件
         initComponents();
+
+        //判断是不是从注册界面跳转过来 获取intent中的手机号信息
+        try {
+            Intent register_intent = this.getIntent();
+            phoneNum = register_intent.getStringExtra("etel");
+            et_phone.setText(phoneNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //TODO 测试SsDuck
+        int test = new SsDuck().SsMobiVersn(1, "w3434t4");
+        Log.i("Test", "test = " + test);
 
     }
 

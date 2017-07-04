@@ -234,8 +234,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                         mCamera.setOneShotPreviewCallback(CameraActivity.this);
                         Log.i("CameraData","setOneShotPreviewCallback");
                     }
-                    //每0.5秒截取一帧
-                    Thread.sleep(500);
+                    //每0.1秒截取一帧
+                    Thread.sleep(100);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Thread.currentThread().interrupt();
