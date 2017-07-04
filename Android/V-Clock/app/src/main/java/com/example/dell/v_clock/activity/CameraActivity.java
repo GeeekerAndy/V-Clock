@@ -1,14 +1,8 @@
 package com.example.dell.v_clock.activity;
 
-import android.Manifest;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -17,7 +11,7 @@ import com.example.dell.v_clock.R;
 
 import java.io.IOException;
 
-public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
     private Camera mCamera;
     private SurfaceView mSurfaceView;
@@ -35,13 +29,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //设置手机屏幕朝向为 竖直
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (mCamera == null) {
-            mCamera = getmCamera();
+            mCamera = getCamera();
             if (mCamera != null && mSurfaceHolder != null) {
                 setStartPreview(mCamera, mSurfaceHolder);
             }
@@ -59,23 +54,22 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      *
      * @return
      */
-    private Camera getmCamera() {
-        Camera camera;
-        try {
-            //Android 6.0 以上需要添加运行时权限 才可以使用Camera
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.i("TEST","Granted");
-                //init(barcodeScannerView, getIntent(), null);
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA}, 1);//1 can be another integer
+    private Camera getCamera() {
+        Camera camera = null;
+        //默认打开前置摄像头
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        int count = Camera.getNumberOfCameras();
+        for (int i = 0; i < count; i++) {
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                try {
+                    //打开摄像头 获取Camera对象
+                    camera = Camera.open(i);
+                } catch (Exception e) {
+                    camera = null;
+                    e.printStackTrace();
+                }
             }
-            //打开摄像头 获取Camera对象
-            camera = Camera.open();
-        } catch (Exception e) {
-            camera = null;
-            e.printStackTrace();
         }
         return camera;
     }
@@ -85,16 +79,22 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     private void setStartPreview(Camera camera, SurfaceHolder holder) {
         try {
-//            if (camera == null) {
-//                Log.i("Main", "camera == null");
-//            }
-//            if (holder == null) {
-//                Log.i("Main", "holder == null");
-//            }
             camera.setPreviewDisplay(holder);
             //将预览相机内容的横屏转为竖屏
-            camera.setDisplayOrientation(90);
+            camera.setDisplayOrientation(270);
             camera.startPreview();
+            //获取实时帧
+            camera.setPreviewCallback(this);
+            //TODO  获取人脸时 自动对焦  暂时放在这
+            mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean b, Camera camera) {
+                    if (b) {
+                        //自动对焦成功
+                    }
+                }
+            });
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -113,6 +113,10 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     }
 
+    /**
+     * SurfaceView的相关方法
+     */
+
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         setStartPreview(mCamera, mSurfaceHolder);
@@ -127,5 +131,15 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         releaseCamera();
+    }
+
+    /**
+     * Camera.PreviewCallback的相关方法 获得实时帧数据 并进行处理
+     * @param bytes
+     * @param camera
+     */
+    @Override
+    public void onPreviewFrame(byte[] bytes, Camera camera) {
+
     }
 }
