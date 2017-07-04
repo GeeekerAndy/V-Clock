@@ -55,6 +55,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         //初始化控件
+        initComponents();
+
+    }
+
+    /**
+     * 初始化各控件
+     */
+    private void initComponents() {
+
         bt_next = (Button) findViewById(R.id.bt_next);
         tv_sign_up = (TextView) findViewById(R.id.tv_sign_up);
         et_phone = (EditText) findViewById(R.id.edit_text_phone);
@@ -67,12 +76,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
         int screenWidth = display.getWidth();
-        int screenHeight = display.getHeight();
+//        int screenHeight = display.getHeight();
         //计算logo、title合适的宽高
         int logo_length = screenWidth / 38 * 20;
 //        int tile_height = logo_length / 572 * 165;
 //        Log.i("Login",logo_length+" ");
-        //设置logo、title的宽高
+        //设置logo、title的宽高  在布局文件中已设置adjustViewBounds=true 只设置一边即可
         iv_logo.setMaxWidth(logo_length);
         iv_logo.setMaxHeight(logo_length);
         iv_title.setMaxWidth(logo_length);
@@ -81,7 +90,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //为控件设置监听器
         bt_next.setOnClickListener(this);
         tv_sign_up.setOnClickListener(this);
-
     }
 
     /**
