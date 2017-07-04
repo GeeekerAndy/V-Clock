@@ -23,10 +23,13 @@ import com.example.dell.v_clock.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The staff can register account here.
  * 工作人员能够在此注册。
-*/
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
@@ -36,18 +39,17 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        final RequestQueue requestQueue  = Volley.newRequestQueue(this);
+        final RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        final EditText employeeName = (EditText)findViewById(R.id.et_employee_name);
-        RadioGroup sexGroup = (RadioGroup)findViewById(R.id.rg_sex_group);
-        final RadioButton sexMan = (RadioButton)findViewById(R.id.rb_sex_man);
-        RadioButton sexWoman = (RadioButton)findViewById(R.id.rb_sex_woman);
-        final EditText employeePhone = (EditText)findViewById(R.id.et_employee_phone);
-        final JSONObject employeeInfo = new JSONObject();
+        final EditText employeeName = (EditText) findViewById(R.id.et_employee_name);
+        RadioGroup sexGroup = (RadioGroup) findViewById(R.id.rg_sex_group);
+        final RadioButton sexMan = (RadioButton) findViewById(R.id.rb_sex_man);
+        RadioButton sexWoman = (RadioButton) findViewById(R.id.rb_sex_woman);
+        final EditText employeePhone = (EditText) findViewById(R.id.et_employee_phone);
 
         sexMan.setChecked(true);
 
-        Button goToSelectRegisterPhoto = (Button)findViewById(R.id.bt_go_to_select_register_photo);
+        Button goToSelectRegisterPhoto = (Button) findViewById(R.id.bt_go_to_select_register_photo);
         goToSelectRegisterPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,12 +57,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                 //Go to select photos activity.
                 //跳转到选择用头像的活动
-                Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
+//                startActivity(intent);
 
-                if(employeeName.getText().toString().equals("")) {
+                if (employeeName.getText().toString().equals("")) {
                     Toast.makeText(RegisterActivity.this, "姓名为空!", Toast.LENGTH_SHORT).show();
-                } else if(employeePhone.getText().length() != 11) {
+                } else if (employeePhone.getText().length() != 11) {
                     Toast.makeText(RegisterActivity.this, "手机号格式错误！", Toast.LENGTH_SHORT).show();
                 } else {
                     //The information of employee if legal. Judge whether employee tel is registered.
@@ -81,23 +83,21 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                     //employee tel is not registered.
-                    try {
-                        employeeInfo.put("ename", employeeName.getText().toString());
-                        if(sexMan.isSelected()) {
-                            employeeInfo.put("esex", "男");
-                        } else {
-                            employeeInfo.put("esex", "女");
-                        }
-                        employeeInfo.put("etel", employeePhone.getText().toString());
 
-//                        //Go to select photos activity.
-//                        //跳转到选择用头像的活动
-//                        Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
-//                        startActivity(intent);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    HashMap<String, String> employeeInfoMap = new HashMap<>();
+                    employeeInfoMap.put("ename", employeeName.getText().toString());
+                    if (sexMan.isSelected()) {
+                        employeeInfoMap.put("esex", "男");
+                    } else {
+                        employeeInfoMap.put("esex", "女");
                     }
+                    employeeInfoMap.put("etel", employeePhone.getText().toString());
+                    //Go to select photos activity.
+                    //跳转到选择用头像的活动
+                    Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
+                    intent.putExtra("employeeInfoHashMap", employeeInfoMap);
+                    startActivity(intent);
+
 
                 }
             }

@@ -8,31 +8,52 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.example.dell.v_clock.util.ImageUtil;
 
 public class SelectPhotoActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int PICK_PHOTO_FOR_AVATAR = 2;
     ImageView employeePicture;
+    HashMap<String , String> employeeInfoMap = new HashMap<>();
+    RequestQueue requestQueue;
+    String registerURL = "http://121.250.222.39:8080/V-Clock/servlet/RegisterServlet";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_photo);
 
+        Intent receiveIntent = getIntent();
+        employeeInfoMap = (HashMap<String, String>)receiveIntent.getSerializableExtra("employeeInfoHashMap");
+
         Button takePhoto = (Button)findViewById(R.id.bt_take_photo);
         Button selectPhoto = (Button)findViewById(R.id.bt_select_photo);
         Button completeRegister = (Button)findViewById(R.id.bt_complete_register);
         employeePicture = (ImageView)findViewById(R.id.iv_employee_picture);
+        requestQueue = Volley.newRequestQueue(this);
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +70,47 @@ public class SelectPhotoActivity extends AppCompatActivity {
         completeRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(!employeeInfoMap.containsKey("ephoto")) {
+                    Toast.makeText(SelectPhotoActivity.this, "请添加照片", Toast.LENGTH_SHORT).show();
+                } else {
+                    System.out.println(employeeInfoMap);
+                    StringRequest registerRequest = new StringRequest(Request.Method.POST, registerURL,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Intent toLoginIntent = new Intent(SelectPhotoActivity.this, LoginActivity.class);
+                                    toLoginIntent.putExtra("etel", employeeInfoMap.get("etel"));
+                                    toLoginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(toLoginIntent);
+//                                    if(response.equals("0")) {
+//                                        Toast.makeText(SelectPhotoActivity.this, "注册成功！", Toast.LENGTH_SHORT).show();
+//                                    } else if(response.equals("1")) {
+//                                        Toast.makeText(SelectPhotoActivity.this, "工作人员已存在！", Toast.LENGTH_SHORT).show();
+//                                    } else if(response.equals("2")) {
+//                                        Toast.makeText(SelectPhotoActivity.this, "数据错误！", Toast.LENGTH_SHORT).show();
+//                                    } else {
+//                                        Toast.makeText(SelectPhotoActivity.this, "发生未知错误！", Toast.LENGTH_SHORT).show();
+//                                    }
+                                    Log.d("TAG", response);
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(SelectPhotoActivity.this, "服务器错误！", Toast.LENGTH_SHORT).show();
+//                            Log.e("TAG", error.getMessage());
+                        }
+                    }){
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            //Test connection.
+//                            HashMap<String, String> map = new HashMap<>();
+//                            map.put("etel", "12345678910");
+//                            return map;
+                            return employeeInfoMap;
+                        }
+                    };
+                    requestQueue.add(registerRequest);
+                }
             }
         });
     }
@@ -68,14 +129,13 @@ public class SelectPhotoActivity extends AppCompatActivity {
         startActivityForResult(pickImageIntent, PICK_PHOTO_FOR_AVATAR);
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap)extras.get("data");
             employeePicture.setImageBitmap(imageBitmap);
+            employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
         }
         if(requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == RESULT_OK) {
             if(data == null) {
@@ -85,10 +145,10 @@ public class SelectPhotoActivity extends AppCompatActivity {
                     Uri selectedImage = data.getData();
                     Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                     employeePicture.setImageBitmap(imageBitmap);
+                    employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         }
     }
