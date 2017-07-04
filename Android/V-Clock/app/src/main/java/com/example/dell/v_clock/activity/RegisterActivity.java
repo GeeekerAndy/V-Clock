@@ -1,5 +1,6 @@
 package com.example.dell.v_clock.activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,6 +52,12 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
+
+                //Go to select photos activity.
+                //跳转到选择用头像的活动
+                Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
+                startActivity(intent);
+
                 if(employeeName.getText().toString().equals("")) {
                     Toast.makeText(RegisterActivity.this, "姓名为空!", Toast.LENGTH_SHORT).show();
                 } else if(employeePhone.getText().length() != 11) {
@@ -82,6 +89,12 @@ public class RegisterActivity extends AppCompatActivity {
                             employeeInfo.put("esex", "女");
                         }
                         employeeInfo.put("etel", employeePhone.getText().toString());
+
+//                        //Go to select photos activity.
+//                        //跳转到选择用头像的活动
+//                        Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
+//                        startActivity(intent);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
