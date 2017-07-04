@@ -8,11 +8,11 @@ public class CheckingPhoto {
 	}
 
 	/*
-	 * 输入参数:两张照片的字符数组字符串 返回值：两张照片同属于一个人 true 两张照片不属于同一个人 false
+	 * 鍒ゆ柇褰撳墠鑾峰彇鐨勫浘鐗囨槸鍚︿笌瀵瑰簲鏁版嵁搴撲腑瀛樺偍鍥剧墖鍚屽睘浜庝竴涓汉
 	 */
-	public boolean isTheSamePerson(String photoFilePath1, String photoFilePath2)
+	public boolean isTheSamePerson(String photoStr1, String photoFilePath2)
 			throws Exception {
-		float similarity = rf.compareOnewithAnother(photoFilePath1,
+		float similarity = rf.compareOnewithAnother(photoStr1,
 				photoFilePath2);
 		if (similarity >= 80)
 			return true;
@@ -22,12 +22,12 @@ public class CheckingPhoto {
 	}
 
 	/*
-	 * 输入参数：照片的存储位置 返回值：若照片能在图库找到一张同属与一个人的照片 person_name 若不能找到 null
+	 * 鍒ゆ柇褰撳墠鑾峰彇鐨勫浘鐗囨墍灞炵殑浜烘槸鍚﹀凡瀛樺湪璁板綍涓紝骞惰繑鍥炶浜虹殑濮撳悕
 	 */
-	public String doesThePersonExist(String photoFilePath) throws Exception {
+	public String doesThePersonExist(String photoStr,int peopleType) throws Exception {
 		String name = "";
-		String face_id = rf.computeFaceID(photoFilePath);
-		JSONObject similarPeople = rf.identifyPeopleInCrowd(face_id);
+		String face_id = rf.computeFaceID(photoStr);
+		JSONObject similarPeople = rf.identifyPeopleInCrowd(face_id,peopleType);
 		name = similarPeople.getString("person_name");
 		float similarity = Float.parseFloat(similarPeople
 				.getString("similarity"));
