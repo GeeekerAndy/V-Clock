@@ -64,8 +64,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         SsDuck ssDuck = new SsDuck();
         int test = ssDuck.SsMobiVersn(1, "w3434t4");
 //        int test2 = ssDuck.Test();
-        Log.i("Test", "test = " + test );
-
+        Log.i("Test", "test = " + test);
+//        Long phEveSet = new Long(0);
+//        Void v = null;
+//        int s = ssDuck.SsMobiDinit(v, 300, 400, 0, "", 1);
+//        Log.i("Test", "s = " + s + "phEveSet = " + phEveSet);
     }
 
     @Override

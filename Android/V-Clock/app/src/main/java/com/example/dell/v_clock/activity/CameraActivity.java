@@ -54,7 +54,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         //开启扫描线程 识别含有人脸的帧
         new Thread(new ScanThread()).start();
 
-        //测试
+        //TODO 测试
         iv_test = (ImageView) findViewById(R.id.iv_test);
 
     }
