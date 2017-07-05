@@ -9,12 +9,14 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import database.Connect;
 
 import util.GenerateImage;
+
 
 import net.sf.json.JSONObject;
 
@@ -38,8 +40,6 @@ public class Employee implements objects.Employees{
 	public Connection getC() {
 		return c;
 	}
-
-
 	public void setC(Connection c) {
 		this.c = c;
 	}
@@ -147,6 +147,68 @@ public class Employee implements objects.Employees{
 		}
 		return "2";
 	}
+	
+	/**
+	 * 查询数据库中是否存在某工作人员
+	 * 返回值意义：0（有此工作人员），1（无此工作人员），2（数据错误）
+	 * @throws Exception 
+	 */
+	public String checkemployee(String ename,String ephoto) throws Exception{
+		String sql="select  *  from Employee where ename="+ename;
+		String eid,path;
+		try {
+			pstmt=c.prepareStatement(sql);			
+			conn.setRs(pstmt.executeQuery());
+			if(conn.getRs().next()){
+				path=conn.getRs().getString("ephoto");
+				String ephotos=imagecode.GetImageStr(path);//ephotos:数据库中对应当前手机号的图片
+				if(ephotos!=null){
+					boolean bool=checking.isTheSamePerson(ephoto,ephotos);
+					if(bool){
+						//eid=conn.getRs().getString("eid");
+						return "0";
+					}
+					else
+						return "1";
+				}
+				else
+					return "2";
+			}
+			else
+				return "1";
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "2";
+	}
+	//************************************************
+	//测试用的临时方法
+	public void insert(String ename,String esex,String etel,String ephotoPath){
+		String sql="insert into Employee(eid,ename,esex,etel,ephoto) "+"values(?,?,?,?,?)";
+		String eid="0001";
+		String ephoto=imagecode.GetImageStr(ephotoPath);
+		byte[] out;
+		try {
+			out = ephoto.getBytes("UTF-8");
+			ByteArrayInputStream ephotostream = new ByteArrayInputStream(out);
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, eid);
+			pstmt.setString(2, ename);
+			pstmt.setString(3, esex);
+			pstmt.setString(4, etel);
+			pstmt.setBinaryStream(5,ephotostream,out.length);
+			pstmt.executeUpdate();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	//************************************************
 	
 	
 	/**
@@ -314,6 +376,7 @@ public class Employee implements objects.Employees{
 	public JSONObject display(String eid){
 		if(!codeLegitimate("eid",eid))
 			return null;
+
 		String sql="select * from Employee where eid="+eid;
 		String temp,path;
 		try {
@@ -342,7 +405,6 @@ public class Employee implements objects.Employees{
 		// TODO Auto-generated method stub
 		//Employee e=new Employee();
 		//e.insert("张三", "男", "18247965198", "D:\\1.jpg");
-		
 
 	}
 

@@ -3,4 +3,12 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="gender_array">
+        <item>男</item>
+        <item>女</item>
+    </string-array>
+    <string name="Message">请输入手机号</string>
+    <string name="next">下一步</string>
+    <string name="signUp">注册</string>
 </resources>
