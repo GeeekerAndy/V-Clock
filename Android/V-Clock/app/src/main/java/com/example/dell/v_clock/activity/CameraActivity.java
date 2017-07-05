@@ -51,9 +51,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         //设置手机屏幕朝向为 竖直
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        //开启扫描线程 识别含有人脸的帧
-        new Thread(new ScanThread()).start();
-
         //TODO 测试
         iv_test = (ImageView) findViewById(R.id.iv_test);
 
@@ -68,6 +65,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 setStartPreview(mCamera, mSurfaceHolder);
             }
         }
+        //开启扫描线程 识别含有人脸的帧
+        new Thread(new ScanThread()).start();
     }
 
     @Override
@@ -108,6 +107,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         try {
             camera.setPreviewDisplay(holder);
             //将预览相机内容的横屏转为竖屏
+            //TODO 小米手机翻转270   三星、oneplus：90
             camera.setDisplayOrientation(270);
             camera.startPreview();
 
@@ -157,10 +157,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     @Override
     public void onPreviewFrame(byte[] bytes, Camera camera) {
-        if(null != mFaceTask)
-        {
-            switch (mFaceTask.getStatus())
-            {
+        if (null != mFaceTask) {
+            switch (mFaceTask.getStatus()) {
                 case RUNNING:
                     return;
                 case PENDING:
@@ -169,7 +167,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             }
         }
         mFaceTask = new FaceTask(bytes);
-        mFaceTask.execute((Void)null);
+        mFaceTask.execute((Void) null);
     }
 
     /**
@@ -189,6 +187,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             Camera.Size size = mCamera.getParameters().getPreviewSize();
             final int width = size.width;
             final int height = size.height;
+            //用于预览
             final YuvImage image = new YuvImage(mData, ImageFormat.NV21, width, height, null);
             ByteArrayOutputStream os = new ByteArrayOutputStream(mData.length);
             boolean isToJpeg = image.compressToJpeg(new Rect(0, 0, width, height), 100, os);
@@ -197,42 +196,44 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 return null;
             }
             byte[] temp = os.toByteArray();
-            Bitmap bmp = BitmapFactory.decodeByteArray(temp,0,temp.length);
+            Bitmap bmp = BitmapFactory.decodeByteArray(temp, 0, temp.length);
             //旋转图像
             Matrix matrix = new Matrix();
+            //TODO 小米手机翻转90   三星、oneplus：270
             matrix.postRotate(90);
-            Bitmap bmp2 = Bitmap.createBitmap(bmp,0,0,bmp.getWidth(),bmp.getHeight(),matrix,true);
-            //TODO　进行人脸识别等一系列操作
+            Bitmap bmp2 = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
             //TODO　测试一下数据是否可以显示
-            Message msg  = handler.obtainMessage();
+            Message msg = handler.obtainMessage();
             msg.obj = bmp2;
             handler.sendMessage(msg);
+
+            //TODO　进行人脸识别等一系列操作
+            //用于导入算法 进行人脸检测
+            final YuvImage image_rgb = new YuvImage(mData, ImageFormat.YUV_420_888, width, height, null);
 
             return null;
         }
     }
 
-    private class ScanThread implements Runnable{
+    private class ScanThread implements Runnable {
 
         @Override
         public void run() {
-            while (!Thread.currentThread().isInterrupted())
-            {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    if(null != mCamera)
-                    {
+                    if (null != mCamera) {
                         //TODO  获取人脸时 自动对焦 这样写是否有效？
                         mCamera.autoFocus(new Camera.AutoFocusCallback() {
                             @Override
                             public void onAutoFocus(boolean b, Camera camera) {
                                 if (b) {
                                     //自动对焦成功
+                                    //获取实时帧  调用回调函数 处理实时帧数据
+                                    mCamera.setOneShotPreviewCallback(CameraActivity.this);
+                                    Log.i("CameraData", "setOneShotPreviewCallback");
                                 }
                             }
                         });
-                        //获取实时帧  调用回调函数 处理实时帧数据
-                        mCamera.setOneShotPreviewCallback(CameraActivity.this);
-                        Log.i("CameraData","setOneShotPreviewCallback");
                     }
                     //每0.1秒截取一帧
                     Thread.sleep(100);
@@ -247,7 +248,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     /**
      * 测试代码  将截取的实时帧显示在一个ImageView中
      */
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             iv_test.setImageBitmap((Bitmap) msg.obj);
