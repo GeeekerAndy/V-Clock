@@ -35,6 +35,7 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 
 	/**
 	 * The doGet method of the servlet. <br>
+
 	 * 
 	 * This method is called when a form has its tag value method equals to get.
 	 * 
@@ -82,7 +83,6 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 		PrintWriter out = response.getWriter();
 		String informationType = request.getParameter("tip");
 		String[] infoList = informationType.split(";");
@@ -117,6 +117,6 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 	public void init() throws ServletException {
 		// Put your code here
 	}
-
 	private Guest guest;
+
 }

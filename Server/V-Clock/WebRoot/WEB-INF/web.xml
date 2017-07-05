@@ -28,43 +28,43 @@
   
    <servlet>
     <servlet-name>Login</servlet-name>
-    <servlet-class>Controller.LoginServlet</servlet-class>
+    <servlet-class>controller.LoginServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>Register</servlet-name>
-    <servlet-class>Controller.RegisterServlet</servlet-class>
+    <servlet-class>controller.RegisterServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ModifyEmployeeInfo</servlet-name>
-    <servlet-class>Controller.ModifyEmployeeInfoServlet</servlet-class>
+    <servlet-class>controller.ModifyEmployeeInfoServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>CreateNewGuest</servlet-name>
-    <servlet-class>Controller.CreateNewGuestServlet</servlet-class>
+    <servlet-class>controller.CreateNewGuestServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>EDisplay</servlet-name>
-    <servlet-class>Controller.EDisplayServlet</servlet-class>
+    <servlet-name>DisplayEmployeeInfo</servlet-name>
+    <servlet-class>controller.DisplayEmployeeInfoServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>SearchOneGuest</servlet-name>
-    <servlet-class>Controller.SearchOneGuestServlet</servlet-class>
+    <servlet-class>controller.SearchOneGuestServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ModifyGuestInfo</servlet-name>
-    <servlet-class>Controller.ModifyGuestInfoServlet</servlet-class>
+    <servlet-class>controller.ModifyGuestInfoServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AddtoGuestList</servlet-name>
-    <servlet-class>Controller.AddtoGuestListServlet</servlet-class>
+    <servlet-class>controller.AddtoGuestListServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>DisplayVisitingRecord</servlet-name>
-    <servlet-class>Controller.DisplayVisitingRecordServlet</servlet-class>
+    <servlet-class>controller.DisplayVisitingRecordServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>PushMessage</servlet-name>
-    <servlet-class>Controller.PushMessageServlet</servlet-class>
+    <servlet-class>controller.PushMessageServlet</servlet-class>
   </servlet>
   
   
@@ -85,8 +85,8 @@
     <url-pattern>/servlet/CreateNewGuestServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>EDisplay</servlet-name>
-    <url-pattern>/servlet/EDisplayServlet</url-pattern>
+    <servlet-name>DisplayEmployeeInfo</servlet-name>
+    <url-pattern>/servlet/DisplayEmployeeInfoServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>SearchOneGuest</servlet-name>

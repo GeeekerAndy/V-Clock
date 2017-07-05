@@ -1,5 +1,6 @@
 package faceAPI;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -49,7 +50,6 @@ public class RecognizeFace {
 		}else{
 			return 0;
 		}
-		
 	}
 
 	// 根据peopleType在对应的crowd加入一个新建的people
@@ -138,8 +138,7 @@ public class RecognizeFace {
 	 */
 	
 	// 提取face_id
-	public String getFaceID(String result)  {
-		
+	public String getFaceID(String result)  {	
 		JSONObject object = JSONObject.fromObject(result);
 		if(object.getString("res_code").equals("1067")){
 			return null;
@@ -149,7 +148,6 @@ public class RecognizeFace {
 			JSONObject face0 = JSONObject.fromObject(faceArray.get(0).toString());
 			return face0.getString("face_id");
 		}
-		
 	}
 
 	// 提取similarity
@@ -187,6 +185,7 @@ public class RecognizeFace {
 	private String crowdName1 = "wuhuabaren_guest";
 	private String crowdName2= "wuhuabaren_employee";
 
+
 //	public static void main(String[] args) throws Exception {
 //		String imgFilePath1 = "C:\\Users\\dell\\Desktop\\4.jpg";
 //		RecognizeFace rf = new RecognizeFace();
@@ -204,5 +203,6 @@ public class RecognizeFace {
 //		// System.out.println(rf.createOneCrowd());
 //
 //	}
+
 
 }

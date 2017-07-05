@@ -72,25 +72,28 @@ public class RegisterServlet extends HttpServlet implements Employees{
 //		out.write(tip);
 //		out.flush();
 //		out.close();
-		//**************************************
+//		//**************************************
 		String[] elist=new String[emessage.length];
 		for(int i=1;i<elist.length;i++){
 			elist[i]=request.getParameter(emessage[i]);
+			System.out.println(elist[i]);
 		}
 		Employee emp=new Employee();
-		String tip="";
+		String tip;
 		try {
 			tip = emp.register(elist[1], elist[2], elist[3], elist[4]);
+			System.out.println("tip:"+tip);
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/html; charset=utf-8");
+			PrintWriter out=null;
+			out=response.getWriter();
+			out.write(tip);
+			out.flush();
+			out.close();
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		response.setCharacterEncoding("UTF-8");
-		response.setContentType("application/json; charset=utf-8");
-		PrintWriter out=null;
-		out=response.getWriter();
-		out.write(tip);
-		out.flush();
-		out.close();
 	}
 
 	/**

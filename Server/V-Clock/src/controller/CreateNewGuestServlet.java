@@ -20,6 +20,7 @@ public class CreateNewGuestServlet extends HttpServlet {
 	 */
 	public CreateNewGuestServlet() {
 		super();
+
 		guests = new Guests();
 		rf =new RecognizeFace();
 	}
@@ -110,7 +111,6 @@ public class CreateNewGuestServlet extends HttpServlet {
 		}else{
 			out.write("0");
 		}
-		
 		
 		out.flush();
 		out.close();
