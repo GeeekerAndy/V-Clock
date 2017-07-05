@@ -10,29 +10,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class HttpGetandPost {
-	// 发送get请求
 	public String sendGet(String url, String param) {
 		String result = "";
 		BufferedReader in = null;
 		String urlStringName = url + "?" + param;
 		try {
 			URL realUrl = new URL(urlStringName);
-			// 打开和url之间的连接
+			//鎵撳紑url杩炴帴
 			HttpURLConnection conn = (HttpURLConnection) realUrl
 					.openConnection();
-
-//			conn.setRequestMethod("GET");
-//			conn.setDoOutput(true);
-//			conn.setDoInput(true);
-//			conn.setUseCaches(false);
-			// 建立实际的连接
+			//杩炴帴
 			conn.connect();
-			// get请求
-//			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-//			out.writeBytes(param);
-//			out.flush();
-//			out.close();
-			// 定义BufferedReader输入流来读取url的响应
+
+			// 浠嶣ufferedReader璇诲彇url鐨勫搷搴旀祦
 			in = new BufferedReader(
 					new InputStreamReader(conn.getInputStream()));
 			String line;
@@ -41,10 +31,9 @@ public class HttpGetandPost {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送GET请求出现异常！" + e);
+			System.out.println("get璇锋眰鍙戦�佸け璐ワ紒" + e);
 			e.printStackTrace();
 		}
-		// 使用finally关闭数据流
 		finally {
 			try {
 				if (in != null)
@@ -56,12 +45,11 @@ public class HttpGetandPost {
 		return result;
 	}
 
-	// 发送post请求
 	public String sendPost(String url, String param) throws Exception {
 		String result = "";
 		try {
 			URL realUrl = new URL(url);
-			// 打开和url之间的连接
+			//鎵撳紑url杩炴帴
 			HttpURLConnection conn = (HttpURLConnection) realUrl
 					.openConnection();
 			conn.setDoOutput(true);
@@ -72,12 +60,12 @@ public class HttpGetandPost {
 			conn.setRequestProperty("Content-Type",
 					"application/x-www-form-urlencoded");
 			conn.connect();
-			// post请求
+			// post璇锋眰
 			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
 			out.writeBytes(param);
 			out.flush();
 			out.close();
-			// 读取响应
+			// 浠嶣ufferedReader璇诲彇url鐨勫搷搴旀祦
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					conn.getInputStream()));
 			String line;
