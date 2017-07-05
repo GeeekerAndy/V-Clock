@@ -62,6 +62,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (employeeName.getText().toString().equals("")) {
                     Toast.makeText(RegisterActivity.this, "姓名为空!", Toast.LENGTH_SHORT).show();
+                } else if(employeeName.getText().toString().length() >= 20) {
+                    Toast.makeText(RegisterActivity.this, "姓名长度过长！", Toast.LENGTH_SHORT).show();
                 } else if (employeePhone.getText().length() != 11) {
                     Toast.makeText(RegisterActivity.this, "手机号格式错误！", Toast.LENGTH_SHORT).show();
                 } else {

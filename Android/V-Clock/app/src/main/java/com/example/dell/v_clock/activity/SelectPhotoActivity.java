@@ -78,26 +78,25 @@ public class SelectPhotoActivity extends AppCompatActivity {
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
-                                    Intent toLoginIntent = new Intent(SelectPhotoActivity.this, LoginActivity.class);
-                                    toLoginIntent.putExtra("etel", employeeInfoMap.get("etel"));
-                                    toLoginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(toLoginIntent);
-//                                    if(response.equals("0")) {
-//                                        Toast.makeText(SelectPhotoActivity.this, "注册成功！", Toast.LENGTH_SHORT).show();
-//                                    } else if(response.equals("1")) {
-//                                        Toast.makeText(SelectPhotoActivity.this, "工作人员已存在！", Toast.LENGTH_SHORT).show();
-//                                    } else if(response.equals("2")) {
-//                                        Toast.makeText(SelectPhotoActivity.this, "数据错误！", Toast.LENGTH_SHORT).show();
-//                                    } else {
-//                                        Toast.makeText(SelectPhotoActivity.this, "发生未知错误！", Toast.LENGTH_SHORT).show();
-//                                    }
-                                    Log.d("TAG", response);
+                                    if(response.equals("0")) {
+                                        Toast.makeText(SelectPhotoActivity.this, "注册成功！", Toast.LENGTH_SHORT).show();
+                                        Intent toLoginIntent = new Intent(SelectPhotoActivity.this, LoginActivity.class);
+                                        toLoginIntent.putExtra("etel", employeeInfoMap.get("etel"));
+                                        toLoginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(toLoginIntent);
+                                        Log.d("TAG", response);
+                                    } else if(response.equals("1")) {
+                                        Toast.makeText(SelectPhotoActivity.this, "工作人员已存在！", Toast.LENGTH_SHORT).show();
+                                    } else if(response.equals("2")) {
+                                        Toast.makeText(SelectPhotoActivity.this, "数据错误！", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(SelectPhotoActivity.this, "发生未知错误！", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Toast.makeText(SelectPhotoActivity.this, "服务器错误！", Toast.LENGTH_SHORT).show();
-//                            Log.e("TAG", error.getMessage());
                         }
                     }){
                         @Override
