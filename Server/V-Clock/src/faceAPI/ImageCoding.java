@@ -10,21 +10,18 @@ import Decoder.BASE64Decoder;
 import Decoder.BASE64Encoder;
 
 public class ImageCoding {
-	// ½«×Ö·û´®×ªÎªÍ¼Æ¬(Í¼Æ¬×Ö½ÚĞòÁĞ£¬¶ÔÓ¦Éú³ÉÍ¼Æ¬´æ´¢ĞÅÏ¢£¨Ãû³Æ/Î»ÖÃ£©)
+	// å°†å›¾ç‰‡å­—ç¬¦ä¸²ç”Ÿæˆæ”¾åœ¨å¯¹åº”å­˜å‚¨ä½ç½®çš„å›¾ç‰‡
 	public boolean generateImg(String imgStr, String imgFilePath)
 			throws Exception {
 		if (imgStr == null)
 			return false;
 		BASE64Decoder decoder = new BASE64Decoder();
 		try {
-			// ½âÂë
 			byte[] b = decoder.decodeBuffer(imgStr);
 			for (int i = 0; i < b.length; ++i) {
-				// µ÷ÕûÒì³£Êı¾İ
 				if (b[i] < 0)
 					b[i] += 256;
 			}
-			// Éú³ÉjpegÍ¼Æ¬
 			OutputStream out = new FileOutputStream(imgFilePath);
 			out.write(b);
 			out.flush();
@@ -36,11 +33,11 @@ public class ImageCoding {
 
 	}
 
-	// ½«Í¼Æ¬ÎÄ¼ş×ª»¯Îª×Ö½ÚÊı×é×Ö·û´®£¬²¢¶ÔÆä½øĞĞBase64±àÂë´¦Àí (Í¼Æ¬´æ´¢Î»ÖÃ)
+	// å°†æŒ‡å®šå­˜å‚¨ä½ç½®çš„å›¾ç‰‡è½¬æ¢æˆå­—ç¬¦ä¸²
 	public String GetImageStr(String imgFilePath) {
 		InputStream in = null;
 		byte[] data = null;
-		// ¶ÁÈ¡Í¼Æ¬×Ö½ÚÊı×é
+
 		try {
 			in = new FileInputStream(imgFilePath);
 			data = new byte[in.available()];
@@ -49,8 +46,7 @@ public class ImageCoding {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// ¶Ô×Ö½ÚÊı×éBase64±àÂë
 		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(data);// ·µ»ØBase64±àÂë¹ıµÄ×Ö½ÚÊı×é×Ö·û´®
+		return encoder.encode(data);
 	}
 }
