@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ImageView iv_title;
     //权限申请RequestCode
     private final int MY_PERMISSION_REQUEST_CAMERA = 1;
-    //用户注册的手机号
+    //用户的手机号
     String phoneNum = "";
 
     @Override
@@ -60,6 +60,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //初始化控件
         initComponents();
 
+        //TODO 测试SsDuck
+        SsDuck ssDuck = new SsDuck();
+        int test = ssDuck.SsMobiVersn(1, "w3434t4");
+//        int test2 = ssDuck.Test();
+        Log.i("Test", "test = " + test );
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         //判断是不是从注册界面跳转过来 获取intent中的手机号信息
         try {
             Intent register_intent = this.getIntent();
@@ -68,12 +79,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        //TODO 测试SsDuck
-        int test = new SsDuck().SsMobiVersn(1, "w3434t4");
-        Log.i("Test", "test = " + test);
-
     }
 
     /**
@@ -125,6 +130,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.tv_sign_up:
                 //通过Intent对象跳转到注册界面
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                phoneNum = et_phone.getText().toString();
+                intent.putExtra("etel", phoneNum);
                 startActivity(intent);
                 break;
             //默认操作
