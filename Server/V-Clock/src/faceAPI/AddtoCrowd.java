@@ -8,14 +8,19 @@ public class AddtoCrowd {
 	}
 	public boolean add(String photoStr,String personName,int peopleType) throws Exception{
 		String face_id=rf.computeFaceID(photoStr);
-		String result=rf.createOnePeople(face_id, personName,peopleType);
-		//System.out.println(result);
-		JSONObject object=JSONObject.fromObject(result);
-		int done=object.getInt("added_crowd");
-		if(1==done)
-			return true;
-		else
+		if(face_id!=null){
+			String result=rf.createOnePeople(face_id, personName,peopleType);
+			//System.out.println(result);
+			JSONObject object=JSONObject.fromObject(result);
+			int done=object.getInt("added_crowd");
+			if(1==done)
+				return true;
+			else
+				return false;
+		}else{
 			return false;
+		}
+		
 	}
 	private RecognizeFace rf;
 //	 public static void main(String[] args) throws Exception {
