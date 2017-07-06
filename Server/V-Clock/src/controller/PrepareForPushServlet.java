@@ -3,28 +3,17 @@ package controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import objects.PushServletService;
-
-import org.apache.commons.lang.StringUtils;
-import org.omg.IOP.ServiceContext;
-
-
-
-public class PushMessageServlet extends HttpServlet {
+public class PrepareForPushServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public PushMessageServlet() {
+	public PrepareForPushServlet() {
 		super();
 	}
 
@@ -47,61 +36,21 @@ public class PushMessageServlet extends HttpServlet {
 	 * @throws IOException if an error occurred
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException,IllegalStateException {
-		
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
-		String timeoutStr=request.getParameter("timeout");
-		long timeout;
-		if(StringUtils.isNumeric(timeoutStr)){
-			timeout=Long.parseLong(timeoutStr);
-		}else{
-			timeout=10*60*1000;
-		}
-		HttpSession seesion = request.getSession();
-		seesion.setAttribute("text", "123456789");
-		final HttpServletResponse finalResponse = response;
-		final AsyncContext ac =  request.startAsync(request, finalResponse);
-		// 设置成长久链接
-		ac.setTimeout(timeout);
-		ac.addListener(new AsyncListener() {
-			public void onComplete(AsyncEvent event) throws IOException {
-				//log.info("onComplete Event!");
-				
-				PushServletService.getInstance().removeAsyncContext(ac);
-			}
+			throws ServletException, IOException {
 
-			public void onTimeout(AsyncEvent event) throws IOException {
-				//log.info("onTimeout Event!");
-				
-				PushServletService.getInstance().removeAsyncContext(ac);
-				ac.complete();
-			}
-			public void onError(AsyncEvent event) throws IOException {
-				
-				PushServletService.getInstance().removeAsyncContext(ac);
-				ac.complete();
-			}
-
-			public void onStartAsync(AsyncEvent event) throws IOException {
-				//log.info("onStartAsync Event!");
-			}
-		});
-		
-		PushServletService.getInstance().addAsyncContext(ac);
-		PushServletService.getInstance().putMessage("0000", "123456789");
-		
-//	
-//		PrintWriter out = response.getWriter();
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		
-//        out.write("i'm server");
-//		out.flush();
-//		out.close();
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+		out.println("<HTML>");
+		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
+		out.println("  <BODY>");
+		out.print("    This is ");
+		out.print(this.getClass());
+		out.println(", using the GET method");
+		out.println("  </BODY>");
+		out.println("</HTML>");
+		out.flush();
+		out.close();
 	}
 
 	/**
