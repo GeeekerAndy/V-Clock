@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+
+import util.VisitingRecord;
+
 public class DisplayVisitingRecordServlet extends HttpServlet {
 
 	/**
@@ -37,20 +41,7 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the GET method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();
+		doPost(request,response);
 	}
 
 	/**
@@ -65,18 +56,18 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		response.setContentType("text/html");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		String eid=request.getParameter("eid");
+		VisitingRecord visitingRecord=new VisitingRecord();
+		JSONArray jsonArray=visitingRecord.displayVisitingRecord(eid);
+		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the POST method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
+		if(jsonArray==null)
+			out.write("2");
+		else if(jsonArray.size()==0)
+			out.write("1");
+		else
+			out.append(jsonArray.toString());
 		out.flush();
 		out.close();
 	}

@@ -28,7 +28,6 @@ public class Employee implements objects.Employees{
 	private PreparedStatement pstmt;
     //对象和接口
 	//private Objects.Employees employee;
-	private JSONObject json;
 	private CheckingPhoto checking;
 	private ImageCoding imagecode;
 	private GenerateImage gi;
@@ -36,6 +35,7 @@ public class Employee implements objects.Employees{
 	private RecognizeFace recognize;
 	//内部属性
 	private static int eidnumber=0;//工作人员创建eid
+	private JSONObject json;
 	
 	public Connection getC() {
 		return c;
@@ -51,14 +51,35 @@ public class Employee implements objects.Employees{
 		gi=new GenerateImage();
 		atc=new AddtoCrowd();
 		recognize=new RecognizeFace();
+		getLastEid();
 	}
 	
+	/**
+	 * 获取数据库中的最大eid作为赋予新id的基础
+	 */
+	public void getLastEid(){
+		String sql="select count(eid) from employee";
+		try {
+			pstmt=c.prepareStatement(sql);
+			conn.setRs(pstmt.executeQuery());
+			if(conn.getRs().next()){
+				eidnumber=conn.getRs().getInt("count(eid)");
+			}
+			else
+				eidnumber=0;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
 	
 	/**
 	 * 判断工作人员信息合法性
 	 * type表示需要判断合法性的属性是哪一个：判断etel,判断ename,判断eid
 	 */
 	public boolean codeLegitimate(String type,String content){
+		if(content==null)
+			return false;
 		String allNumber="^[0-9_]+$";//纯数字正则表达式
 		String existNumber=".*\\d+.*";//包含数字正则表达式
 		Pattern ifAllNumber=Pattern.compile(allNumber);
@@ -103,9 +124,10 @@ public class Employee implements objects.Employees{
 	 * 返回值意义：0（有此手机号），1（无此手机号），2（数据错误）
 	 */
 	public String checkphoNumber(String etel){
-		String sql="select  *  from Employee where etel="+etel;
+		String sql="select  *  from Employee where etel=?";
 		try {
-			pstmt=c.prepareStatement(sql);			
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, etel);			
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next())
 				return "0";						
@@ -124,10 +146,11 @@ public class Employee implements objects.Employees{
 	 * @throws Exception 
 	 */
 	public String checkuser(String etel,String ephoto) throws Exception{
-		String sql="select  *  from Employee where etel="+etel;
+		String sql="select  ephoto  from Employee where etel=?";
 		String path;
 		try {
-			pstmt=c.prepareStatement(sql);			
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, etel);
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next()){
 				path=conn.getRs().getString("ephoto");
@@ -154,10 +177,11 @@ public class Employee implements objects.Employees{
 	 * @throws Exception 
 	 */
 	public String checkemployee(String ename,String ephoto) throws Exception{
-		String sql="select  *  from Employee where ename="+ename;
+		String sql="select  *  from Employee where ename=?";
 		String eid,path;
 		try {
-			pstmt=c.prepareStatement(sql);			
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, ename);	
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next()){
 				path=conn.getRs().getString("ephoto");
@@ -209,7 +233,7 @@ public class Employee implements objects.Employees{
 
 	}
 	//************************************************
-	
+
 	
 	/**
 	 * 工作人员登录
@@ -229,7 +253,7 @@ public class Employee implements objects.Employees{
 			return "2";
 		else{
 		try {
-			pstmt=c.prepareStatement("select  *  from Employee where etel=");
+			pstmt=c.prepareStatement("select  *  from Employee where etel=?");
 			pstmt.setString(1, etel);
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next()){
@@ -253,11 +277,11 @@ public class Employee implements objects.Employees{
 	public String register(String ename,String esex,String etel,String ephoto) throws Exception{
 		if(!codeLegitimate("etel",etel)||!codeLegitimate("ename",ename)){
 			System.out.println("codeLegitimate fail!!!");
-			return "2";
+			return "12";
 		}
 		String tip=checking.doesThePersonExist(ephoto,2);
 		if(tip.equals("1"))
-			return "2";
+			return "22";
 		else if(!tip.equals("0"))
 			return "1";
 		tip=checkphoNumber(etel);
@@ -266,10 +290,10 @@ public class Employee implements objects.Employees{
 			return "1";
 		if(tip.equals("2")){
 			System.out.println("checkphoNumber fail!!!");
-			return "2";
+			return "32";
 		}
 		else{
-			String sql="insert into Employee(eid,ename,esex,etel,ephoto) "+"values(?,?,?,?,?)";
+			String sql="insert into Employee(eid,ename,esex,etel,ephoto) "+"values(?,?,?,?,?)";	
 			eid=(eidnumber++)+"";
 			while(eid.length()<4){
 					eid="0"+eid;
@@ -280,7 +304,7 @@ public class Employee implements objects.Employees{
 				//将employee加入crowd
 				boolean atcAddBool=atc.add(ephoto, eid,2);
 				if(!atcAddBool)
-					return "2";
+					return "42";
 				pstmt=c.prepareStatement(sql);
 				pstmt.setString(1, eid);
 				pstmt.setString(2, ename);
@@ -295,7 +319,7 @@ public class Employee implements objects.Employees{
 			}		
 		}
 		System.out.println("end fail!!!");
-		return "2";
+		return "52";
 	}
 	
 	/**
@@ -311,7 +335,9 @@ public class Employee implements objects.Employees{
 			String path;
 		if(type.equals("ephoto")){
 			//先判断要更新的照片是不是属于该工作人员本人
-			pstmt=c.prepareStatement("select * from Employee where eid="+eid);
+			String sql="select * from Employee where eid=?";
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, eid);	
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next()){
 				path=conn.getRs().getString("ephoto");
@@ -374,22 +400,27 @@ public class Employee implements objects.Employees{
 	 * 返回值意义：json对象（正常查看），null（数据错误)
 	 */
 	public JSONObject display(String eid){
-		if(!codeLegitimate("eid",eid))
+		if(!codeLegitimate("eid",eid)){
+			System.out.println("codeLegitimate fail!!!");
 			return null;
-
-		String sql="select * from Employee where eid="+eid;
+		}
+		String sql="select * from Employee where eid=?";
 		String temp,path;
 		try {
 			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, eid);
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next()){
 				for(int i=0;i<emessage.length-1;i++){
 					temp=conn.getRs().getString(emessage[i]);
+					System.out.println(emessage[i]+":"+temp);
 					json.put(emessage[i], temp);
 				}
 				path=conn.getRs().getString("ephoto");
 				String ephoto=imagecode.GetImageStr(path);
-				json.put(emessage[emessage.length-1], ephoto);
+				//System.out.println("ephoto:"+ephoto);
+				//json.put(emessage[emessage.length-1], ephoto);
+				return json;
 			}
 			return json;
 		} catch (SQLException e) {
@@ -405,6 +436,7 @@ public class Employee implements objects.Employees{
 		// TODO Auto-generated method stub
 		//Employee e=new Employee();
 		//e.insert("张三", "男", "18247965198", "D:\\1.jpg");
+		System.out.println(Employee.eidnumber);
 
 	}
 

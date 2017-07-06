@@ -58,6 +58,7 @@ public class ModifyEmployeeInfoServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		String temp=request.getParameter("tip");
 		String[] modifyTypeList=temp.split(";");
 		String[] modifyContentList=new String[modifyTypeList.length];
