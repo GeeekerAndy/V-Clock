@@ -85,6 +85,8 @@ public class SsDuck {
 
     private void loadAssetFile(String version) {
         String sdmdat = mContext.getFilesDir().getAbsolutePath() + "/" + DAT_NAME;
+//        sdmdat = "/data/data/com.example.dell.v_clock/files/Duck.dat";
+//        sdmdat = "file:///android_asset/Duck.dat";
         File file = new File(sdmdat);
         int versionCode = getVersionCode();
         if (versionCode > getInt(VERSION_CODE) || !getString(VERSION).equals(version)) {
@@ -95,11 +97,11 @@ public class SsDuck {
             }
             saveString(VERSION, version);
             saveInt(VERSION_CODE, versionCode);
+            Log.i(TAG, "版本更替");
         }
         try {
             if (!file.exists()) {
                 InputStream is = mContext.getResources().getAssets().open(DAT_NAME);
-
                 FileOutputStream fos = new FileOutputStream(sdmdat);
                 byte[] buffer = new byte[1024];
                 int count = 0;
@@ -108,17 +110,16 @@ public class SsDuck {
                 }
                 fos.close();
                 is.close();
+                Log.i(TAG, "file不存在");
             }
-            int loadresult = SsSetDatFile(sdmdat, 0, 0);
+            int loadResult = SsSetDatFile(sdmdat, 0, 0);
 
             String thisV = SsMobiVersn(0);
             String datV = SsMobiVersn(1);
-//            Logs.i(TAG, "dat路径：" + file.exists() + " " + sdmdat + " " + Environment.getExternalStorageDirectory());
-//            Logs.d(TAG, "库版本:" + thisV + " dat版本：" + datV);
-//            Logs.d(TAG, "加载算法数据库完成:" + loadresult);
+
             Log.d(TAG, "dat路径：" + file.exists() + " " + sdmdat + " " + Environment.getExternalStorageDirectory());
             Log.d(TAG, "库版本:" + thisV + " dat版本：" + datV);
-            Log.d(TAG, "加载算法数据库完成:" + loadresult);
+            Log.d(TAG, "加载算法数据库完成:" + loadResult);
 
             hOptCfg = new int[]{28, 1, 40, 0, 65, sDetectType, ALWAYS_DETECT};
             //下面的部分放到外面执行，因为图片分辨率可能不同，但是上面的操作只需要一次，下面的操作每次分辨率变化都要执行，所以分开了。

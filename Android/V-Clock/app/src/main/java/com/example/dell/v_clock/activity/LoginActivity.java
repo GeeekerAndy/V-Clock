@@ -174,6 +174,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     //跳转到人脸识别界面
                     Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
                     startActivity(intent);
+                    this.finish();
                 } else {
                     Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();
                     //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
