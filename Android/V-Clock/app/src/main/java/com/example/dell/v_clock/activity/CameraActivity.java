@@ -1,5 +1,6 @@
 package com.example.dell.v_clock.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -16,13 +17,24 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.util.FaceCheck;
+import com.example.dell.v_clock.util.ImageUtil;
 import com.smartshino.face.FaceAttr;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CameraActivity extends AppCompatActivity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
@@ -38,6 +50,22 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private FaceCheck faceCheck;
     //
     private String TAG = "CameraAct";
+    //手机号与人脸图片匹配是否成功
+    private boolean isMatch = false;
+    //是否在等待匹配结果
+    private boolean isWaited = false;
+    //登录访问URL
+    private final String LOGIN_URL = "http://121.250.222.39:8080/V-Clock/servlet/LoginServlet";
+    //访问服务器请求队列
+    private RequestQueue requestQueue;
+    //用户登录手机号
+    private String phoneNum;
+    //超时毫秒数
+    private final int OVERTIME = 10000;
+    //捕捉画面的时间间隔
+    private final int INTERVAL = 100;
+    //捕捉画面的次数
+    private int captureCount = 0;
 
     //测试使用的ImageView
     ImageView iv_test;
@@ -55,15 +83,16 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //设置手机屏幕朝向为 竖直
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        //TODO　初始化人脸识别对象
+        //初始化人脸识别对象
         faceCheck = new FaceCheck();
-//        SsDuck mSsDuck = SsDuck.getInstance();
-//        mSsDuck.init(this.getApplicationContext());
 
+        //获取登录界面 用户输入的手机号
+        phoneNum = getIntent().getStringExtra("etel");
+        //初始化请求队列
+        requestQueue = Volley.newRequestQueue(this);
 
-        //TODO 测试
+        //测试
         iv_test = (ImageView) findViewById(R.id.iv_test);
-
     }
 
     @Override
@@ -121,7 +150,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             camera.setPreviewDisplay(holder);
             //为相机设置参数
             Camera.Parameters parameters = mCamera.getParameters();
-            parameters.setPreviewSize(640,480);
+            parameters.setPreviewSize(640, 480);
             mCamera.setParameters(parameters);
             //将预览相机内容的横屏转为竖屏
             //TODO 小米手机翻转270   三星、oneplus：90
@@ -261,16 +290,21 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             //TODO　进行人脸识别等一系列操作
             //进行人脸检测
             FaceAttr faceAttr = faceCheck.detectFace(bmp_rotated, width, height, 1);
-            //TODO　测试一下数据是否可以显示
-            if(faceAttr.isIncludeFace())
-            {
+            //测试一下数据是否可以显示
+            if (faceAttr.isIncludeFace()) {
                 Message msg = handler.obtainMessage();
                 msg.obj = bmp_rotated;
                 handler.sendMessage(msg);
             }
+            //传输图片与用户手机号
+            if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
+                isWaited = true;
+                transferPhoneImg(bmp_rotated);
+            }
             return null;
         }
     }
+
 
     private class ScanThread implements Runnable {
 
@@ -279,7 +313,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     if (null != mCamera) {
-                        //TODO  获取人脸时 自动对焦 这样写是否有效？
+                        //获取人脸时 自动对焦 这样写是否有效？
                         mCamera.autoFocus(new Camera.AutoFocusCallback() {
                             @Override
                             public void onAutoFocus(boolean b, Camera camera) {
@@ -293,7 +327,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                         });
                     }
                     //每0.1秒截取一帧
-                    Thread.sleep(100);
+                    Thread.sleep(INTERVAL);
+                    if (++captureCount >= OVERTIME / INTERVAL) {
+                        //TODO 超时检测 发送超时Message
+
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Thread.currentThread().interrupt();
@@ -312,4 +350,59 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         }
     };
 
+    /**
+     * 将用户手机号与捕捉到的图片发送到后台服务器
+     *
+     * @param bmp_rotated
+     */
+    private void transferPhoneImg(final Bitmap bmp_rotated) {
+
+        StringRequest loginRequest = new StringRequest(Request.Method.POST, LOGIN_URL,
+                new LoginResponseListener(), new LoginResponseErrorListener()) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("etel", phoneNum);
+                String imgStr = ImageUtil.convertImage(bmp_rotated);
+                map.put("ephoto", imgStr);
+                return map;
+            }
+        };
+        requestQueue.add(loginRequest);
+    }
+
+    private class LoginResponseListener implements Response.Listener<String> {
+
+        @Override
+        public void onResponse(String response) {
+            //收到服务器回复 不再等待回复
+            isWaited = false;
+            if (response.equals("1")) {//无此工作人员
+                //提示手机号位注册
+                Toast.makeText(CameraActivity.this, "该手机号未注册", Toast.LENGTH_SHORT).show();
+                CameraActivity.this.finish();
+            } else if (response.equals("2")) {//数据错误
+                //登录人脸图片不匹配
+                isMatch = false;
+            } else {//返回工作人员编号eid
+                //跳转到主界面 传入eid
+                //提示匹配成功信息
+                Toast.makeText(CameraActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                isMatch = true;
+                Intent intent = new Intent(CameraActivity.this, MainActivity.class);
+                intent.putExtra("eid", response);
+                startActivity(intent);
+            }
+        }
+    }
+
+    private class LoginResponseErrorListener implements Response.ErrorListener {
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            //提示网络连接失败
+            isWaited = false;
+            Toast.makeText(CameraActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
