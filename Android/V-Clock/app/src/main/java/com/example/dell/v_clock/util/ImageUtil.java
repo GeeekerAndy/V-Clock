@@ -20,7 +20,7 @@ public class ImageUtil {
         return BitmapFactory.decodeByteArray(decodeBytes, 0, decodeBytes.length);
     }
 
-    public static String convertImage(Bitmap bitmap) {
+        public static String convertImage(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 //        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);

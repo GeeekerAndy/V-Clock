@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.v_clock.R;
-import com.smartshino.face.SsDuck;
 
 /**
  * This activity is the interface for the stuff to login which can jump to RegisterActivity.
@@ -60,15 +58,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //初始化控件
         initComponents();
 
-        //TODO 测试SsDuck
-        SsDuck ssDuck = new SsDuck();
-        int test = ssDuck.SsMobiVersn(1, "w3434t4");
-//        int test2 = ssDuck.Test();
-        Log.i("Test", "test = " + test);
-//        Long phEveSet = new Long(0);
-//        Void v = null;
-//        int s = ssDuck.SsMobiDinit(v, 300, 400, 0, "", 1);
-//        Log.i("Test", "s = " + s + "phEveSet = " + phEveSet);
     }
 
     @Override
@@ -133,8 +122,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.tv_sign_up:
                 //通过Intent对象跳转到注册界面
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                phoneNum = et_phone.getText().toString();
-                intent.putExtra("etel", phoneNum);
                 startActivity(intent);
                 break;
             //默认操作
@@ -169,6 +156,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //Camera权限被授予
             //跳转到人脸识别界面
             Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
+            phoneNum = et_phone.getText().toString();
+            intent.putExtra("etel", phoneNum);
             startActivity(intent);
         }
 
@@ -185,6 +174,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     //跳转到人脸识别界面
                     Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
                     startActivity(intent);
+                    this.finish();
                 } else {
                     Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();
                     //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
