@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance http://www.springmodules.org/schema/cache/springmodules-cache.xsd http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd 
+" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name />
   <servlet>
     <servlet-name>action</servlet-name>
@@ -61,11 +62,17 @@
   <servlet>
     <servlet-name>PushMessage</servlet-name>
     <servlet-class>controller.PushMessageServlet</servlet-class>
+    <asyncSupported>true</asyncSupported>
   </servlet>
   <servlet>
+    <servlet-name>PrepareForPushServlet</servlet-name>
+    <servlet-class>controller.PrepareForPushServlet</servlet-class>
+  </servlet>
+    <servlet>
     <servlet-name>SearchGuest</servlet-name>
     <servlet-class>controller.SearchGuestServlet</servlet-class>
   </servlet>
+
 
 
   
@@ -107,8 +114,13 @@
     <url-pattern>/servlet/PushMessageServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+
+    <servlet-name>PrepareForPushServlet</servlet-name>
+    <url-pattern>/servlet/PrepareForPushServlet</url-pattern>
+
     <servlet-name>SearchGuest</servlet-name>
     <url-pattern>/servlet/SearchGuestServlet</url-pattern>
+
   </servlet-mapping>
 </web-app>
 
