@@ -2,6 +2,8 @@ package faceAPI;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import util.ImageCoding;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -106,7 +108,7 @@ public class RecognizeFace {
 				+ "face_id=" + URLEncoder.encode(face_id, "utf-8") + "&"
 				+ "crowd_name=" + URLEncoder.encode(crowdName, "utf-8");
 		result = hgp.sendGet(conf.getUrl6(), param);
-        System.out.println(result);
+       // System.out.println(result);
 		return getTheMostSimilar(result);
 	}
 

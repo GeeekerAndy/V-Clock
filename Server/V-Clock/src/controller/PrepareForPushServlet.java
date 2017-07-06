@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class SearchOneGuestServlet extends HttpServlet {
+public class PrepareForPushServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public SearchOneGuestServlet() {
+	public PrepareForPushServlet() {
 		super();
 	}
 
