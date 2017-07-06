@@ -65,10 +65,10 @@
     <asyncSupported>true</asyncSupported>
   </servlet>
   <servlet>
-
     <servlet-name>PrepareForPushServlet</servlet-name>
     <servlet-class>controller.PrepareForPushServlet</servlet-class>
   </servlet>
+    <servlet>
     <servlet-name>SearchGuest</servlet-name>
     <servlet-class>controller.SearchGuestServlet</servlet-class>
   </servlet>
