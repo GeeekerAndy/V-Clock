@@ -41,6 +41,7 @@ public class LoginServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -56,6 +57,7 @@ public class LoginServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		String etel=request.getParameter("etel");
 		String ephoto=request.getParameter("ephoto");
 		System.out.println("login:"+etel);
@@ -65,7 +67,8 @@ public class LoginServlet extends HttpServlet {
 			//String tip=emp.checkphoNumber(etel);
 			eid = emp.login(etel, ephoto);
 			response.setCharacterEncoding("UTF-8");
-			response.setContentType("application/json; charset=utf-8");
+			//response.setContentType("application/json; charset=utf-8");
+			System.out.println("eid:"+eid);
 			PrintWriter out=null;
 			out=response.getWriter();
 			out.write(eid);

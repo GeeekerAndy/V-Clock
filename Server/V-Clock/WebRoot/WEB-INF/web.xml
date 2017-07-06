@@ -47,10 +47,6 @@
     <servlet-class>controller.DisplayEmployeeInfoServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>SearchOneGuest</servlet-name>
-    <servlet-class>controller.SearchOneGuestServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ModifyGuestInfo</servlet-name>
     <servlet-class>controller.ModifyGuestInfoServlet</servlet-class>
   </servlet>
@@ -66,6 +62,12 @@
     <servlet-name>PushMessage</servlet-name>
     <servlet-class>controller.PushMessageServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>SearchGuest</servlet-name>
+    <servlet-class>controller.SearchGuestServlet</servlet-class>
+  </servlet>
+
+
   
   
   <servlet-mapping>
@@ -89,10 +91,6 @@
     <url-pattern>/servlet/DisplayEmployeeInfoServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>SearchOneGuest</servlet-name>
-    <url-pattern>/servlet/SearchOneGuestServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>ModifyGuestInfo</servlet-name>
     <url-pattern>/servlet/ModifyGuestInfoServlet</url-pattern>
   </servlet-mapping>
@@ -107,6 +105,10 @@
   <servlet-mapping>
     <servlet-name>PushMessage</servlet-name>
     <url-pattern>/servlet/PushMessageServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SearchGuest</servlet-name>
+    <url-pattern>/servlet/SearchGuestServlet</url-pattern>
   </servlet-mapping>
 </web-app>
 

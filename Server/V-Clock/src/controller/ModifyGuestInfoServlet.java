@@ -50,7 +50,7 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
@@ -94,14 +94,14 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 				guest.modifyInfo(gname, info, infoList[i]);
 			}
 			guest.getC().commit();
-			out.write("1");
+			out.write("0");
 		} catch (Exception e) {
 			try {
 				guest.getC().rollback();
-				out.write("0");
+				out.write("1");
 			} catch (SQLException e1) {
 				e1.printStackTrace();
-				out.write("0");
+				out.write("1");
 			}
 		}
 		out.flush();
