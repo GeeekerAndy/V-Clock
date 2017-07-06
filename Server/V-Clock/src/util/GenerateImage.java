@@ -1,6 +1,5 @@
 package util;
 
-import faceAPI.ImageCoding;
 
 public class GenerateImage {
 	public GenerateImage(){

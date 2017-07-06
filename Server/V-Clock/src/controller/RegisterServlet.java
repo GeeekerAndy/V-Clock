@@ -44,6 +44,7 @@ public class RegisterServlet extends HttpServlet implements Employees{
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -59,32 +60,19 @@ public class RegisterServlet extends HttpServlet implements Employees{
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-//		String etel=request.getParameter("etel");
-//		System.out.println("register:"+request.toString());
-//		System.out.println("register:"+etel);
-//		Employee emp=new Employee();
-//		//String eid=emp.login(etel, ephoto);
-//		String tip=emp.checkphoNumber(etel);
-//		response.setCharacterEncoding("UTF-8");
-//		response.setContentType("application/json; charset=utf-8");
-//		PrintWriter out=null;
-//		out=response.getWriter();
-//		out.write(tip);
-//		out.flush();
-//		out.close();
-//		//**************************************
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		String[] elist=new String[emessage.length];
 		for(int i=1;i<elist.length;i++){
 			elist[i]=request.getParameter(emessage[i]);
 			System.out.println(elist[i]);
 		}
 		Employee emp=new Employee();
-		String tip;
+		String tip="";
 		try {
 			tip = emp.register(elist[1], elist[2], elist[3], elist[4]);
 			System.out.println("tip:"+tip);
 			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html; charset=utf-8");
+			//response.setContentType("text/html; charset=utf-8");
 			PrintWriter out=null;
 			out=response.getWriter();
 			out.write(tip);

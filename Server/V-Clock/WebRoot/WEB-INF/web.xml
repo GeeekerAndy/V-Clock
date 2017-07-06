@@ -48,10 +48,6 @@
     <servlet-class>controller.DisplayEmployeeInfoServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>SearchOneGuest</servlet-name>
-    <servlet-class>controller.SearchOneGuestServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ModifyGuestInfo</servlet-name>
     <servlet-class>controller.ModifyGuestInfoServlet</servlet-class>
   </servlet>
@@ -69,9 +65,15 @@
     <asyncSupported>true</asyncSupported>
   </servlet>
   <servlet>
+
     <servlet-name>PrepareForPushServlet</servlet-name>
     <servlet-class>controller.PrepareForPushServlet</servlet-class>
   </servlet>
+    <servlet-name>SearchGuest</servlet-name>
+    <servlet-class>controller.SearchGuestServlet</servlet-class>
+  </servlet>
+
+
 
   
   
@@ -96,10 +98,6 @@
     <url-pattern>/servlet/DisplayEmployeeInfoServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>SearchOneGuest</servlet-name>
-    <url-pattern>/servlet/SearchOneGuestServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>ModifyGuestInfo</servlet-name>
     <url-pattern>/servlet/ModifyGuestInfoServlet</url-pattern>
   </servlet-mapping>
@@ -116,8 +114,13 @@
     <url-pattern>/servlet/PushMessageServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+
     <servlet-name>PrepareForPushServlet</servlet-name>
     <url-pattern>/servlet/PrepareForPushServlet</url-pattern>
+
+    <servlet-name>SearchGuest</servlet-name>
+    <url-pattern>/servlet/SearchGuestServlet</url-pattern>
+
   </servlet-mapping>
 </web-app>
 

@@ -49,7 +49,7 @@ public class CreateNewGuestServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
@@ -103,13 +103,9 @@ public class CreateNewGuestServlet extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if("1".equals(tip)){
-				out.write("1");
-			}else{
-				out.write("0");
-			}
+			out.write(tip);
 		}else{
-			out.write("0");
+			out.write("2");
 		}
 		
 		out.flush();
