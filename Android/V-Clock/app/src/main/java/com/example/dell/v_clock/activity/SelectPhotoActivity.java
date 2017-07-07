@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.ImageUtil;
 
 public class SelectPhotoActivity extends AppCompatActivity {
@@ -42,8 +43,6 @@ public class SelectPhotoActivity extends AppCompatActivity {
     ImageView employeePicture;
     HashMap<String , String> employeeInfoMap = new HashMap<>();
     RequestQueue requestQueue;
-    String registerURL = "http://121.250.222.39:8080/V-Clock/servlet/RegisterServlet";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +77,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                     Toast.makeText(SelectPhotoActivity.this, "请添加照片", Toast.LENGTH_SHORT).show();
                 } else {
                     System.out.println(employeeInfoMap);
-                    StringRequest registerRequest = new StringRequest(Request.Method.POST, registerURL,
+                    StringRequest registerRequest = new StringRequest(Request.Method.POST, ServerInfo.REGISTER_URL,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {

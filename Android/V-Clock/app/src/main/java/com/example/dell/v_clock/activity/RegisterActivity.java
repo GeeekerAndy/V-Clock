@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
+import com.example.dell.v_clock.ServerInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,8 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     //The information of employee if legal. Judge whether employee tel is registered.
                     // 数据已合法。判断工作人员手机是否被注册。
-                    String url = "http://192.168.2.101:80/serlet/loginServlet";
-                    StringRequest registerStat = new StringRequest(url, new Response.Listener<String>() {
+                    StringRequest registerStat = new StringRequest(ServerInfo.LOGIN_URL, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             //Check whether etel is registered here.

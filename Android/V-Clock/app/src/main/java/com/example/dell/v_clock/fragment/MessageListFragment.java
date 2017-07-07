@@ -88,17 +88,7 @@ public class MessageListFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        //Save unread message
-        //保存未读消息
-//        db = new saveOneMessge().doInBackground();
-//        for(int i = 0; i < messageListAdapter.getCount(); i++) {
-//            messageValues.put(VClockContract.MessageInfo.COLUMN_NAME_GNAME, messageListAdapter.getItem(i).getGuestName());
-//            messageValues.put(VClockContract.MessageInfo.COLUMN_NAME_DATE, messageListAdapter.getItem(i).getArriveTime());
-//        }
-//        db.insert(VClockContract.MessageInfo.TABLE_NAME, null, messageValues);
-//        messageValues.clear();
-//        Log.d("TAG", "onDestroy. Save unread message successfully.");
-//        dbHelper.close();
+        dbHelper.close();
         super.onDestroy();
     }
 
@@ -107,10 +97,10 @@ public class MessageListFragment extends Fragment {
         protected Void doInBackground(Integer... position) {
             db = dbHelper.getWritableDatabase();
             String guestName = messageListAdapter.getItem(position[0]).getGuestName();
-            String arriveDate = messageListAdapter.getItem(position[0]).getArriveTime();
+            String arriveTime = messageListAdapter.getItem(position[0]).getArriveTime();
             String selection = VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=? and " +
                     VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=?";
-            String[] selectionArgs = {guestName, arriveDate};
+            String[] selectionArgs = {guestName, arriveTime};
             db.delete(VClockContract.MessageInfo.TABLE_NAME, selection, selectionArgs);
             return null;
         }
