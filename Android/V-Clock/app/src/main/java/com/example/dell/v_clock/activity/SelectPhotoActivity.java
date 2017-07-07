@@ -1,11 +1,15 @@
 package com.example.dell.v_clock.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -115,9 +119,20 @@ public class SelectPhotoActivity extends AppCompatActivity {
     }
 
     public void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        //权限申请RequestCode
+        final int MY_PERMISSION_REQUEST_CAMERA = 1;
+        //动态添加权限
+        //Android 6.0 以上需要添加运行时权限 才可以使用Camera
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED) {
+            //Camera权限未授予  申请Camera权限
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
+        } else {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
 

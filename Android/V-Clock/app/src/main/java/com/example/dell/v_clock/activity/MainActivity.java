@@ -1,16 +1,16 @@
 package com.example.dell.v_clock.activity;
 
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.RadioButton;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
+import com.example.dell.v_clock.fragment.GuestListFragment;
+import com.example.dell.v_clock.fragment.HistoryFragment;
+import com.example.dell.v_clock.fragment.MeFragment;
+import com.example.dell.v_clock.fragment.MessageListFragment;
 
 /**
  * This is the main interface, including four parts Messages, GuestList, History and Me.
@@ -24,28 +24,54 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final TextView mTextView = (TextView)findViewById(R.id.text);
+        final MessageListFragment messageListFragment = new MessageListFragment();
+        final GuestListFragment guestListFragment = new GuestListFragment();
+        final HistoryFragment historyFragment = new HistoryFragment();
+        final MeFragment meFragment = new MeFragment();
 
-        //Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://www.google.com/ncr";
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.ll_fragment_container, messageListFragment);
+        transaction.commit();
 
-        //Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        mTextView.setText("Response is: " + response.substring(0, 500));
-                    }
-                }, new Response.ErrorListener() {
+        RadioButton radioMessage = (RadioButton)findViewById(R.id.rb_message);
+        radioMessage.setChecked(true);
+        radioMessage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                mTextView.setText("That didn't work!");
+            public void onClick(View view) {
+                FragmentTransaction transaction1 = getSupportFragmentManager().beginTransaction();
+                transaction1.replace(R.id.ll_fragment_container, messageListFragment);
+                transaction1.commit();
+            }
+        });
+        RadioButton radioGuestList = (RadioButton)findViewById(R.id.rb_guest_list);
+        radioGuestList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction transaction2 = getSupportFragmentManager().beginTransaction();
+                transaction2.replace(R.id.ll_fragment_container, guestListFragment);
+                transaction2.commit();
+            }
+        });
+        RadioButton radioHistory = (RadioButton)findViewById(R.id.rb_history);
+        radioHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction transaction3 = getSupportFragmentManager().beginTransaction();
+                transaction3.replace(R.id.ll_fragment_container, historyFragment);
+                transaction3.commit();
+            }
+        });
+        RadioButton radioMe = (RadioButton)findViewById(R.id.rb_me);
+        radioMe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction transaction4 = getSupportFragmentManager().beginTransaction();
+                transaction4.replace(R.id.ll_fragment_container, meFragment);
+                transaction4.commit();
             }
         });
 
-        //Add the request to the RequestQueue
-        queue.add(stringRequest);
 
     }
+
 }

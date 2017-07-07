@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText employeeName = (EditText) findViewById(R.id.et_employee_name);
         RadioGroup sexGroup = (RadioGroup) findViewById(R.id.rg_sex_group);
         final RadioButton sexMan = (RadioButton) findViewById(R.id.rb_sex_man);
-        RadioButton sexWoman = (RadioButton) findViewById(R.id.rb_sex_woman);
+        final RadioButton sexWoman = (RadioButton) findViewById(R.id.rb_sex_woman);
         final EditText employeePhone = (EditText) findViewById(R.id.et_employee_phone);
 
         sexMan.setChecked(true);
@@ -73,7 +73,8 @@ public class RegisterActivity extends AppCompatActivity {
                     StringRequest registerStat = new StringRequest(url, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-//                            if(requestQueue.equals())
+                            //Check whether etel is registered here.
+                            //在此处检测手机号是否已经注册。
                         }
                     }, new Response.ErrorListener() {
                         @Override
@@ -81,16 +82,16 @@ public class RegisterActivity extends AppCompatActivity {
 
                         }
                     });
-                    requestQueue.add(registerStat);
+//                    requestQueue.add(registerStat);
 
 
                     //employee tel is not registered.
 
                     HashMap<String, String> employeeInfoMap = new HashMap<>();
                     employeeInfoMap.put("ename", employeeName.getText().toString());
-                    if (sexMan.isSelected()) {
+                    if (sexMan.isChecked()) {
                         employeeInfoMap.put("esex", "男");
-                    } else {
+                    } else if(sexWoman.isChecked()){
                         employeeInfoMap.put("esex", "女");
                     }
                     employeeInfoMap.put("etel", employeePhone.getText().toString());
@@ -99,7 +100,6 @@ public class RegisterActivity extends AppCompatActivity {
                     Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
                     intent.putExtra("employeeInfoHashMap", employeeInfoMap);
                     startActivity(intent);
-
 
                 }
             }
