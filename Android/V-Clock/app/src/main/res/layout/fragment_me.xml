@@ -14,4 +14,11 @@
         android:gravity="center"
         android:textSize="20sp"/>
 
+    <Button
+        android:id="@+id/bt_sign_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"
+        android:text="退出账号"/>
+
 </LinearLayout>
