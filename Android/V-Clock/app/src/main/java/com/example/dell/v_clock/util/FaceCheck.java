@@ -99,12 +99,12 @@ public class FaceCheck {
 //            faceAttr.setmHeadPosition(mHeadPosition);
 //            //矩阵位置
             int[] mFaceRect = new int[4];
-            int rectResult = SsDuck.SsMobiIsoGo(SsDuck.TD_RECT, mFaceRect, 1, 0, SsDuck.ENV_SET);
+            int rectResult = SsDuck.SsMobiIsoGo(SsDuck.TD_RECT, faceAttr.getFaceRect(), 1, 0, SsDuck.ENV_SET);
             Log.i(TAG, "rectResult = " + rectResult);
             faceAttr.setmFaceRect(mFaceRect);
 //            Log.i(TAG, "score:" + mScor[0]);
 //            Log.i(TAG, "pose:" + mHeadPosition[0] + " " + mHeadPosition[1] + " " + mHeadPosition[2]);
-            Log.i(TAG, "rect:" + mFaceRect[0] + " " + mFaceRect[1] + " " + mFaceRect[2] + " " + mFaceRect[3]);
+            Log.i(TAG, "rect:" + faceAttr.getFaceRect()[0] + " " + faceAttr.getFaceRect()[1] + " " + faceAttr.getFaceRect()[2] + " " + faceAttr.getFaceRect()[3]);
         }
         return faceAttr;
     }

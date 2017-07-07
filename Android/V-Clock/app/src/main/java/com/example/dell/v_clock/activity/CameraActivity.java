@@ -1,6 +1,8 @@
 package com.example.dell.v_clock.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -12,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -62,7 +65,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     //用户登录手机号
     private String phoneNum;
     //超时毫秒数
-    private final int OVERTIME = 10000;
+    private final int OVERTIME = 20000;
     //捕捉画面的时间间隔
     private final int INTERVAL = 100;
     //捕捉画面的次数
@@ -295,13 +298,16 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             //测试一下数据是否可以显示
             if (faceAttr.isIncludeFace()) {
                 Message msg = handler.obtainMessage();
+                msg.arg1 = 0;
                 msg.obj = bmp_rotated;
                 handler.sendMessage(msg);
-            }
-            //传输图片与用户手机号
-            if (!isMatch && !isWaited && faceAttr.isIncludeFace()) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
-                isWaited = true;
-                transferPhoneImg(bmp_rotated);
+                //传输图片与用户手机号
+                if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
+                    isWaited = true;
+                    Log.i("Transger","向服务器发送数据");
+                    //TODO
+                    transferPhoneImg(bmp_rotated);
+                }
             }
             return null;
         }
@@ -313,7 +319,17 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
+
                 try {
+                    //每0.1秒截取一帧
+                    Thread.sleep(INTERVAL);
+                    if ((captureCount++ >= OVERTIME / INTERVAL) && !isMatch) {
+                        //TODO 超时检测 发送超时Message
+                        Message msg = handler.obtainMessage();
+                        msg.arg1 = 1;
+                        handler.sendMessage(msg);
+                        break;
+                    }
                     if (null != mCamera) {
                         //获取人脸时 自动对焦 这样写是否有效？
                         mCamera.autoFocus(new Camera.AutoFocusCallback() {
@@ -327,12 +343,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                                 }
                             }
                         });
-                    }
-                    //每0.1秒截取一帧
-                    Thread.sleep(INTERVAL);
-                    if (++captureCount >= OVERTIME / INTERVAL) {
-                        //TODO 超时检测 发送超时Message
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -348,7 +358,18 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            iv_test.setImageBitmap((Bitmap) msg.obj);
+            switch (msg.arg1) {
+                case 0:
+                    //更新捕捉画面
+                    iv_test.setImageBitmap((Bitmap) msg.obj);
+                    break;
+                case 1:
+                    //提示超时信息
+                    Toast.makeText(CameraActivity.this, "登录失败,请检查手机号是否输入正确！", Toast.LENGTH_SHORT).show();
+                    CameraActivity.this.finish();
+                    break;
+            }
+
         }
     };
 
@@ -378,16 +399,13 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         public void onResponse(String response) {
-
-            //收到服务器回复 不再等待回复
-            isWaited = false;
-
             int lengthOfResponse = response.length();
             int intOfResponse = 0;
             try {
                 intOfResponse = Integer.parseInt(response);
             } catch (NumberFormatException e) {
                 //返回数据包含非数字信息
+                Log.i("Transfer","收到服务器回复 数据错误");
                 Log.i("CameraActivity", "response 包含非数字信息");
                 e.printStackTrace();
             }
@@ -396,35 +414,59 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     case 1://无此工作人员
                         //提示手机号位注册
                         Toast.makeText(CameraActivity.this, "该手机号未注册", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(CameraActivity.this, LoginActivity.class);
-                        startActivity(intent);
+//                        Intent intent = new Intent(CameraActivity.this, LoginActivity.class);
+//                        startActivity(intent);
                         CameraActivity.this.finish();
                         break;
                     case 2:
-                        //数据错误  登录人脸不匹配
+                        //数据错误
                         isMatch = false;
+                        Log.i("Transfer","收到服务器回复 数据错误");
+                        break;
+                    case 3:
+                        //登录人脸不匹配
+                        isMatch = false;
+                        Log.i("Transfer","收到服务器回复 人脸不匹配");
                         break;
                 }
             } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
+                isMatch = true;
+                Log.i("Transfer","收到服务器回复 登录成功");
                 //跳转到主界面 传入eid
+                //
                 //提示匹配成功信息
                 Toast.makeText(CameraActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                isMatch = true;
                 //TODO 保存登录信息 只要不注销账号 下次不做登录验证
-
+                saveLoginInfo(response);
                 Intent intent = new Intent(CameraActivity.this, MainActivity.class);
                 intent.putExtra("eid", response);
                 Log.i("CameraActivity", "eid = " + response);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-                CameraActivity.this.finish();
+//                CameraActivity.this.finish();
             }
+            //收到服务器回复 不再等待回复
+            isWaited = false;
         }
+    }
+
+    /**
+     * 保存用户登录信息 下次启动程序以上一次登录时的账号进入程序
+     * @param response
+     */
+    private void saveLoginInfo(String response) {
+        SharedPreferences sp = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
+        Log.i("SaveLoginInfo",response);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("eid",response);
+        editor.apply();
     }
 
     private class LoginResponseErrorListener implements Response.ErrorListener {
 
         @Override
         public void onErrorResponse(VolleyError error) {
+            Log.i("Transfer","收到服务器回复");
             //提示网络连接失败
             isWaited = false;
             Toast.makeText(CameraActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();

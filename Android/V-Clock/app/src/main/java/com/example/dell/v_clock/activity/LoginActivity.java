@@ -3,6 +3,7 @@ package com.example.dell.v_clock.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +24,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.StringRequest;
 import com.example.dell.v_clock.R;
+
+import org.xml.sax.helpers.LocatorImpl;
 
 /**
  * This activity is the interface for the stuff to login which can jump to RegisterActivity.
@@ -55,10 +59,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        //TODO 读取上次登录的信息 如果没有注销登录直接登录
+        SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
+        String eid = sp.getString("eid", null);
+        if (eid != null) {
+            Log.i("ReadSharedPrefer",eid);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }else {
+            Log.i("ReadSharedPrefer","eid 为空");
+        }
         //初始化控件
         initComponents();
-
     }
 
     @Override
@@ -138,10 +151,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //检测手机号输入的长度是否合适
         //在布局设置中已经设置过只能输入数字，且最多11位，所以只需检测数字是否足够11位即可
         String phoneNumber = et_phone.getText().toString();
+        Log.i("Login", "测试 phoneNumber = " + phoneNumber);
         int lengthOfPhone = phoneNumber.length();
         if (lengthOfPhone < 11) {
             Toast.makeText(LoginActivity.this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
-            //TODO  方便测试 暂时注释掉下一行
+            //方便测试 暂时注释掉下一行
             return;
         }
         //TODO 向服务器查询输入手机号是否已注册
@@ -161,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Log.i("LoginActivity", "phoneNum = " + phoneNumber);
             intent.putExtra("etel", phoneNum);
             startActivity(intent);
-            LoginActivity.this.finish();
+//            LoginActivity.this.finish();
         }
 
     }
@@ -176,8 +190,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     //Camera权限被授予
                     //跳转到人脸识别界面
                     Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
+                    phoneNum = et_phone.getText().toString();
+                    intent.putExtra("etel", phoneNum);
                     startActivity(intent);
-                    this.finish();
                 } else {
                     Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();
                     //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
