@@ -87,21 +87,24 @@ public class FaceCheck {
             Log.i(TAG, "检测到人脸");
             faceAttr.setIncludeFace(true);
             //TODO  人脸的其他属性
-//            //检测人脸置信度
+            //检测人脸置信度
 //            int[] mScor = {0};
-//            SsDuck.SsMobiIsoGo(SsDuck.TD_SCOR, mScor, 1, 0, SsDuck.ENV_SET);
+//            int scoreResult = SsDuck.SsMobiIsoGo(SsDuck.TD_SCOR, mScor, 1, 0, SsDuck.ENV_SET);
+//            Log.i(TAG, "scoreResult = " + scoreResult);
 //            faceAttr.setmScor(mScor);
 //            //人脸姿态
 //            int[] mHeadPosition = new int[3];
-//            SsDuck.SsMobiIsoGo(SsDuck.TD_POSE, mHeadPosition, 1, 0, SsDuck.ENV_SET);
+//            int poseResult = SsDuck.SsMobiIsoGo(SsDuck.TD_POSE, mHeadPosition, 1, 0, SsDuck.ENV_SET);
+//            Log.i(TAG, "poseResult = " + poseResult);
 //            faceAttr.setmHeadPosition(mHeadPosition);
 //            //矩阵位置
-//            int[] mFaceRect = new int[4];
-//            SsDuck.SsMobiIsoGo(SsDuck.TD_RECT, mFaceRect, 1, 0, SsDuck.ENV_SET);
-//            faceAttr.setmFaceRect(mFaceRect);
+            int[] mFaceRect = new int[4];
+            int rectResult = SsDuck.SsMobiIsoGo(SsDuck.TD_RECT, mFaceRect, 1, 0, SsDuck.ENV_SET);
+            Log.i(TAG, "rectResult = " + rectResult);
+            faceAttr.setmFaceRect(mFaceRect);
 //            Log.i(TAG, "score:" + mScor[0]);
 //            Log.i(TAG, "pose:" + mHeadPosition[0] + " " + mHeadPosition[1] + " " + mHeadPosition[2]);
-//            Log.i(TAG, "rect:" + mFaceRect[0] + " " + mFaceRect[1] + " " + mFaceRect[2] + " " + mFaceRect[3]);
+            Log.i(TAG, "rect:" + mFaceRect[0] + " " + mFaceRect[1] + " " + mFaceRect[2] + " " + mFaceRect[3]);
         }
         return faceAttr;
     }

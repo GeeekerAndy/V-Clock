@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (lengthOfPhone < 11) {
             Toast.makeText(LoginActivity.this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
             //TODO  方便测试 暂时注释掉下一行
-//            return;
+            return;
         }
         //TODO 向服务器查询输入手机号是否已注册
 
@@ -157,8 +158,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //跳转到人脸识别界面
             Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
             phoneNum = et_phone.getText().toString();
+            Log.i("LoginActivity", "phoneNum = " + phoneNumber);
             intent.putExtra("etel", phoneNum);
             startActivity(intent);
+            LoginActivity.this.finish();
         }
 
     }
