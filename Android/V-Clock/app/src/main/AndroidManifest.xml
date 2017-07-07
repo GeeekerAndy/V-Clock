@@ -36,8 +36,7 @@
                 android:value="com.example.dell.v_clock.activity.RegisterActivity" />
         </activity>
         <activity
-            android:name=".activity.CameraActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:name=".activity.CameraActivity">
 
         </activity>
         <activity android:name=".activity.SelectPhotoActivity"
