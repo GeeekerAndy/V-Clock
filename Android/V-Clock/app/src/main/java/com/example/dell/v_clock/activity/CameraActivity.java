@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -88,6 +89,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         //获取登录界面 用户输入的手机号
         phoneNum = getIntent().getStringExtra("etel");
+        Log.i("CameraActivity", "phone = " + phoneNum);
         //初始化请求队列
         requestQueue = Volley.newRequestQueue(this);
 
@@ -297,7 +299,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 handler.sendMessage(msg);
             }
             //传输图片与用户手机号
-            if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
+            if (!isMatch && !isWaited && faceAttr.isIncludeFace()) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
                 isWaited = true;
                 transferPhoneImg(bmp_rotated);
             }
@@ -363,6 +365,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> map = new HashMap<>();
                 map.put("etel", phoneNum);
+                Log.i("CameraActivity", "phoneTo = " + phoneNum);
                 String imgStr = ImageUtil.convertImage(bmp_rotated);
                 map.put("ephoto", imgStr);
                 return map;
@@ -375,23 +378,45 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         public void onResponse(String response) {
+
             //收到服务器回复 不再等待回复
             isWaited = false;
-            if (response.equals("1")) {//无此工作人员
-                //提示手机号位注册
-                Toast.makeText(CameraActivity.this, "该手机号未注册", Toast.LENGTH_SHORT).show();
-                CameraActivity.this.finish();
-            } else if (response.equals("2")) {//数据错误
-                //登录人脸图片不匹配
-                isMatch = false;
-            } else {//返回工作人员编号eid
+
+            int lengthOfResponse = response.length();
+            int intOfResponse = 0;
+            try {
+                intOfResponse = Integer.parseInt(response);
+            } catch (NumberFormatException e) {
+                //返回数据包含非数字信息
+                Log.i("CameraActivity", "response 包含非数字信息");
+                e.printStackTrace();
+            }
+            if (lengthOfResponse == 1) {
+                switch (intOfResponse) {
+                    case 1://无此工作人员
+                        //提示手机号位注册
+                        Toast.makeText(CameraActivity.this, "该手机号未注册", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(CameraActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        CameraActivity.this.finish();
+                        break;
+                    case 2:
+                        //数据错误  登录人脸不匹配
+                        isMatch = false;
+                        break;
+                }
+            } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
                 //跳转到主界面 传入eid
                 //提示匹配成功信息
                 Toast.makeText(CameraActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 isMatch = true;
+                //TODO 保存登录信息 只要不注销账号 下次不做登录验证
+
                 Intent intent = new Intent(CameraActivity.this, MainActivity.class);
                 intent.putExtra("eid", response);
+                Log.i("CameraActivity", "eid = " + response);
                 startActivity(intent);
+                CameraActivity.this.finish();
             }
         }
     }
