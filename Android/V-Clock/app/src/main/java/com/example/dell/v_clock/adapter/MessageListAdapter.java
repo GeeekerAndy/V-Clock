@@ -29,8 +29,8 @@ public class MessageListAdapter extends ArrayAdapter<GuestMessage> {
     public View getView(int position, View convertView, ViewGroup parent) {
         GuestMessage guestMessage = getItem(position);
         View view = LayoutInflater.from(getContext()).inflate(messageLayoutID, parent, false);
-        TextView guestName = (TextView)view.findViewById(R.id.tv_guest_name_in_message);
-        TextView arriveTime = (TextView)view.findViewById(R.id.tv_arrive_time_in_message);
+        TextView guestName = view.findViewById(R.id.tv_guest_name_in_message);
+        TextView arriveTime = view.findViewById(R.id.tv_arrive_time_in_message);
         guestName.setText(guestMessage.getGuestName());
         arriveTime.setText(guestMessage.getArriveTime());
         return view;

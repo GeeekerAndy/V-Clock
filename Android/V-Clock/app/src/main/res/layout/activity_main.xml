@@ -15,73 +15,12 @@
         android:layout_weight="1">
     </LinearLayout>
 
-    <ImageView
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/gray"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:orientation="horizontal">
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:orientation="horizontal">
-            <RadioButton
-                android:id="@+id/rb_message"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_weight="1"
-                android:button="@null"
-                android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="消息"/>
-            <ImageView
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/gray"/>
-            <RadioButton
-                android:id="@+id/rb_guest_list"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:button="@null"
-                android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="嘉宾列表"/>
-            <ImageView
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/gray"/>
-            <RadioButton
-                android:id="@+id/rb_history"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:button="@null"
-                android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="历史记录" />
-            <ImageView
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/gray"/>
-            <RadioButton
-                android:id="@+id/rb_me"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:button="@null"
-                android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="我的"/>
-        </RadioGroup>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/navigation" />
 
 </LinearLayout>

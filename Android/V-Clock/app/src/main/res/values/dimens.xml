@@ -22,4 +22,5 @@
     <dimen name="bt_search_text_size">18sp</dimen>
     <dimen name="guest_size">18sp</dimen>
     <dimen name="width_25">25dp</dimen>
+    <dimen name="elevation">4dp</dimen>
 </resources>
