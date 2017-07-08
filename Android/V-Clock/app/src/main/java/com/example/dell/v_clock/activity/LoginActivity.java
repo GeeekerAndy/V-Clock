@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //TODO 读取上次登录的信息 如果没有注销登录直接登录
+        //读取上次登录的信息 如果没有注销登录直接登录
         SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
         String eid = sp.getString("eid", null);
         if (eid != null) {
@@ -67,8 +67,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
-        }else {
-            Log.i("ReadSharedPrefer","eid 为空");
         }
         //初始化控件
         initComponents();
