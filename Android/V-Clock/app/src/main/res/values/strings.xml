@@ -11,4 +11,10 @@
     <string name="Message">请输入手机号</string>
     <string name="next">下一步</string>
     <string name="signUp">注册</string>
+    <string name="my_guest">我的嘉宾</string>
+    <string name="search">搜索</string>
+    <string name="cancel">取消</string>
+    <string name="guest_num_10">10</string>
+    <string name="guest_name">隔壁小王</string>
+    <string name="add_guest">添加嘉宾</string>
 </resources>

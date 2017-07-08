@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.dell.v_clock.activity.AddGuestActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/colorPrimary">
+
+        <ImageButton
+            android:id="@+id/img_bt_add_back"
+            android:layout_width="@dimen/margin_20"
+            android:layout_height="@dimen/margin_20"
+            android:background="@drawable/back_selector"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/margin_20" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/add_guest"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/act_bar_text_size" />
+    </RelativeLayout>
+
+</RelativeLayout>

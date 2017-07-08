@@ -31,6 +31,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
+import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.FaceCheck;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.smartshino.face.FaceAttr;
@@ -59,7 +60,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     //是否在等待匹配结果
     private boolean isWaited = false;
     //登录访问URL
-    private final String LOGIN_URL = "http://121.250.222.39:8080/V-Clock/servlet/LoginServlet";
+    private final String LOGIN_URL = ServerInfo.LOGIN_URL;
     //访问服务器请求队列
     private RequestQueue requestQueue;
     //用户登录手机号
@@ -158,7 +159,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             parameters.setPreviewSize(640, 480);
             mCamera.setParameters(parameters);
             //将预览相机内容的横屏转为竖屏
-            //TODO 小米手机翻转270   三星、oneplus：90
+            //小米手机翻转270   三星、oneplus：90
             camera.setDisplayOrientation(90);
 //            camera.setPreviewCallback(this);
             camera.startPreview();
@@ -289,7 +290,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             Bitmap bmp = BitmapFactory.decodeByteArray(temp, 0, temp.length);
             //旋转图像
             Matrix matrix = new Matrix();
-            //TODO 小米手机翻转90   三星、oneplus：270
+            //小米手机翻转90   三星、oneplus：270
             matrix.postRotate(270);
             Bitmap bmp_rotated = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
             //TODO　进行人脸识别等一系列操作
@@ -305,7 +306,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
                     isWaited = true;
                     Log.i("Transger","向服务器发送数据");
-                    //TODO
                     transferPhoneImg(bmp_rotated);
                 }
             }
@@ -324,7 +324,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     //每0.1秒截取一帧
                     Thread.sleep(INTERVAL);
                     if ((captureCount++ >= OVERTIME / INTERVAL) && !isMatch) {
-                        //TODO 超时检测 发送超时Message
+                        //超时检测 发送超时Message
                         Message msg = handler.obtainMessage();
                         msg.arg1 = 1;
                         handler.sendMessage(msg);
@@ -431,12 +431,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 }
             } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
                 isMatch = true;
+                //TODO 有待测试  登录成功 setOneShotPreview() NullPointer
+                mFaceTask.cancel(true);
                 Log.i("Transfer","收到服务器回复 登录成功");
                 //跳转到主界面 传入eid
                 //
                 //提示匹配成功信息
                 Toast.makeText(CameraActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                //TODO 保存登录信息 只要不注销账号 下次不做登录验证
+                //保存登录信息 只要不注销账号 下次不做登录验证
                 saveLoginInfo(response);
                 Intent intent = new Intent(CameraActivity.this, MainActivity.class);
                 intent.putExtra("eid", response);

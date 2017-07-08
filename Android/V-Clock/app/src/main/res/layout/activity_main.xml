@@ -18,7 +18,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/gery"/>
+        android:background="@color/gray"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,7 +42,7 @@
             <ImageView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/gery"/>
+                android:background="@color/gray"/>
             <RadioButton
                 android:id="@+id/rb_guest_list"
                 android:layout_width="0dp"
@@ -56,7 +56,7 @@
             <ImageView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/gery"/>
+                android:background="@color/gray"/>
             <RadioButton
                 android:id="@+id/rb_history"
                 android:layout_width="0dp"
@@ -70,7 +70,7 @@
             <ImageView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/gery"/>
+                android:background="@color/gray"/>
             <RadioButton
                 android:id="@+id/rb_me"
                 android:layout_width="0dp"

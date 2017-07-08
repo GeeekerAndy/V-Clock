@@ -7,9 +7,12 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.camera2"
-                android:required="true"/>
-    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -18,10 +21,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity"
-            android:theme="@style/NoActionBarTheme">
-
-        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:theme="@style/NoActionBarTheme" />
         <activity
             android:name=".activity.LoginActivity"
             android:theme="@style/NoActionBarTheme">
@@ -38,17 +40,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.dell.v_clock.activity.RegisterActivity" />
         </activity>
+        <activity android:name=".activity.CameraActivity" />
         <activity
-            android:name=".activity.CameraActivity">
-
-        </activity>
-        <activity android:name=".activity.SelectPhotoActivity"
+            android:name=".activity.SelectPhotoActivity"
             android:screenOrientation="portrait">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.dell.v_clock.activity.RegisterActivity" />
         </activity>
+        <activity android:name=".activity.SearchActivity" />
+        <activity android:name=".activity.AddGuestActivity" />
+        <activity android:name=".activity.GuestInfoActivity"></activity>
     </application>
 
 </manifest>
