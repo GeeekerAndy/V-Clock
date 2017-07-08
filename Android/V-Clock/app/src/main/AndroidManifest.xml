@@ -21,11 +21,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".activity.MainActivity"
-            android:theme="@style/NoActionBarTheme" />
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarTheme">
+
+        </activity>
         <activity
             android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,16 +38,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RegisterActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.dell.v_clock.activity.RegisterActivity" />
-        </activity>
-        <activity android:name=".activity.CameraActivity" />
         <activity
-            android:name=".activity.SelectPhotoActivity"
+            android:name=".activity.RegisterActivity"
             android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -50,9 +47,32 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.dell.v_clock.activity.RegisterActivity" />
         </activity>
+        <activity
+            android:name=".activity.CameraActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SelectPhotoActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.dell.v_clock.activity.RegisterActivity" />
+
+
         <activity android:name=".activity.SearchActivity" />
         <activity android:name=".activity.AddGuestActivity" />
         <activity android:name=".activity.GuestInfoActivity"></activity>
+
+        <service
+            android:name=".service.GetMessageService"
+            android:enabled="true"
+            android:exported="true">
+
+        </service>
+
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.dell.v_clock.activity;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import com.example.dell.v_clock.fragment.GuestListFragment;
 import com.example.dell.v_clock.fragment.HistoryFragment;
 import com.example.dell.v_clock.fragment.MeFragment;
 import com.example.dell.v_clock.fragment.MessageListFragment;
+import com.example.dell.v_clock.service.GetMessageService;
 
 /**
  * This is the main interface, including four parts Messages, GuestList, History and Me.
@@ -71,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Intent startServiceIntent = new Intent(this, GetMessageService.class);
+        startService(startServiceIntent);
 
     }
 
