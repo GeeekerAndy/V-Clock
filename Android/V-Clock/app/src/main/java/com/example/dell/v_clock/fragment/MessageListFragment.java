@@ -74,7 +74,9 @@ public class MessageListFragment extends Fragment {
                             @Override
                             public void onDismiss(ListView listView, int[] reverseSortedPositions) {
                                 for (int position : reverseSortedPositions) {
-                                    new removeOneMessage().execute(position);
+                                    String[] visitInfo = {messageListAdapter.getItem(position).getGuestName(),
+                                                        messageListAdapter.getItem(position).getArriveTime()};
+                                    new removeOneMessage().execute(visitInfo);
                                     messageListAdapter.remove(messageListAdapter.getItem(position));
                                 }
                                 messageListAdapter.notifyDataSetChanged();
@@ -92,16 +94,19 @@ public class MessageListFragment extends Fragment {
         super.onDestroy();
     }
 
-    private class removeOneMessage extends AsyncTask<Integer, Void, Void> {
+    private class removeOneMessage extends AsyncTask<String, Void, Void> {
         @Override
-        protected Void doInBackground(Integer... position) {
+        protected Void doInBackground(String... visitInfo) {
             db = dbHelper.getWritableDatabase();
-            String guestName = messageListAdapter.getItem(position[0]).getGuestName();
-            String arriveTime = messageListAdapter.getItem(position[0]).getArriveTime();
-            String selection = VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=? and " +
-                    VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=?";
-            String[] selectionArgs = {guestName, arriveTime};
-            db.delete(VClockContract.MessageInfo.TABLE_NAME, selection, selectionArgs);
+            if(visitInfo.length < 1) {
+                Log.d("TAG", "数据库删除失败！嘉宾信息不完整");
+            } else {
+                String selection = VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=? and " +
+                        VClockContract.MessageInfo.COLUMN_NAME_DATE + "=?";
+                String[] selectionArgs = {visitInfo[0], visitInfo[1]};
+                db.delete(VClockContract.MessageInfo.TABLE_NAME, selection, selectionArgs);
+                Log.d("TAG", "删除一条消息, 嘉宾姓名：" + visitInfo[0] + "，到访时间：" + visitInfo[1]);
+            }
             return null;
         }
     }

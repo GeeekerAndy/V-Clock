@@ -53,6 +53,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.dell.v_clock.activity.RegisterActivity" />
         </activity>
+        <service android:name=".service.GetMessageService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>
