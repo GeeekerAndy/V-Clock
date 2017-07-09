@@ -29,58 +29,65 @@
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:orientation="horizontal">
+
             <RadioButton
                 android:id="@+id/rb_message"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:layout_weight="1"
-                android:button="@null"
                 android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="消息"/>
+                android:button="@null"
+                android:gravity="center"
+                android:text="消息"
+                android:textColor="@drawable/button_text_color" />
+
             <ImageView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/gray"/>
+                android:background="@color/gray" />
+
             <RadioButton
                 android:id="@+id/rb_guest_list"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:button="@null"
                 android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="嘉宾列表"/>
+                android:button="@null"
+                android:gravity="center"
+                android:text="嘉宾列表"
+                android:textColor="@drawable/button_text_color" />
+
             <ImageView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/gray"/>
+                android:background="@color/gray" />
+
             <RadioButton
                 android:id="@+id/rb_history"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:button="@null"
                 android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="历史记录" />
+                android:button="@null"
+                android:gravity="center"
+                android:text="历史记录"
+                android:textColor="@drawable/button_text_color" />
+
             <ImageView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/gray"/>
+                android:background="@color/gray" />
+
             <RadioButton
                 android:id="@+id/rb_me"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:button="@null"
                 android:background="@drawable/radio_button_background"
-                android:textColor="@drawable/button_text_color"
-                android:text="我的"/>
+                android:button="@null"
+                android:gravity="center"
+                android:text="我的"
+                android:textColor="@drawable/button_text_color" />
         </RadioGroup>
     </LinearLayout>
 

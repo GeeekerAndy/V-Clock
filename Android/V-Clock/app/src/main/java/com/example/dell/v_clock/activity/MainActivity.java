@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.ll_fragment_container, messageListFragment);
         transaction.commit();
 
-        RadioButton radioMessage = (RadioButton)findViewById(R.id.rb_message);
+        RadioButton radioMessage = (RadioButton) findViewById(R.id.rb_message);
         radioMessage.setChecked(true);
         radioMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 transaction1.commit();
             }
         });
-        RadioButton radioGuestList = (RadioButton)findViewById(R.id.rb_guest_list);
+        RadioButton  radioGuestList = (RadioButton) findViewById(R.id.rb_guest_list);
         radioGuestList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 transaction2.commit();
             }
         });
-        RadioButton radioHistory = (RadioButton)findViewById(R.id.rb_history);
+        RadioButton radioHistory = (RadioButton) findViewById(R.id.rb_history);
         radioHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 transaction3.commit();
             }
         });
-        RadioButton radioMe = (RadioButton)findViewById(R.id.rb_me);
+        RadioButton radioMe = (RadioButton) findViewById(R.id.rb_me);
         radioMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,10 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 transaction4.commit();
             }
         });
-
         Intent startServiceIntent = new Intent(this, GetMessageService.class);
         startService(startServiceIntent);
-
     }
 
 }

@@ -62,9 +62,15 @@
             android:value="com.example.dell.v_clock.activity.RegisterActivity" />
 
 
-        <activity android:name=".activity.SearchActivity" />
-        <activity android:name=".activity.AddGuestActivity" />
-        <activity android:name=".activity.GuestInfoActivity"></activity>
+        <activity
+            android:name=".activity.SearchActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.AddGuestActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.GuestInfoActivity"
+            android:theme="@style/NoActionBarTheme" />
 
         <service
             android:name=".service.GetMessageService"

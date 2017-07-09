@@ -17,4 +17,11 @@
     <string name="guest_num_10">10</string>
     <string name="guest_name">隔壁小王</string>
     <string name="add_guest">添加嘉宾</string>
+    <string name="name">姓名:</string>
+    <string name="company">单位:</string>
+    <string name="phone">手机:</string>
+    <string name="sex">性别:</string>
+    <string name="woman">女</string>
+    <string name="man">男</string>
+    <string name="add">添加</string>
 </resources>

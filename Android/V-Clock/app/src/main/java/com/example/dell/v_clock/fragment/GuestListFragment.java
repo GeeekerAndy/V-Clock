@@ -1,6 +1,5 @@
 package com.example.dell.v_clock.fragment;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,7 +40,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener 
 
         ibt_addGuest.setOnClickListener(this);
         bt_search.setOnClickListener(this);
-
 
         return view;
     }

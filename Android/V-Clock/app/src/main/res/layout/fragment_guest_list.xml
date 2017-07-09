@@ -15,35 +15,31 @@
             android:id="@+id/bt_search"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_30"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginRight="@dimen/margin_20"
-            android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/img_bt_add"
             android:background="@drawable/rounded_rectangle_white"
             android:gravity="center"
             android:text="@string/search"
-            android:textSize="@dimen/bt_search_text_size"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray"
+            android:textSize="@dimen/bt_search_text_size" />
 
         <ImageButton
             android:id="@+id/img_bt_add"
             android:layout_width="@dimen/width_25"
             android:layout_height="@dimen/width_25"
             android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
             android:layout_marginEnd="@dimen/margin_15"
-            android:layout_centerVertical="true"
-            android:adjustViewBounds="true"
-            android:background="@drawable/plus_white" />
+            android:background="@drawable/plus_selector" />
     </RelativeLayout>
 
     <ExpandableListView
         android:id="@+id/explv_guest_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
-
-
+        android:layout_below="@id/relative_search">
     </ExpandableListView>
 
 </RelativeLayout>
