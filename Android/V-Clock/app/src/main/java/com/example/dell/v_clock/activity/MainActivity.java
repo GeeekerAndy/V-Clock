@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.ll_fragment_container, messageListFragment);
         transaction.commit();
-<<<<<<< HEAD
 
         RadioButton radioMessage = (RadioButton) findViewById(R.id.rb_message);
         radioMessage.setChecked(true);
@@ -113,8 +112,6 @@ public class MainActivity extends AppCompatActivity {
                 transaction4.commit();
             }
         });
-=======
->>>>>>> upstream/master
         Intent startServiceIntent = new Intent(this, GetMessageService.class);
         startService(startServiceIntent);
     }

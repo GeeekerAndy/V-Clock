@@ -18,7 +18,6 @@
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
-<<<<<<< HEAD
         android:layout_height="1dp"
         android:background="@color/gray"/>
 
@@ -92,11 +91,4 @@
                 android:textColor="@drawable/button_text_color" />
         </RadioGroup>
     </LinearLayout>
-=======
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
-        app:menu="@menu/navigation" />
->>>>>>> upstream/master
-
 </LinearLayout>
