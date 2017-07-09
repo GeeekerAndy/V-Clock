@@ -24,12 +24,14 @@ public class RecognizeFace {
 	public String computeFaceID(String imgStr) throws Exception {
 		String result = "";
 		//String imgStr = ic.GetImageStr(imgFilePath);
+		System.out.println(imgStr);
 		// 设置参数
 		String param = "app_id=" + URLEncoder.encode(conf.getAppID(), "utf-8")
 				+ "&" + "app_key="
 				+ URLEncoder.encode(conf.getAppKey(), "utf-8") + "&" + "img="
 				+ URLEncoder.encode(imgStr, "utf-8");
 		result = hgp.sendPost(conf.getUrl1(), param);
+		
 		return getFaceID(result);
 	}
 
@@ -38,8 +40,8 @@ public class RecognizeFace {
 			throws Exception {
 		String result;
 		String fid1 = computeFaceID(imgStr1);
-		String fid2 = computeFaceID( ic.GetImageStr(imgFilePath2));
-		if(fid1!=null&&fid2!=null){
+		String fid2 = computeFaceID(ic.GetImageStr(imgFilePath2));
+		if(!fid1.equals("")&&!fid2.equals("")){
 			// 设置参数
 			String param = "app_id=" + URLEncoder.encode(conf.getAppID(), "utf-8")
 					+ "&" + "app_key="
@@ -47,7 +49,7 @@ public class RecognizeFace {
 					+ "face_id1=" + URLEncoder.encode(fid1, "utf-8") + "&"
 					+ "face_id2=" + URLEncoder.encode(fid2, "utf-8");
 			result = hgp.sendGet(conf.getUrl2(), param);
-
+            //System.out.println(fid1+"@"+fid2);
 			return getSimilarityBetweenTwoImages(result);
 		}else{
 			return 0;
@@ -155,8 +157,10 @@ public class RecognizeFace {
 	// 提取similarity
 	public float getSimilarityBetweenTwoImages(String result)  {
 		float similarity = 0;
+		//System.out.println(result);
 		JSONObject object = JSONObject.fromObject(result);
 		similarity = Float.parseFloat(object.getString("similarity"));
+		//System.out.println(similarity);
 		return similarity;
 	}
     
@@ -188,23 +192,23 @@ public class RecognizeFace {
 	private String crowdName2= "wuhuabaren_employee";
 
 
-//	public static void main(String[] args) throws Exception {
-//		String imgFilePath1 = "C:\\Users\\dell\\Desktop\\4.jpg";
-//		RecognizeFace rf = new RecognizeFace();
+	public static void main(String[] args) throws Exception {
+	String imgFilePath1 = "D:\\1.jpg";
+	RecognizeFace rf = new RecognizeFace();
 //		//System.out.println(rf.createCrowd());
 //		// System.out.println(rf.computeFaceID(imgFilePath1));
 //		 CheckingPhoto cp=new CheckingPhoto();
-//	     ImageCoding ic=new ImageCoding();
-//	     String s=ic.GetImageStr(imgFilePath1);
+    ImageCoding ic=new ImageCoding();
+    String s=ic.GetImageStr(imgFilePath1);
 //	     System.out.println(rf.computeFaceID(s));
-//		//String imgFilePath2 = "D:\\2.jpg";
-//		//System.out.println(rf.compareOnewithAnother(imgFilePath1, imgFilePath2));
+		String imgFilePath2 = "D:\\2.jpg";
+	System.out.println(rf.compareOnewithAnother(s, imgFilePath2));
 //		// String fid = rf.getFaceID(imgFilePath1);
 //		// System.out.println(rf.createOnePeople(fid, "w3"));
 //		// System.out.println(rf.identifyPeopleInCrowd(fid));
 //		// System.out.println(rf.createOneCrowd());
 //
-//	}
+}
 
 
 }
