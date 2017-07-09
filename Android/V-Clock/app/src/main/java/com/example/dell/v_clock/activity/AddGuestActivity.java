@@ -249,7 +249,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      *
      */
     private class AddGuestResponseErrorListener implements Response.ErrorListener {
-
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.i("Transfer", "收到服务器回复");
