@@ -35,10 +35,9 @@ public class MessageHistoryAdapter extends ArrayAdapter<GuestHistory> {
         TextView guestName = view.findViewById(R.id.tv_guest_name_in_message);
         TextView arriveTime = view.findViewById(R.id.tv_arrive_time_in_message);
         ImageView myGuestAvatar = view.findViewById(R.id.iv_my_guest_avatar);
-        guestName.setText("嘉宾" + guestHistory.getGuestName());
-        arriveTime.setText("到达时间：" + guestHistory.getArriveTime());
+        guestName.setText("嘉宾 " + guestHistory.getGuestName());
+        arriveTime.setText(guestHistory.getArriveTime());
         myGuestAvatar.setImageBitmap(ImageUtil.convertImage(guestHistory.getBase64Pic()));
-
         return view;
     }
 }
