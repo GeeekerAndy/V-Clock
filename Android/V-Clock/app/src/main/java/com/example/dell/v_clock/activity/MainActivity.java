@@ -75,43 +75,6 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.ll_fragment_container, messageListFragment);
         transaction.commit();
 
-        RadioButton radioMessage = (RadioButton) findViewById(R.id.rb_message);
-        radioMessage.setChecked(true);
-        radioMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction transaction1 = getSupportFragmentManager().beginTransaction();
-                transaction1.replace(R.id.ll_fragment_container, messageListFragment);
-                transaction1.commit();
-            }
-        });
-        RadioButton  radioGuestList = (RadioButton) findViewById(R.id.rb_guest_list);
-        radioGuestList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction transaction2 = getSupportFragmentManager().beginTransaction();
-                transaction2.replace(R.id.ll_fragment_container, guestListFragment);
-                transaction2.commit();
-            }
-        });
-        RadioButton radioHistory = (RadioButton) findViewById(R.id.rb_history);
-        radioHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction transaction3 = getSupportFragmentManager().beginTransaction();
-                transaction3.replace(R.id.ll_fragment_container, historyFragment);
-                transaction3.commit();
-            }
-        });
-        RadioButton radioMe = (RadioButton) findViewById(R.id.rb_me);
-        radioMe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction transaction4 = getSupportFragmentManager().beginTransaction();
-                transaction4.replace(R.id.ll_fragment_container, meFragment);
-                transaction4.commit();
-            }
-        });
         Intent startServiceIntent = new Intent(this, GetMessageService.class);
         startService(startServiceIntent);
     }

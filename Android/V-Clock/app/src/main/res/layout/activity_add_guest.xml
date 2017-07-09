@@ -31,13 +31,13 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_below="@+id/relative_add_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="10"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/relative_add_bar"
+        android:orientation="vertical"
+        android:weightSum="10">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -97,6 +97,8 @@
                             android:layout_width="@dimen/height_200"
                             android:layout_height="@dimen/height_30"
                             android:background="@drawable/rounded_rectangle_white"
+                            android:lines="1"
+                            android:maxLength="20"
                             android:paddingEnd="@dimen/margin_20"
                             android:paddingStart="@dimen/margin_20"
                             android:textColor="@color/colorBlack" />
@@ -117,34 +119,34 @@
                             android:textColor="@color/colorWhite"
                             android:textSize="@dimen/guest_size" />
 
-                            <RadioGroup
+                        <RadioGroup
+                            android:layout_width="@dimen/height_0"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:gravity="center_horizontal"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rd_bt_woman"
                                 android:layout_width="@dimen/height_0"
-                                android:layout_height="match_parent"
-                                android:layout_weight="2"
+                                android:layout_height="@dimen/height_30"
+                                android:layout_weight="1"
+                                android:checked="true"
                                 android:gravity="center_horizontal"
-                                android:orientation="horizontal">
+                                android:text="@string/woman"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/guest_size" />
 
-                                <RadioButton
-                                    android:id="@+id/rd_bt_woman"
-                                    android:checked="true"
-                                    android:layout_width="@dimen/height_0"
-                                    android:layout_height="@dimen/height_30"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:text="@string/woman"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/guest_size" />
-
-                                <RadioButton
-                                    android:id="@+id/rd_bt_man"
-                                    android:layout_width="@dimen/height_0"
-                                    android:layout_height="@dimen/height_30"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:text="@string/man"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/guest_size" />
-                            </RadioGroup>
+                            <RadioButton
+                                android:id="@+id/rd_bt_man"
+                                android:layout_width="@dimen/height_0"
+                                android:layout_height="@dimen/height_30"
+                                android:layout_weight="1"
+                                android:gravity="center_horizontal"
+                                android:text="@string/man"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/guest_size" />
+                        </RadioGroup>
 
                     </LinearLayout>
 
@@ -166,6 +168,8 @@
                             android:layout_width="@dimen/height_200"
                             android:layout_height="@dimen/height_30"
                             android:background="@drawable/rounded_rectangle_white"
+                            android:lines="1"
+                            android:maxLength="20"
                             android:paddingEnd="@dimen/margin_20"
                             android:paddingStart="@dimen/margin_20"
                             android:textColor="@color/colorBlack" />
@@ -210,7 +214,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/margin_50"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/white_blue_selector"
                     android:text="@string/add"
                     android:textColor="@color/white"
                     android:textSize="@dimen/act_bar_text_size" />
