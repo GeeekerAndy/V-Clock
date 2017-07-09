@@ -70,7 +70,7 @@ public class GetMessageService extends Service {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //Json object {"eid":4,"gname":12,"arrivingDate":1234}
+                        //Json object example {"eid":4,"gname":12,"arrivingDate":1234}
                         SQLiteDatabase db = new MessageDBHelper(getBaseContext()).getWritableDatabase();
                         ContentValues values = new ContentValues();
                         try {

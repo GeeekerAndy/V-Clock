@@ -13,7 +13,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_toEndOf="@+id/iv_my_guest_avatar"
-        android:text="嘉宾XXX已经到达"
         android:textSize="25sp"
         android:textColor="@color/colorBlack"
         android:gravity="center" />
@@ -21,7 +20,6 @@
         android:id="@+id/tv_arrive_time_in_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2017.07.05 17.05"
         android:textColor="@color/colorBlack"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"/>
