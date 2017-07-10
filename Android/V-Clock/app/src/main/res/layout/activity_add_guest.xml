@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
+    android:background="@color/gray_group_bar"
     tools:context="com.example.dell.v_clock.activity.AddGuestActivity">
 
     <RelativeLayout
-        android:id="@+id/relative_add_bar"
+        android:id="@+id/relative_guest_info_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_size"
         android:background="@color/colorPrimary">
 
         <ImageButton
-            android:id="@+id/img_bt_add_back"
+            android:id="@+id/img_bt_info_back"
             android:layout_width="@dimen/margin_20"
             android:layout_height="@dimen/margin_20"
             android:layout_centerVertical="true"
@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/relative_add_bar"
+        android:layout_below="@+id/relative_guest_info_bar"
         android:orientation="vertical"
         android:weightSum="10">
 

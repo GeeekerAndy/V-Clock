@@ -17,18 +17,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.fragment.GuestListFragment;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +57,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //ListView 适配器
     SimpleAdapter simpleAdapter;
 
-    final String MY_GEUST_SEATCH_TYPE = "0";
-    final String PARTITIAL_NAME_SEATCH_TYPE = "1";
+//    final String MY_GEUST_SEATCH_TYPE = "0";
+//    final String PARTITIAL_NAME_SEATCH_TYPE = "1";
     final String WHOLE_NAME_SEATCH_TYPE = "2";
 
     @Override
@@ -78,7 +84,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /**
-     *
+     *  捕捉消息 更新UI
      */
     Handler handler = new Handler(){
         @Override
@@ -92,9 +98,22 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * 显示搜索结果 刷新ListView
      */
     private void refreshGuestList() {
-
+        dataList_guest.clear();
+        //TODO 测试显示效果  自定义搜索结果
+        for(int i = 0;i < 10;i++)
+        {
+            Map<String,Object> tempMap = new HashMap();
+            tempMap.put(from[0],R.mipmap.ic_launcher);
+            tempMap.put(from[1],"小明"+i);
+            dataList_guest.add(tempMap);
+        }
+        simpleAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * “取消”的点击事件监听  TODO item 右边的加号 点击的监听
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -104,6 +123,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     *  监听点击软键盘上“搜索”键事件
+     * @param textView
+     * @param i         键值
+     * @param keyEvent  键盘事件
+     * @return
+     */
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         if (i == EditorInfo.IME_ACTION_SEARCH) {
@@ -113,8 +139,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 Toast.makeText(this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
                 return false;
             }
-            //向后台发送请求
-            transferRequest(name);
+            //TODO　向后台发送请求
+//            transferRequest(name);
             //发送Message 更新ListView的显示结果
             handler.sendEmptyMessage(0);
             return true;
@@ -123,15 +149,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /**
-     * 向后台发送请求
+     * 向后台发送搜索请求
      */
     private void transferRequest(final String name) {
-        JSONObject jsonObject = new JSONObject();
-        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, ServerInfo.CREATE_NEW_GUEST_URL, jsonObject,
-                new SearchResponseListener(), new SearchResponseErrorListener()) {
+        CustomRequest customRequest = new CustomRequest(Request.Method.POST,ServerInfo.SEARCH_GUEST_URL,null,
+                new SearchResponseListener(), new SearchResponseErrorListener()){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
+                //TODO　要传哪些参数
                 Map<String,String> searchInfo = new  HashMap<>();
                 searchInfo.put("gname",name);
                 searchInfo.put("tip",WHOLE_NAME_SEATCH_TYPE);
@@ -143,18 +168,64 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         };
         //访问服务器请求队列
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(loginRequest);
+        requestQueue.add(customRequest);
+    }
+
+    /**
+     * 接收Json对象的Request类
+     */
+    private class CustomRequest extends Request<JSONObject> {
+
+        private Response.Listener<JSONObject> listener;
+        private Map<String, String> params;
+
+        public CustomRequest(String url, Map<String, String> params,
+                             Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
+            super(Method.GET, url, errorListener);
+            this.listener = reponseListener;
+            this.params = params;
+        }
+
+        public CustomRequest(int method, String url, Map<String, String> params,
+                             Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
+            super(method, url, errorListener);
+            this.listener = reponseListener;
+            this.params = params;
+        }
+
+        protected Map<String, String> getParams()
+                throws com.android.volley.AuthFailureError {
+            return params;
+        }
+
+        @Override
+        protected Response<JSONObject> parseNetworkResponse (NetworkResponse response) {
+            try {
+                String utf8String = new String(response.data, "UTF-8");
+                return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
+            } catch (UnsupportedEncodingException e) {
+                // log error
+                return Response.error(new ParseError(e));
+            } catch (JSONException e) {
+                // log error
+                return Response.error(new ParseError(e));
+            }
+        }
+
+        @Override
+        protected void deliverResponse(JSONObject response) {
+            // TODO Auto-generated method stub
+            listener.onResponse(response);
+        }
     }
 
     /**
      *
      */
     private class SearchResponseListener implements Response.Listener<JSONObject> {
-
-
         @Override
         public void onResponse(JSONObject response) {
-
+            //TODO 判断返回是否有效
         }
     }
 
@@ -171,7 +242,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-
+    /**
+     * TODO 点击条目，进入嘉宾详细信息
+     * @param adapterView
+     * @param view
+     * @param i
+     * @param l
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 

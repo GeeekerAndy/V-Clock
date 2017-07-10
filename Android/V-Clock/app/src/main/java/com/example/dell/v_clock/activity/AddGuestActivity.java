@@ -65,7 +65,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     private void initComponents() {
         //TODO iv_photo 的尺寸适配问题
 
-        ibt_back = (ImageButton) findViewById(R.id.img_bt_add_back);
+        ibt_back = (ImageButton) findViewById(R.id.img_bt_info_back);
         ibt_plus = (ImageButton) findViewById(R.id.img_bt_add_guest_photo);
         iv_photo = (ImageView) findViewById(R.id.iv_guest_photo);
         et_name = (EditText) findViewById(R.id.et_guest_name);
@@ -97,7 +97,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.img_bt_add_back:
+            case R.id.img_bt_info_back:
                 //返回上个界面
                 this.finish();
                 break;

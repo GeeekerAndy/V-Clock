@@ -22,7 +22,7 @@
             android:background="@drawable/rounded_rectangle_white"
             android:gravity="center"
             android:text="@string/search"
-            android:textColor="@color/gray"
+            android:textColor="@color/gray_light"
             android:textSize="@dimen/bt_search_text_size" />
 
         <ImageButton
@@ -35,11 +35,34 @@
             android:background="@drawable/plus_selector" />
     </RelativeLayout>
 
-    <ExpandableListView
-        android:id="@+id/explv_guest_list"
+    <ScrollView
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/relative_search">
-    </ExpandableListView>
+        android:fillViewport="true"
+        android:layout_below="@+id/relative_search">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ExpandableListView
+                android:id="@+id/explv_my_guest_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </ExpandableListView>
+
+            <ExpandableListView
+                android:id="@+id/explv_all_guest_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/explv_my_guest_list">
+
+            </ExpandableListView>
+        </RelativeLayout>
+
+    </ScrollView>
+
 
 </RelativeLayout>
