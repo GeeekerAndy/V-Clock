@@ -44,4 +44,6 @@
     <string name="fragment_message_title">消息</string>
     <string name="guest_info">嘉宾信息</string>
     <string name="save">保存</string>
+    <string name="fragment_me_edit">编辑</string>
+    <string name="update_password">更新密码</string>
 </resources>
