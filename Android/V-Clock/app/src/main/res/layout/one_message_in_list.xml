@@ -7,9 +7,10 @@
         android:id="@+id/iv_my_guest_avatar"
         android:layout_width="@dimen/one_message_height"
         android:layout_height="match_parent"
+        android:layout_margin="10dp"
         android:src="@drawable/ic_person_pin_circle_48pt_2x"/>
     <TextView
-        android:layout_margin="5dp"
+        android:layout_marginLeft="@dimen/margin_20"
         android:id="@+id/tv_guest_name_in_message"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

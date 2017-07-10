@@ -35,4 +35,6 @@
     <string name="fragment_history_title">历史</string>
     <string name="fragment_me_sign_out">退出账号</string>
     <string name="fragment_message_title">消息</string>
+    <string name="fragment_me_edit">编辑</string>
+    <string name="update_password">更新密码</string>
 </resources>
