@@ -64,7 +64,6 @@ public class PushMessageServlet extends HttpServlet {
 		}
 		final HttpServletResponse finalResponse = response;
 		final AsyncContext ac = request.startAsync(request, finalResponse);
-		
 		// 设置成长久链接
 		ac.setTimeout(timeout);
 		ac.addListener(new AsyncListener() {
@@ -91,32 +90,13 @@ public class PushMessageServlet extends HttpServlet {
 				// log.info("onStartAsync Event!");
 			}
 		});
-//		if (request.getParameter("origin").equals("PrepareForPushServlet")) {
-//			PushServletService.getInstance().putMessage(
-//					request.getParameter("eid"), request.getParameter("gname"),
-//					request.getParameter("arrivingDate"));
-//		} else {
-		//System.out.println(request.getParameter("eid")+"+++++++++");
-		PushServletService.getInstance().addAsyncContext(ac);
-		PushServletService.getInstance().putMessage("0004","123456","123456789");
-		PushServletService.getInstance().putMessage("0004","12","1234");
-			// HttpSession seesion = request.getSession();
-			// seesion.setAttribute("text", "123456789");
-			
-		//}
+			PushServletService.getInstance().addAsyncContext(ac);
+//			PushServletService.getInstance().putMessage("0004", "123456",
+//					"123456789");
+//			PushServletService.getInstance().putMessage("0004", "12", "1234");
 
-		//
-		// PrintWriter out = response.getWriter();
-		// try {
-		// Thread.sleep(5000);
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		//
-		// out.write("i'm server");
-		// out.flush();
-		// out.close();
-    
+
+		
 	}
 
 	/**
@@ -136,23 +116,22 @@ public class PushMessageServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-//		System.out.println("get a request");
-//		response.setHeader("Access-Control-Allow-Origin", "*");
-//		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
-//		response.setCharacterEncoding("UTF-8");
-//		response.setContentType("text/html;charset=UTF-8");
-//
-//		String timeoutStr = request.getParameter("timeout");
-//		long timeout;
-//		if (StringUtils.isNumeric(timeoutStr)) {
-//			timeout = Long.parseLong(timeoutStr);
-//		} else {
-//			timeout = 10 * 60 * 1000;
-//		}
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html;charset=UTF-8");
+
+		String timeoutStr = request.getParameter("timeout");
+		long timeout;
+		if (StringUtils.isNumeric(timeoutStr)) {
+			timeout = Long.parseLong(timeoutStr);
+		} else {
+			timeout = 10 * 60 * 1000;
+		}
 //		final HttpServletResponse finalResponse = response;
 //		final AsyncContext ac = request.startAsync(request, finalResponse);
-//		
-//		// 设置成长久链接
+		System.out.println("arrive!");
+		// 设置成长久链接
 //		ac.setTimeout(timeout);
 //		ac.addListener(new AsyncListener() {
 //			public void onComplete(AsyncEvent event) throws IOException {
@@ -178,30 +157,12 @@ public class PushMessageServlet extends HttpServlet {
 //				// log.info("onStartAsync Event!");
 //			}
 //		});
-////		if (request.getParameter("origin").equals("PrepareForPushServlet")) {
-////			PushServletService.getInstance().putMessage(
-////					request.getParameter("eid"), request.getParameter("gname"),
-////					request.getParameter("arrivingDate"));
-////		} else {
-//		//System.out.println(request.getParameter("eid")+"+++++++++");
-//		PushServletService.getInstance().addAsyncContext(ac);
-//		PushServletService.getInstance().putMessage("0004","123456","123456789");
-//			// HttpSession seesion = request.getSession();
-//			// seesion.setAttribute("text", "123456789");
-//			
-//		//}
-//
-//		//
-//		// PrintWriter out = response.getWriter();
-//		// try {
-//		// Thread.sleep(5000);
-//		// } catch (InterruptedException e) {
-//		// e.printStackTrace();
-//		// }
-//		//
-//		// out.write("i'm server");
-//		// out.flush();
-//		// out.close();
+		    System.out.println("guestmessage:"+request.getParameter("eid")+ request.getParameter("gname")+
+				request.getParameter("arrivingDate"));
+			PushServletService.getInstance().putMessage(
+					request.getParameter("eid"), request.getParameter("gname"),
+					request.getParameter("arrivingDate"));
+		
 	}
 
 	/**

@@ -9,16 +9,19 @@ public class DealWithPhotoStream {
     	System.out.println("拿到一张图片！");
     	String gname="";
     	gname=cp.doesThePersonExist(photoStr, 1);
-    	System.out.println("----"+gname+"--------");
+    	//gname="张三";
+    	//System.out.println("----"+gname+"--------");
     	if("0".endsWith(gname)){
     		gname="0";//该嘉宾不存在
     		change=false;
     	}else if(lastGuest.equals("gname")){
     		gname="1";//该嘉宾消息已被推送
     		change=false;
-    	}else{
+    	}else if(!lastGuest.equals(gname)){
     		lastGuest=gname;
     		change=true;
+    	}else{
+    		change=false;
     	}
     	return gname;
     }

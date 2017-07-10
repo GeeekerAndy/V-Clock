@@ -46,11 +46,11 @@ public class PushServletService {
 	public void addAsyncContext(final AsyncContext asyncContext) {
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
-		// user.setEid((String)req.getSession().getAttribute("eid"));
+		//user.setEid((String)req.getSession().getAttribute("eid"));
 		user.setEid(req.getParameter("eid"));
 		// user.setEid("0000");
 		user.setMobile(GetHttpMessage.check(req.getHeader("USER-AGENT")));
-		System.out.println(req.getParameter("eid") + "****"
+		System.out.println("****"
 				+ req.getHeader("USER-AGENT"));
 		// System.out.println(ASYNC_CONTEXT_MAP.size()+"---------");
 
@@ -74,7 +74,7 @@ public class PushServletService {
 
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
-		// user.setEid((String)req.getSession().getAttribute("eid"));
+		//user.setEid((String)req.getSession().getAttribute("eid"));
 		user.setEid(req.getParameter("eid"));
 		// user.setEid(req.getParameter("eid"));
 		user.setMobile(GetHttpMessage.check(req.getHeader("USER-AGENT")));
@@ -104,9 +104,9 @@ public class PushServletService {
 			final String arrivingDate) throws IllegalStateException {
 
 		try {
-
-			String jsonStr = "{\"eid\":" + eid + ",\"gname\":" + gname
-					+ ",\"arrivingDate\":" + arrivingDate + "}";
+            System.out.println("get a new message!");
+			String jsonStr = "{\'eid\': \'"+ eid + "\',\'gname\':\'" + gname
+					+ "\',\'arrivingDate\':\'" + arrivingDate + "\'}";
 			JSONObject message = JSONObject.fromObject(jsonStr);
 			TEXT_MESSAGE_QUEUE.add(message);
 		} catch (Exception ex) {
@@ -152,7 +152,7 @@ public class PushServletService {
 			while (!done) {
 				try {
 					final JSONObject message = TEXT_MESSAGE_QUEUE.take();// 当消息队列没有数据时候，线程执行到这里就会被阻塞
-					System.out.println(message.getString("eid") + "?????????");
+					//System.out.println(message.getString("eid") + "?????????");
 					int id = Integer.parseInt(message.getString("eid"));
 					String eid = message.getString("eid");
 					if (id < 10)
