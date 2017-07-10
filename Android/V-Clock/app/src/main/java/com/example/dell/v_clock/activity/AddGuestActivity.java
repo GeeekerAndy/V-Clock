@@ -280,7 +280,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                     Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                     iv_photo.setImageBitmap(imageBitmap);
                     ibt_plus.setVisibility(View.INVISIBLE);
-                    iv_photo.setBackgroundResource(R.drawable.rounded_rectangle_gray);
+                    iv_photo.setBackgroundResource(R.color.gray_group_bar);
                     guestInfoMap.put("gphoto", ImageUtil.convertImage(imageBitmap));
                 } catch (IOException e) {
                     e.printStackTrace();

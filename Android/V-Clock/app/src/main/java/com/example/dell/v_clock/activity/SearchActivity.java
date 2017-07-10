@@ -1,6 +1,8 @@
 package com.example.dell.v_clock.activity;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,6 +32,8 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.fragment.GuestListFragment;
+import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.ImageUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,9 +61,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //ListView 适配器
     SimpleAdapter simpleAdapter;
 
-//    final String MY_GEUST_SEATCH_TYPE = "0";
+    //    final String MY_GEUST_SEATCH_TYPE = "0";
 //    final String PARTITIAL_NAME_SEATCH_TYPE = "1";
     final String WHOLE_NAME_SEATCH_TYPE = "2";
+
+    //搜索结果 guest对象
+    GuestInfo guestInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +82,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         lv_search_result = (ListView) findViewById(R.id.lv_search_result);
         dataList_guest = new ArrayList<>();
 
-        from = new String[]{"iv_my_guest_avatar","tv_my_guest_name"};
-        to = new int[]{R.id.iv_my_guest_avatar,R.id.tv_my_guest_name};
-        simpleAdapter = new SimpleAdapter(this,dataList_guest,R.layout.item_children_all_guest,from,to);
+        from = new String[]{"iv_search_guest_avatar", "tv_search_guest_name"};
+        to = new int[]{R.id.iv_search_guest_avatar, R.id.tv_search_guest_name};
+        simpleAdapter = new SimpleAdapter(this, dataList_guest, R.layout.item_search_guest, from, to);
 
         lv_search_result.setAdapter(simpleAdapter);
         lv_search_result.setOnItemClickListener(this);
     }
 
     /**
-     *  捕捉消息 更新UI
+     * 捕捉消息 更新UI
      */
-    Handler handler = new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             //更新UI  ListView信息
@@ -98,20 +105,23 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * 显示搜索结果 刷新ListView
      */
     private void refreshGuestList() {
-        dataList_guest.clear();
-        //TODO 测试显示效果  自定义搜索结果
-        for(int i = 0;i < 10;i++)
-        {
-            Map<String,Object> tempMap = new HashMap();
-            tempMap.put(from[0],R.mipmap.ic_launcher);
-            tempMap.put(from[1],"小明"+i);
+        Log.i("Search", "刷新界面");
+        if (guestInfo != null) {
+            //显示结果
+            Map<String, Object> tempMap = new HashMap();
+            tempMap.put(from[0], guestInfo.getGuestBitmapPhoto());
+            tempMap.put(from[1], guestInfo.getGuestName());
+            dataList_guest.clear();
             dataList_guest.add(tempMap);
+            et_search.setText("");
+            Log.i("Search", "数据更新");
         }
         simpleAdapter.notifyDataSetChanged();
     }
 
     /**
-     * “取消”的点击事件监听  TODO item 右边的加号 点击的监听
+     * “取消”的点击事件监听
+     *
      * @param view
      */
     @Override
@@ -124,25 +134,23 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /**
-     *  监听点击软键盘上“搜索”键事件
+     * 监听点击软键盘上“搜索”键事件
+     *
      * @param textView
-     * @param i         键值
-     * @param keyEvent  键盘事件
+     * @param i        键值
+     * @param keyEvent 键盘事件
      * @return
      */
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         if (i == EditorInfo.IME_ACTION_SEARCH) {
-            String name  = et_search.getText().toString();
-            if (name.equals("") || name.equals(" "))
-            {
+            String name = et_search.getText().toString();
+            if (name.equals("") || name.equals(" ")) {
                 Toast.makeText(this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
                 return false;
             }
-            //TODO　向后台发送请求
-//            transferRequest(name);
-            //发送Message 更新ListView的显示结果
-            handler.sendEmptyMessage(0);
+            //向后台发送请求
+            transferRequest(name);
             return true;
         }
         return false;
@@ -152,17 +160,17 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * 向后台发送搜索请求
      */
     private void transferRequest(final String name) {
-        CustomRequest customRequest = new CustomRequest(Request.Method.POST,ServerInfo.SEARCH_GUEST_URL,null,
-                new SearchResponseListener(), new SearchResponseErrorListener()){
+        CustomRequest customRequest = new CustomRequest(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, null,
+                new SearchResponseListener(), new SearchResponseErrorListener()) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                //TODO　要传哪些参数
-                Map<String,String> searchInfo = new  HashMap<>();
-                searchInfo.put("gname",name);
-                searchInfo.put("tip",WHOLE_NAME_SEATCH_TYPE);
+                //要传哪些参数
+                Map<String, String> searchInfo = new HashMap<>();
+                searchInfo.put("gname", name);
+                searchInfo.put("tip", WHOLE_NAME_SEATCH_TYPE);
                 SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
                 String eid = sp.getString("eid", null);
-                searchInfo.put("eid",eid);
+                searchInfo.put("eid", eid);
                 return searchInfo;
             }
         };
@@ -199,7 +207,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         @Override
-        protected Response<JSONObject> parseNetworkResponse (NetworkResponse response) {
+        protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
             try {
                 String utf8String = new String(response.data, "UTF-8");
                 return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
@@ -214,7 +222,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         protected void deliverResponse(JSONObject response) {
-            // TODO Auto-generated method stub
+            // TODOAuto-generated method stub
             listener.onResponse(response);
         }
     }
@@ -226,6 +234,32 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onResponse(JSONObject response) {
             //TODO 判断返回是否有效
+            try {
+                String tip = response.getString("tip");
+                if (tip.equals("2")) {
+                    //数据错误
+                    Toast.makeText(SearchActivity.this, "数据错误", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (tip.equals("0")) {
+                    //接收成功
+                    Log.i("Search", "接收成功");
+                    String name = response.getString("gname");
+                    String sex = response.getString("gsex");
+                    String phone = response.getString("gtel");
+                    String company = response.getString("gcompany");
+                    String basePhoto = response.getString("gphoto");
+                    Bitmap photo = ImageUtil.convertImage(basePhoto);
+                    guestInfo = new GuestInfo(name, sex, company, phone, photo);
+                    //发送Message 更新ListView的显示结果
+                    handler.sendEmptyMessage(0);
+                }
+
+            } catch (JSONException e) {
+                Toast.makeText(SearchActivity.this, "该嘉宾未添加！", Toast.LENGTH_SHORT).show();
+                et_search.setText("");
+                handler.sendEmptyMessage(0);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -244,6 +278,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     /**
      * TODO 点击条目，进入嘉宾详细信息
+     *
      * @param adapterView
      * @param view
      * @param i
