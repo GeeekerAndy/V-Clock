@@ -14,7 +14,7 @@ public class ServerInfo {
     public static String REGISTER_URL = SERVER_URL_1 + "/servlet/RegisterServlet";
     public static String MODIFY_EMPLOYEE_INFO_URL = SERVER_URL_1 + "/servlet/ModifyEmployeeInfoServlet";
     public static String DISPLAY_EMPLOYEE_INFO_URL = SERVER_URL_1 + "/servlet/DisplayEmployeeInfoServlet";
-    public static String CREATE_NEW_GUEST_URL = SERVER_URL_2 + "/servlet/CreateNewGuestServlet";
+    public static String CREATE_NEW_GUEST_URL = SERVER_URL_1 + "/servlet/CreateNewGuestServlet";
     public static String SEARCH_GUEST_URL = SERVER_URL_1 + "/servlet/SearchGuestServlet";
     public static String MODIFY_GUEST_INFO_URL = SERVER_URL_2 + "/servlet/ModifyGuestInfoServlet";
     public static String ADD_TO_GUEST_LIST_URL = SERVER_URL_1 + "/servlet/AddtoGuestListServlet";

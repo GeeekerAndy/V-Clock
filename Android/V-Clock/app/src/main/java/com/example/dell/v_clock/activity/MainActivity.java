@@ -74,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.ll_fragment_container, messageListFragment);
         transaction.commit();
+
         Intent startServiceIntent = new Intent(this, GetMessageService.class);
         startService(startServiceIntent);
-
     }
 
 }

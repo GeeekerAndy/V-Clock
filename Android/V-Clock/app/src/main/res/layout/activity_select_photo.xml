@@ -28,7 +28,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:src="@drawable/ic_person_48px"/>
+        android:src="@drawable/ic_person_48px" />
 
     <Button
         android:id="@+id/bt_take_photo"

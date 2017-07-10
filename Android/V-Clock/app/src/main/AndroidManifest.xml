@@ -25,6 +25,7 @@
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme" />
+
         <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
@@ -51,22 +52,38 @@
             android:name=".activity.SelectPhotoActivity"
             android:screenOrientation="portrait" />
 
+
         <!-- Parent activity meta-data to support 4.0 and lower -->
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value="com.example.dell.v_clock.activity.RegisterActivity" />
 
-        <activity android:name=".activity.SearchActivity" />
-        <activity android:name=".activity.AddGuestActivity" />
-        <activity android:name=".activity.GuestInfoActivity" />
+
+        <activity
+            android:name=".activity.SearchActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.AddGuestActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.GuestInfoActivity"
+            android:theme="@style/NoActionBarTheme" />
+
 
         <service
             android:name=".service.GetMessageService"
             android:enabled="true"
+
             android:exported="true" />
+
+        <activity
+            android:name=".activity.ModifyActivity"
+            android:theme="@style/NoActionBarTheme" />
+
 
         <activity android:name=".activity.UpdateEmployeeInfoActivity" />
         <activity android:name=".activity.UpdateEmployeePwdActivity"></activity>
+
     </application>
 
 </manifest>
