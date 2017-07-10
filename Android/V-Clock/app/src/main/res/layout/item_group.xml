@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_group_bar"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_marginStart="@dimen/margin_40"
         android:gravity="center"
         android:text="@string/my_guest"
-        android:textColor="@color/white"
+        android:textColor="@color/gray_dark"
         android:textSize="@dimen/act_bar_text_size" />
     <TextView
         android:id="@+id/tv_guest_num"
@@ -23,7 +23,7 @@
         android:layout_centerVertical="true"
         android:gravity="center"
         android:text="@string/guest_num_10"
-        android:textColor="@color/white"
+        android:textColor="@color/gray_dark"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/margin_50" />
 </RelativeLayout>

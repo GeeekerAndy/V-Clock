@@ -8,13 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.activity.AddGuestActivity;
+import com.example.dell.v_clock.activity.GuestInfoActivity;
 import com.example.dell.v_clock.activity.SearchActivity;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
 
@@ -150,7 +150,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
      */
     @Override
     public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
-
+        //TODO
+        Log.i("GuestListFrament","点击了item");
+        Intent guestInfoIntent = new Intent(getContext(), GuestInfoActivity.class);
+        startActivity(guestInfoIntent);
         return false;
     }
 

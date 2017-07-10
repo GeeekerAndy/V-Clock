@@ -30,7 +30,7 @@
             android:maxLength="20"
             android:paddingEnd="@dimen/margin_10"
             android:paddingStart="@dimen/margin_10"
-            android:textColorHint="@color/gray_light" />
+            android:textColorHint="@color/gray_dark" />
 
         <TextView
             android:id="@+id/tv_cancel"

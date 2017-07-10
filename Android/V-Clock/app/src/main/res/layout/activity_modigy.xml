@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.dell.v_clock.activity.ModifyActivity">
+
+    <RelativeLayout
+        android:id="@+id/relative_modify_info_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/colorPrimary"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true">
+
+        <ImageButton
+            android:id="@+id/img_bt_modify_back"
+            android:layout_width="@dimen/margin_20"
+            android:layout_height="@dimen/margin_20"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/margin_20"
+            android:background="@drawable/back_selector" />
+
+        <TextView
+            android:id="@+id/tv_modify_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="更改信息"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/act_bar_text_size" />
+
+        <TextView
+            android:id="@+id/tv_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/margin_20"
+            android:text="@string/save"
+            android:textColor="@drawable/sign_up_selector"
+            android:textSize="@dimen/guest_size"  />
+    </RelativeLayout>
+    <EditText
+        android:layout_below="@+id/relative_modify_info_bar"
+        android:id="@+id/et_modify_content"
+        android:layout_width="match_parent"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/act_bar_text_size"
+        android:text="隔壁小王"
+        android:paddingStart="@dimen/margin_20"
+        android:layout_height="@dimen/margin_50" />
+</RelativeLayout>

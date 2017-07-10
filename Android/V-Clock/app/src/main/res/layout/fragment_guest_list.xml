@@ -22,7 +22,7 @@
             android:background="@drawable/rounded_rectangle_white"
             android:gravity="center"
             android:text="@string/search"
-            android:textColor="@color/gray_light"
+            android:textColor="@color/gray_dark"
             android:textSize="@dimen/bt_search_text_size" />
 
         <ImageButton
@@ -48,18 +48,14 @@
 
             <ExpandableListView
                 android:id="@+id/explv_my_guest_list"
+                android:indicatorStart="0dp"
+                android:indicatorEnd="50dp"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
             </ExpandableListView>
 
-            <ExpandableListView
-                android:id="@+id/explv_all_guest_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/explv_my_guest_list">
-
-            </ExpandableListView>
         </RelativeLayout>
 
     </ScrollView>

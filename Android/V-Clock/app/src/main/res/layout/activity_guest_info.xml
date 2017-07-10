@@ -26,38 +26,43 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="嘉宾信息"
+            android:text="@string/guest_info"
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/act_bar_text_size" />
 
         <TextView
-            android:id="@+id/tv_guest_info_edit"
+            android:id="@+id/tv_guest_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/margin_20"
-            android:text="@string/edit"
+            android:text="@string/add"
             android:textColor="@drawable/sign_up_selector"
             android:textSize="@dimen/guest_size" />
     </RelativeLayout>
 
     <LinearLayout
+        android:layout_below="@+id/relative_guest_info_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/relative_guest_info_bar"
         android:orientation="vertical"
-        android:weightSum="10">
+        android:weightSum="10"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
 
         <RelativeLayout
-            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_0"
-            android:layout_weight="4">
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_weight="4"
+            android:background="@color/white">
 
             <ImageView
+                android:id="@+id/iv_guest_info_photo"
                 android:layout_width="@dimen/width_150"
                 android:layout_height="@dimen/height_200"
+                android:src="@mipmap/ic_launcher"
                 android:layout_centerInParent="true" />
         </RelativeLayout>
 
@@ -68,41 +73,127 @@
             android:orientation="vertical"
             android:weightSum="6">
 
-            <LinearLayout
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_0"
                 android:layout_marginTop="@dimen/margin_20"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_0"
                 android:layout_weight="1"
                 android:background="@color/white">
 
-            </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="@string/name"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/act_bar_text_size" />
 
-            <LinearLayout
+                <TextView
+                    android:id="@+id/tv_guest_info_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="隔壁小王"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="@dimen/act_bar_text_size" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relative_sex"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_0"
                 android:layout_marginTop="2dp"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_0"
                 android:layout_weight="1"
                 android:background="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="@string/sex"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/act_bar_text_size" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_guest_info_sex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="@string/man"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="@dimen/act_bar_text_size" />
 
-            <LinearLayout
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/relative_company"
                 android:layout_width="match_parent"
+                android:layout_height="@dimen/height_0"
                 android:layout_marginTop="2dp"
-                android:layout_height="@dimen/height_0"
                 android:layout_weight="1"
                 android:background="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="@string/company"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/act_bar_text_size" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_guest_info_company"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="山东大学"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="@dimen/act_bar_text_size" />
 
-            <LinearLayout
-                android:layout_marginTop="2dp"
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/relative_phone"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/height_0"
+                android:layout_marginTop="2dp"
                 android:layout_weight="1"
                 android:background="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="@string/phone"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/act_bar_text_size" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_guest_info_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_30"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/margin_20"
+                    android:gravity="center"
+                    android:text="17865160007"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="@dimen/act_bar_text_size" />
+
+            </RelativeLayout>
+
 
         </LinearLayout>
     </LinearLayout>
