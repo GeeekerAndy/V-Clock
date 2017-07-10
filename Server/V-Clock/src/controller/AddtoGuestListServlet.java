@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import util.*;
 
@@ -39,6 +40,7 @@ public class AddtoGuestListServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -55,6 +57,8 @@ public class AddtoGuestListServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
+//		HttpSession session=request.getSession();
+//		String eid=(String) session.getAttribute("eid");
 		String gname=request.getParameter("gname");
 		String eid=request.getParameter("eid");
 		GuestList guestList=new GuestList();

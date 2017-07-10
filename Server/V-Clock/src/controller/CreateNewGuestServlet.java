@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import faceAPI.RecognizeFace;
 
@@ -50,19 +51,7 @@ public class CreateNewGuestServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the GET method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();
+		doPost(request,response);
 	}
 
 	/**
@@ -82,11 +71,17 @@ public class CreateNewGuestServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
         String  imgIsValid="";
 		String glist[] = new String[guests.gmessage.length];
 		for (int i = 0; i < guests.gmessage.length; i++) {
+//		for (int i = 0; i < guests.gmessage.length-1; i++) {
 			glist[i] = request.getParameter(guests.gmessage[i]);
+			if(i!=guests.gmessage.length-2)
+				System.out.println(guests.gmessage[i]+":"+glist[i]);
 		}
+//		HttpSession session=request.getSession();
+//		glist[guests.gmessage.length-1]=(String) session.getAttribute("eid");
 		try {
 			imgIsValid=rf.computeFaceID(glist[4]);
 		} catch (Exception e1) {
@@ -103,11 +98,11 @@ public class CreateNewGuestServlet extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			out.write(tip);
+			out.append(tip);
+			System.out.println("tip(create guest):"+tip);
 		}else{
-			out.write("2");
+			out.append("2");
 		}
-		
 		out.flush();
 		out.close();
 	}

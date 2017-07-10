@@ -39,7 +39,11 @@ public class RecognizeFace {
 		String result;
 		String fid1 = computeFaceID(imgStr1);
 		String fid2 = computeFaceID( ic.GetImageStr(imgFilePath2));
-		if(fid1!=null&&fid2!=null){
+		System.out.println(fid1+"1");
+		System.out.println(fid2+"2");
+		if(fid1==null)
+			return -1;
+		if(!fid1.equals("")&&!fid2.equals("")){
 			// 设置参数
 			String param = "app_id=" + URLEncoder.encode(conf.getAppID(), "utf-8")
 					+ "&" + "app_key="
@@ -47,7 +51,7 @@ public class RecognizeFace {
 					+ "face_id1=" + URLEncoder.encode(fid1, "utf-8") + "&"
 					+ "face_id2=" + URLEncoder.encode(fid2, "utf-8");
 			result = hgp.sendGet(conf.getUrl2(), param);
-
+            System.out.println(result);
 			return getSimilarityBetweenTwoImages(result);
 		}else{
 			return 0;
@@ -157,6 +161,7 @@ public class RecognizeFace {
 		float similarity = 0;
 		JSONObject object = JSONObject.fromObject(result);
 		similarity = Float.parseFloat(object.getString("similarity"));
+		System.out.println(similarity);
 		return similarity;
 	}
     

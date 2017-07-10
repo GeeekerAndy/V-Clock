@@ -7,18 +7,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import util.Employee;
+import util.GuestList;
 
-import net.sf.json.JSONObject;
-
-public class LoginServlet extends HttpServlet {
+public class DeleteFromGuestListServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public LoginServlet() {
+	public DeleteFromGuestListServlet() {
 		super();
 	}
 
@@ -59,28 +56,18 @@ public class LoginServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		String etel=request.getParameter("etel");
-		String ephoto=request.getParameter("ephoto");	
-		System.out.println("login:"+etel);
-		Employee emp=new Employee();
-		String eid;
-		try {
-			eid = emp.login(etel, ephoto);
-			response.setCharacterEncoding("UTF-8");
-			System.out.println("eid:"+eid);
-			System.out.println("**********************");
-			PrintWriter out=null;
-			out=response.getWriter();
-			out.append(eid);
-			System.out.println(eid);
-			HttpSession session=request.getSession();
-			session.setAttribute("eid", eid);
-			out.flush();
-			out.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		HttpSession session=request.getSession();
+//		String eid=(String) session.getAttribute("eid");
+		String gname=request.getParameter("gname");
+		String eid=request.getParameter("eid");
+		System.out.println("(gname+eid):"+gname+"+"+eid);
+		GuestList guestList=new GuestList();
+		String tip=guestList.deleteFromGuestList(gname, eid);
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter out = response.getWriter();
+		out.write(tip);
+		out.flush();
+		out.close();
 	}
 
 	/**

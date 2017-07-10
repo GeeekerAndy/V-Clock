@@ -14,6 +14,8 @@
 	<classpathentry kind="lib" path="lib/json-lib-2.4-jdk15.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.26-bin.jar"/>
 	<classpathentry kind="lib" path="lib/sun.misc.BASE64Decoder.jar"/>
+	<classpathentry kind="lib" path="lib/fastjson-1.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/fastjson-1.2.2.jar"/>
 	<classpathentry kind="con" path="melibrary.com.genuitec.eclipse.cross.easystruts.eclipse.STRUTS12_CONTAINER"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -41,6 +42,7 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -57,17 +59,16 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setCharacterEncoding("UTF-8");
+//		HttpSession session=request.getSession();
+//		String eid=(String) session.getAttribute("eid");
 		String eid=request.getParameter("eid");
 		System.out.println("输入eid:"+eid);
 		Employee emp=new Employee();
-		JSONObject json=emp.display(eid);
+		JSONObject json=emp.displayEmployeeInfo(eid);
 		PrintWriter out = response.getWriter();
-		if(json!=null)
-			out.append(json.toString());
-		else{
-			System.out.println("fail!!!!");
-			out.write("2");
-		}
+		out.append(json.toString());
+		//System.out.println(json.toString());
 		out.flush();
 		out.close();
 	}

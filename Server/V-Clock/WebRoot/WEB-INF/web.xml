@@ -66,6 +66,11 @@
     <servlet-name>SearchGuest</servlet-name>
     <servlet-class>controller.SearchGuestServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>DeleteFromGuestList</servlet-name>
+    <servlet-class>controller.DeleteFromGuestListServlet</servlet-class>
+  </servlet>
+
 
 
   
@@ -109,6 +114,10 @@
   <servlet-mapping>
     <servlet-name>SearchGuest</servlet-name>
     <url-pattern>/servlet/SearchGuestServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DeleteFromGuestList</servlet-name>
+    <url-pattern>/servlet/DeleteFromGuestListServlet</url-pattern>
   </servlet-mapping>
 </web-app>
 

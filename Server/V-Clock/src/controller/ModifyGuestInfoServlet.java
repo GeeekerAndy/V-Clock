@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import database.Connect;
 
@@ -51,19 +52,7 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the GET method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();
+		doPost(request,response);
 	}
 
 	/**
@@ -83,27 +72,41 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		PrintWriter out = response.getWriter();
 		String informationType = request.getParameter("tip");
-		String[] infoList = informationType.split(";");
+		System.out.println("informationType:"+informationType);
+		String[] infoList=informationType.split(";");
+//		String[] temp = informationType.split(";");
+//		String[] infoList=new String[temp.length];
+//		HttpSession session=request.getSession();
+//		infoList[0]=(String) session.getAttribute("eid");
+//		for(int i=1;i<infoList.length;i++){
+//			infoList[i]=temp[i-1];
+//		}
 		String gname = request.getParameter("gname");
+		System.out.println("gname:"+gname);
+		String result="";
 		try {
 			guest.getC().setAutoCommit(false);
 			for (int i = 0; i < infoList.length; i++) {
 				String info = request.getParameter(infoList[i]);
-				guest.modifyInfo(gname, info, infoList[i]);
+				result+=guest.modifyInfo(gname, info, infoList[i]);
 			}
 			guest.getC().commit();
-			out.write("0");
+			out.append(result);
+			guest.getC().setAutoCommit(true);
 		} catch (Exception e) {
 			try {
 				guest.getC().rollback();
-				out.write("1");
+				out.append(result);
+				guest.getC().setAutoCommit(true);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
-				out.write("1");
+				out.append(result);
 			}
 		}
+		System.out.println(result);
 		out.flush();
 		out.close();
 	}

@@ -7,8 +7,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import util.VisitingRecord;
 
@@ -41,6 +43,7 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -57,17 +60,23 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
+//		HttpSession session=request.getSession();
+//		String eid=(String) session.getAttribute("eid");
 		String eid=request.getParameter("eid");
+		System.out.println("eid:"+eid);
 		VisitingRecord visitingRecord=new VisitingRecord();
-		JSONArray jsonArray=visitingRecord.displayVisitingRecord(eid);
+		JSONArray temp=visitingRecord.displayVisitingRecord(eid);
+		JSONObject json=new JSONObject();
+		if(temp==null)
+			json.put("tip", "2");
+		else{
+			json.put("tip", "0");
+			json.put("VisitingRecord", temp);
+		}
 		response.setCharacterEncoding("UTF-8");
-		PrintWriter out = response.getWriter();
-		if(jsonArray==null)
-			out.write("2");
-		else if(jsonArray.size()==0)
-			out.write("1");
-		else
-			out.append(jsonArray.toString());
+		PrintWriter out = response.getWriter();		
+		//System.out.println(json.toString());
+		out.append(json.toString());
 		out.flush();
 		out.close();
 	}

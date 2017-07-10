@@ -2,6 +2,7 @@ package util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,6 +25,7 @@ public class VisitingRecord {
 	private JSONObject json;
 	public VisitingRecord(){
 		conn = new Connect();
+		c=conn.con();
 		imagecode=new ImageCoding();
 		json=new JSONObject();
 	}
@@ -56,7 +58,7 @@ public class VisitingRecord {
 	public JSONArray displayVisitingRecord(String eid){
 		if(!codeLegitimate("eid",eid))
 			return null;
-		String sql="select * from Visitingrecord eid=? order by arrivingdate desc";
+		String sql="select * from Visitingrecord where eid=? order by arrivingdate desc";
 		String gname,path,gphoto,arrivingdate;
 		JSONArray jsonArray=new JSONArray();
 		Date temp;
@@ -65,24 +67,30 @@ public class VisitingRecord {
 			pstmt=c.prepareStatement(sql);
 			pstmt.setString(1, eid);
 			conn.setRs(pstmt.executeQuery());
+			ResultSet result;
+			JSONObject jsons=new JSONObject();
 			while(conn.getRs().next()){
 				gname=conn.getRs().getString("gname");
+				//System.out.println("gname:"+gname);
 				temp=new Date(conn.getRs().getTimestamp("arrivingdate").getTime());
 				arrivingdate=df.format(temp);
-				sql="select gphoto from guest where game=?";
+				sql="select gphoto from guest where gname=?";
 				pstmt=c.prepareStatement(sql);
 				pstmt.setString(1, gname);
-				conn.setRs(pstmt.executeQuery());
-				if(conn.getRs().next()){
+				result=pstmt.executeQuery();
+				if(result.next()){
 					json=new JSONObject();
-					path=conn.getRs().getString("gphoto");
+					path=result.getString("gphoto");
 					gphoto=imagecode.GetImageStr(path);
 					json.put("gname", gname);
 					json.put("arrivingdate", arrivingdate);
 					json.put("gphoto", gphoto);
+					//System.out.println(json.toString());
 					jsonArray.add(json);
 				}
-			}
+			}	
+			//jsons.put("VisitingRecord", jsonArray);
+			//System.out.println("jsons:"+jsons);
 			return jsonArray;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -96,6 +104,8 @@ public class VisitingRecord {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		VisitingRecord vr=new VisitingRecord();
+		vr.displayVisitingRecord("0000");
 
 	}
 
