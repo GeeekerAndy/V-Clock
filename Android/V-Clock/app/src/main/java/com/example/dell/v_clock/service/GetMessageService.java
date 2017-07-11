@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 public class GetMessageService extends Service {
 
+    RequestQueue requestQueue;
 
     public GetMessageService() {
     }
@@ -48,7 +49,7 @@ public class GetMessageService extends Service {
         Log.d("TAG", "service onStartCommand");
         //Polling to obtain server information
         //轮询获取服务器嘉宾到访信息
-        final RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
+        requestQueue = Volley.newRequestQueue(getBaseContext());
         SharedPreferences sp = getBaseContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
         String session_id = sp.getString("eid", null);
 
@@ -84,12 +85,18 @@ public class GetMessageService extends Service {
 
                 while (true) {
 //                    requestQueue.add(jsonObjectRequest);
-                    SystemClock.sleep(5*1000);
+                    SystemClock.sleep(1*1000);
                 }
             }
         }).start();
 
 
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        requestQueue.stop();
     }
 }

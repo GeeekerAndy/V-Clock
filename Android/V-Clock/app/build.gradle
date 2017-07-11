@@ -37,5 +37,6 @@ dependencies {
     compile 'com.koushikdutta.async:androidasync:2.+'
     compile 'com.android.support:design:26.+'
     compile 'com.android.support:support-vector-drawable:26.+'
+    compile 'com.github.omadahealth:swipy:1.2.3@aar'
     testCompile 'junit:junit:4.12'
 }

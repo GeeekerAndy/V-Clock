@@ -31,7 +31,7 @@ public class MessageListAdapter extends ArrayAdapter<GuestMessage> {
         View view = LayoutInflater.from(getContext()).inflate(messageLayoutID, parent, false);
         TextView guestName = view.findViewById(R.id.tv_guest_name_in_message);
         TextView arriveTime = view.findViewById(R.id.tv_arrive_time_in_message);
-        guestName.setText(guestMessage.getGuestName());
+        guestName.setText(guestMessage.getGuestName() + "到达");
         arriveTime.setText(guestMessage.getArriveTime());
         return view;
     }
