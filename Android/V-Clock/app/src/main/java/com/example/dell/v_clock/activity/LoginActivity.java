@@ -24,10 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.StringRequest;
 import com.example.dell.v_clock.R;
-
-import org.xml.sax.helpers.LocatorImpl;
 
 /**
  * This activity is the interface for the stuff to login which can jump to RegisterActivity.

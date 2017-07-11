@@ -98,7 +98,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/margin_20"
                     android:gravity="center"
-                    android:text="隔壁小王"
                     android:textColor="@color/gray_dark"
                     android:textSize="@dimen/act_bar_text_size" />
             </RelativeLayout>
@@ -128,7 +127,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/margin_20"
                     android:gravity="center"
-                    android:text="@string/man"
                     android:textColor="@color/gray_dark"
                     android:textSize="@dimen/act_bar_text_size" />
 
@@ -158,7 +156,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/margin_20"
                     android:gravity="center"
-                    android:text="山东大学"
                     android:textColor="@color/gray_dark"
                     android:textSize="@dimen/act_bar_text_size" />
 
@@ -188,7 +185,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/margin_20"
                     android:gravity="center"
-                    android:text="17865160007"
                     android:textColor="@color/gray_dark"
                     android:textSize="@dimen/act_bar_text_size" />
 

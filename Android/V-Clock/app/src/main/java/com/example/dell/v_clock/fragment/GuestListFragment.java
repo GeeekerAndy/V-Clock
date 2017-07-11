@@ -1,8 +1,10 @@
 package com.example.dell.v_clock.fragment;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,28 +15,30 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.activity.AddGuestActivity;
 import com.example.dell.v_clock.activity.GuestInfoActivity;
 import com.example.dell.v_clock.activity.SearchActivity;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
+import com.example.dell.v_clock.util.ImageUtil;
+import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * This fragment shows the list of my guest and all guest.
@@ -54,6 +58,15 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private List<String> guestGroupList;
     //内层列表的数据源
     private List<List<Map<String, Object>>> guestChildList;
+
+    //我的嘉宾
+    final String MY_GEUST_SEATCH_TYPE = "0";
+    //全部嘉宾（gname="") 异步搜索
+    final String PARTITIAL_NAME_SEATCH_TYPE = "1";
+
+    JSONObjectRequestMapParams myGuestRequest;
+    JSONObjectRequestMapParams allGuestRequest;
+    RequestQueue requestQueue;
 
 
     @Override
@@ -85,14 +98,32 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private void initGuestList() {
         //GroupList只包含两项
         guestGroupList = new ArrayList<>();
-        guestGroupList.add("我的嘉宾");
-        guestGroupList.add("全部嘉宾");
+        guestGroupList.add(0, "我的嘉宾");
+        guestGroupList.add(1, "全部嘉宾");
         //childList的信息来源于后台服务器
         guestChildList = new ArrayList<>();
         //设置适配器
         guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, guestChildList);
         guestList.setAdapter(guestListAdapter);
         //加载ChildList数据
+        //向服务器发送请求  请求我的嘉宾
+        Map<String, String> my_searchInfo = new HashMap<>();
+        my_searchInfo.put("tip", MY_GEUST_SEATCH_TYPE);
+        SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
+        String eid = sp.getString("eid", null);
+        my_searchInfo.put("eid", eid);
+        myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
+                new MyGuestListResponseListener(), new GuestListResponseErrorListener());
+        //  请求全部嘉宾
+        Map<String, String> all_searchInfo = new HashMap<>();
+        all_searchInfo.put("gname", "");
+        all_searchInfo.put("tip", PARTITIAL_NAME_SEATCH_TYPE);
+        my_searchInfo.put("eid", eid);
+        allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
+                new AllGuestListResponseListener(), new GuestListResponseErrorListener());
+
+        //访问服务器请求队列
+        requestQueue = Volley.newRequestQueue(getContext());
         refreshChildList();
     }
 
@@ -100,53 +131,19 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
      * 刷新ChildList的数据
      */
     private void refreshChildList() {
-        //TODO　向服务器发送请求  请求我的嘉宾 全部嘉宾
-
-        GuestListRequest customRequest = new GuestListRequest(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL,null,
-                new GuestListResponseListener(), new GuestListResponseErrorListener()){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                //TODO　要传哪些参数
-                Map<String,String> searchInfo = new  HashMap<>();
-//                searchInfo.put("gname",name);
-//                searchInfo.put("tip",WHOLE_NAME_SEATCH_TYPE);
-//                SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
-//                String eid = sp.getString("eid", null);
-//                searchInfo.put("eid",eid);
-                return searchInfo;
-            }
-        };
-        //访问服务器请求队列
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        requestQueue.add(customRequest);
-
-
-        //刷新数据时 首先清空原来的数据  收到服务器正确回复再 clear（）
-        guestChildList.clear();
-
-        //TODO 测试显示效果  自定义搜索结果
-        List<Map<String, Object>> tempList = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
-            Map<String, Object> tempMap = new HashMap();
-            tempMap.put("avatar", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-            tempMap.put("name", "小明" + i);
-            tempList.add(tempMap);
-            Log.i("循环加载数据", i + "");
-        }
-        guestChildList.add(tempList);
-
-        List<Map<String, Object>> tempList2 = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            Map<String, Object> tempMap = new HashMap();
-            tempMap.put("avatar", BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-            tempMap.put("name", "小红" + i);
-            tempList2.add(tempMap);
-        }
-        guestChildList.add(tempList2);
-
-        //数据改变 刷新UI
-        guestListAdapter.notifyDataSetChanged();
+        //发出请求
+        requestQueue.add(myGuestRequest);
+        requestQueue.add(allGuestRequest);
     }
+
+    //捕捉数据更新完成的信息
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            //数据改变 刷新UI
+            guestListAdapter.notifyDataSetChanged();
+        }
+    };
 
     /**
      * 搜索按钮点击事件的监听
@@ -182,73 +179,78 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     @Override
     public boolean onChildClick(ExpandableListView expandableListView, View view,
                                 int groupPosition, int childPosition, long id) {
-        //TODO 判断点击的是哪一项
-
-//        Log.i("GuestListFrament","点击了item");
+        //T判断点击的是哪一项
+        String name = (String) guestChildList.get(groupPosition).get(childPosition).get("name");
         Intent guestInfoIntent = new Intent(getContext(), GuestInfoActivity.class);
+        guestInfoIntent.putExtra("guest_type",groupPosition);
+        guestInfoIntent.putExtra("gname",name);
         startActivity(guestInfoIntent);
         return false;
     }
 
-
-    /******************************************************************************
-     * 暂时使用内部类获取 后台信息
-     ********************************************************************************/
     /**
-     * 接收Json对象的Request类
+     *
      */
-    private class GuestListRequest extends Request<JSONObject> {
-
-        private Response.Listener<JSONObject> listener;
-        private Map<String, String> params;
-
-        public GuestListRequest(String url, Map<String, String> params,
-                                Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
-            super(Method.GET, url, errorListener);
-            this.listener = reponseListener;
-            this.params = params;
-        }
-
-        public GuestListRequest(int method, String url, Map<String, String> params,
-                                Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
-            super(method, url, errorListener);
-            this.listener = reponseListener;
-            this.params = params;
-        }
-
-        protected Map<String, String> getParams()
-                throws com.android.volley.AuthFailureError {
-            return params;
-        }
-
+    private class MyGuestListResponseListener implements Response.Listener<JSONObject> {
         @Override
-        protected Response<JSONObject> parseNetworkResponse (NetworkResponse response) {
+        public void onResponse(JSONObject response) {
+            //判断返回是否有效
+            JSONArray jsonObjects;
             try {
-                String utf8String = new String(response.data, "UTF-8");
-                return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-            } catch (UnsupportedEncodingException e) {
-                // log error
-                return Response.error(new ParseError(e));
+                jsonObjects = response.getJSONArray("GuestList");
+                //更新data
+                if (guestChildList.size() > 0) {
+                    guestChildList.get(0).clear();
+                }
+                List<Map<String, Object>> tempList = new ArrayList<>();
+                for (int i = 0; i < jsonObjects.length(); i++) {
+                    Map<String, Object> tempMap = new HashMap();
+                    String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
+                    tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
+                    tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
+                    tempList.add(tempMap);
+                    //手机号暂时不用
+//                    String phone = response.getString("gtel");
+                }
+                guestChildList.add(0, tempList);
+                handler.sendEmptyMessage(0);
             } catch (JSONException e) {
-                // log error
-                return Response.error(new ParseError(e));
+                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
-        }
-
-        @Override
-        protected void deliverResponse(JSONObject response) {
-            // TODO Auto-generated method stub
-            listener.onResponse(response);
         }
     }
 
     /**
      *
      */
-    private class GuestListResponseListener implements Response.Listener<JSONObject> {
+    private class AllGuestListResponseListener implements Response.Listener<JSONObject> {
         @Override
         public void onResponse(JSONObject response) {
-            //TODO 判断返回是否有效
+            //判断返回是否有效
+            JSONArray jsonObjects;
+            try {
+                jsonObjects = response.getJSONArray("Guest");
+                //更新data
+                if (guestChildList.size() > 1) {
+                    guestChildList.get(1).clear();
+                }
+                List<Map<String, Object>> tempList = new ArrayList<>();
+                for (int i = 0; i < jsonObjects.length(); i++) {
+                    Map<String, Object> tempMap = new HashMap();
+                    String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
+                    tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
+                    tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
+                    tempList.add(tempMap);
+                    //手机号暂时不用
+//                    String phone = response.getString("gtel");
+                }
+                guestChildList.add(1, tempList);
+                handler.sendEmptyMessage(1);
+            } catch (JSONException e) {
+                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
         }
     }
 
@@ -261,6 +263,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(getContext(), "服务器连接失败", Toast.LENGTH_SHORT).show();
+            refreshChildList();
         }
     }
 

@@ -48,18 +48,29 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
     @Override
     public int getChildrenCount(int groupPosition) {
 //        Log.i(TAG,"getChildrenCount "+childList.get(groupPosition).size()+" groupPosition "+groupPosition);
+        if (childList.size() <= groupPosition) {
+            return 0;
+        }
         return childList.get(groupPosition).size();
     }
 
     @Override
     public String getGroup(int groupPosition) {
 //        Log.i(TAG,"getGroup");
+        if (groupList.size() <= groupPosition) {
+            return null;
+        }
         return groupList.get(groupPosition);
     }
 
     @Override
     public Map<String, Object> getChild(int groupPosition, int childPosition) {
 //        Log.i(TAG,"getChild");
+        if (childList.size() <= groupPosition) {
+            return null;
+        } else if (childList.get(groupPosition).size() < childPosition) {
+            return null;
+        }
         return childList.get(groupPosition).get(childPosition);
     }
 
@@ -91,9 +102,13 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         TextView groupNum = convertView.findViewById(R.id.tv_guest_num);
 
         groupName.setText(groupList.get(groupPosition));
-        String num = childList.get(groupPosition).size()+"";
-        groupNum.setText(num);
-
+//        Log.i("GuestListAdapter", "groupPosition = " + groupPosition + " childList.size = " + childList.size());
+        if (childList.size() > groupPosition) {
+            String num = childList.get(groupPosition).size() + "";
+            groupNum.setText(num);
+        } else {
+            groupNum.setText(0 + "");
+        }
         return convertView;
     }
 
@@ -103,19 +118,18 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         ImageView iv_avatar;
         TextView tv_name;
         ImageButton img_bt_move;
-        if(groupPosition == 0)
-        {
+        if (groupPosition == 0) {
             //“我的嘉宾”列表
             view = View.inflate(context, R.layout.item_children_my_guest, null);
             iv_avatar = view.findViewById(R.id.iv_my_guest_avatar);
             tv_name = view.findViewById(R.id.tv_my_guest_name);
-            img_bt_move= view.findViewById(R.id.img_bt_cross_gray);
-        }else {
+            img_bt_move = view.findViewById(R.id.img_bt_cross_gray);
+        } else {
             //“全部嘉宾”列表
             view = View.inflate(context, R.layout.item_children_all_guest, null);
             iv_avatar = view.findViewById(R.id.iv_all_guest_avatar);
             tv_name = view.findViewById(R.id.tv_all_guest_name);
-            img_bt_move= view.findViewById(R.id.img_bt_plus_gray);
+            img_bt_move = view.findViewById(R.id.img_bt_plus_gray);
         }
 
         iv_avatar.setImageBitmap((Bitmap) childList.get(groupPosition).get(childPosition).get("avatar"));
@@ -123,13 +137,12 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         img_bt_move.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (view.getId())
-                {
+                switch (view.getId()) {
                     case R.id.img_bt_cross_gray:
-                        Log.i("GuestAdapter","点击了叉号");
+                        Log.i("GuestAdapter", "点击了叉号");
                         break;
                     case R.id.img_bt_plus_gray:
-                        Log.i("GuestAdapter","点击了加号");
+                        Log.i("GuestAdapter", "点击了加号");
                         break;
                 }
             }
