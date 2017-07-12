@@ -149,7 +149,7 @@ public class PrepareForPushServlet extends HttpServlet {
 			if (!dealps.getChange()) {
 				gname = "";
 			} else {
-				System.out.println(gname + "***********");
+				//System.out.println(gname + "***********");
 				PreparedStatement pstmt;
 				ResultSet rs;
 				// 在GuestList中找出负责接待的员工编号
@@ -168,22 +168,22 @@ public class PrepareForPushServlet extends HttpServlet {
 					pstmt.setString(2, eid);
 					pstmt.execute();
 					// 在visitingrecord找出嘉宾到访的时间
-					String sql3 = "select arrivingdate from visitingrecord where gname=? and eid =?";
+					String sql3 = "select max(arrivingdate) from visitingrecord where gname=? and eid =?";
 					pstmt = c.prepareStatement(sql3);
 					pstmt.setString(1, gname);
 					pstmt.setString(2, eid);
 					ResultSet rs2 = pstmt.executeQuery();
 					String arrivingDate;
 					if (rs2.next()) {
-						arrivingDate = rs2.getString("arrivingdate");
-						System.out.println(gname + " " + eid + " "
-								+ arrivingDate);
+						arrivingDate = rs2.getString("max(arrivingdate)");
+//						System.out.println(gname + " " + eid + " "
+//								+ arrivingDate);
 						// 设置传给PushMessageServlet的request内容
 						request.setAttribute("gname", gname);
 						request.setAttribute("arrivingDate", arrivingDate);
 						request.setAttribute("eid", eid);
 						//request.setAttribute("origin", "PrepareForPushServlet");
-						System.out.println("**********"+gname+arrivingDate+eid+"*********");
+						// System.out.println("**********"+gname+arrivingDate+eid+"*********");
 						// 将嘉宾到访记录传至PushMessageServlet进行处理
 //						request.getRequestDispatcher("PushMessageServlet?origin=PrepareForPushServlet&eid="
 //								+ eid

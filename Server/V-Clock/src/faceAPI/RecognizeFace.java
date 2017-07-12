@@ -24,7 +24,7 @@ public class RecognizeFace {
 	public String computeFaceID(String imgStr) throws Exception {
 		String result = "";
 		//String imgStr = ic.GetImageStr(imgFilePath);
-		System.out.println(imgStr);
+		//System.out.println(imgStr);
 		// 设置参数
 		String param = "app_id=" + URLEncoder.encode(conf.getAppID(), "utf-8")
 				+ "&" + "app_key="

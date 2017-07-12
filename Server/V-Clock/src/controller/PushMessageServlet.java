@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -81,7 +82,6 @@ public class PushMessageServlet extends HttpServlet {
 			}
 
 			public void onError(AsyncEvent event) throws IOException {
-
 				PushServletService.getInstance().removeAsyncContext(ac);
 				ac.complete();
 			}
@@ -91,11 +91,11 @@ public class PushMessageServlet extends HttpServlet {
 			}
 		});
 			PushServletService.getInstance().addAsyncContext(ac);
-//			PushServletService.getInstance().putMessage("0004", "123456",
-//					"123456789");
-//			PushServletService.getInstance().putMessage("0004", "12", "1234");
+//			PushServletService.getInstance().putMessage("0002", "123456",
+//					new Date().toString());
+//			PushServletService.getInstance().putMessage("0002", "12", (new Date()).toString());
 
-
+			System.out.println("---------------------------------------------");
 		
 	}
 
