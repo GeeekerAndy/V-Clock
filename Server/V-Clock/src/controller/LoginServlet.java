@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,9 +74,11 @@ public class LoginServlet extends HttpServlet {
 			out.append(eid);
 			System.out.println("eid(login):"+eid);
 			if(eid.length()==4){
-				HttpSession session=request.getSession();
-				session.setAttribute("etel", etel);
-				session.setAttribute("ephoto", ephoto);
+				HttpSession session=request.getSession(true);
+				session.setAttribute("eid", eid);
+				//System.out.println(session.getId()+"--------");
+				//session.setAttribute("etel", etel);
+				//session.setAttribute("ephoto", ephoto);
 			}
 			out.flush();
 			out.close();

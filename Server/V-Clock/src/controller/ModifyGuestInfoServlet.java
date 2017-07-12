@@ -78,20 +78,27 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 		String result="",loginBool="";
 		HttpSession session=request.getSession();
 		Employee emp=new Employee();
-		String userTel=(String) session.getAttribute("etel");
-		String userPhoto=(String) session.getAttribute("ephoto");
-		if(userTel!=null&&userPhoto!=null){
-			try {
-				loginBool=emp.checkuser(userTel, userPhoto);
-			} catch (Exception e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-			if(loginBool.equals("0")){		
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
+//				loginBool=emp.checkuser(userTel, userPhoto);
+//			} catch (Exception e2) {
+//				// TODO Auto-generated catch block
+//				e2.printStackTrace();
+//			}
+//			if(loginBool.equals("0")){		
 				try {		
 					String informationType = request.getParameter("tip");
 					System.out.println("informationType:"+informationType);
 					String[] infoList=informationType.split(";");
+//					String[] temp = informationType.split(";");
+//					String[] infoList=new String[temp.length];
+//					HttpSession session=request.getSession();
+//					infoList[0]=(String) session.getAttribute("eid");
+//					for(int i=1;i<infoList.length;i++){
+//						infoList[i]=temp[i-1];
+//					}
 					String gname = request.getParameter("gname");
 					System.out.println("gname:"+gname);
 					guest.getC().setAutoCommit(false);
@@ -115,12 +122,12 @@ public class ModifyGuestInfoServlet extends HttpServlet {
 				System.out.println(result);
 				out.flush();
 				out.close();
-			}
-			else
-				System.out.println("No Legitimate(2)");
-		}
-		else
-			System.out.println("No Legitimate(1)");
+//			}
+//			else
+//				System.out.println("No Legitimate(2)");
+//		}
+//		else
+//			System.out.println("No Legitimate(1)");
 	}
 
 	/**
