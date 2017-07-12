@@ -466,6 +466,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+
     /**
      * 更改嘉宾所属分组的错误监听器
      */
