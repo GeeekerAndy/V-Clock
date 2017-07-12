@@ -142,6 +142,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap)extras.get("data");
+            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
             employeePicture.setImageBitmap(imageBitmap);
             employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
         }

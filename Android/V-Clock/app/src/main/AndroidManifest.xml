@@ -81,7 +81,6 @@
             android:theme="@style/NoActionBarTheme" />
 
 
-        <activity android:name=".activity.UpdateEmployeeInfoActivity" />
         <activity android:name=".activity.UpdateEmployeePwdActivity"></activity>
 
     </application>

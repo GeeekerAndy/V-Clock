@@ -18,11 +18,11 @@
             android:textColor="@color/colorWhite"
             android:background="@color/colorPrimary"
             android:textSize="20sp"/>
-        <TextView
+        <Button
+            android:id="@+id/bt_edit_employee_info"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:paddingEnd="@dimen/margin_10"
             android:gravity="center"
             android:background="@color/colorPrimary"
             android:text="@string/fragment_me_edit"
@@ -97,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:orientation="vertical">
-            <TextView
+            <EditText
                 android:id="@+id/tv_employee_name"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/margin_40"
@@ -105,15 +105,26 @@
                 android:layout_gravity="start"
                 android:gravity="center"
                 android:textSize="18sp"
+                android:enabled="false"
+                android:background="@null"
+                android:maxLines="1"
+                android:inputType="text"
+                android:minWidth="@dimen/margin_40"
                 android:textColor="@color/colorBlack"/>
-            <TextView
+            <EditText
                 android:id="@+id/tv_employee_gender"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/margin_40"
                 android:layout_marginStart="@dimen/margin_10"
                 android:layout_gravity="start"
+                android:maxLines="1"
+                android:inputType="text"
+                android:maxLength="1"
+                android:minWidth="@dimen/margin_40"
+                android:enabled="false"
                 android:gravity="center"
                 android:textSize="18sp"
+                android:background="@null"
                 android:textColor="@color/colorBlack"/>
             <TextView
                 android:id="@+id/tv_employee_id"
@@ -124,7 +135,7 @@
                 android:gravity="center"
                 android:textSize="18sp"
                 android:textColor="@color/colorBlack"/>
-            <TextView
+            <EditText
                 android:id="@+id/tv_employee_tel"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/margin_40"
@@ -132,6 +143,12 @@
                 android:layout_gravity="start"
                 android:gravity="center"
                 android:textSize="18sp"
+                android:maxLines="1"
+                android:minWidth="@dimen/margin_40"
+                android:enabled="false"
+                android:inputType="number"
+                android:maxLength="11"
+                android:background="@null"
                 android:textColor="@color/colorBlack"/>
         </LinearLayout>
     </LinearLayout>

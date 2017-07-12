@@ -114,6 +114,7 @@ public class UpdateEmployeePwdActivity extends AppCompatActivity {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap)extras.get("data");
+            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
             employeeUpdatePicture.setImageBitmap(imageBitmap);
             employeePwdMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
         }
