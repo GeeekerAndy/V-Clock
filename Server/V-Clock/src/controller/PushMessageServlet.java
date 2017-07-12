@@ -69,14 +69,10 @@ public class PushMessageServlet extends HttpServlet {
 		ac.setTimeout(timeout);
 		ac.addListener(new AsyncListener() {
 			public void onComplete(AsyncEvent event) throws IOException {
-				// log.info("onComplete Event!");
-
 				PushServletService.getInstance().removeAsyncContext(ac);
 			}
 
 			public void onTimeout(AsyncEvent event) throws IOException {
-				// log.info("onTimeout Event!");
-
 				PushServletService.getInstance().removeAsyncContext(ac);
 				ac.complete();
 			}
@@ -87,16 +83,11 @@ public class PushMessageServlet extends HttpServlet {
 			}
 
 			public void onStartAsync(AsyncEvent event) throws IOException {
-				// log.info("onStartAsync Event!");
 			}
 		});
-			PushServletService.getInstance().addAsyncContext(ac);
-//			PushServletService.getInstance().putMessage("0002", "123456",
-//					new Date().toString());
-//			PushServletService.getInstance().putMessage("0002", "12", (new Date()).toString());
+		PushServletService.getInstance().addAsyncContext(ac);
+		System.out.println("---------------------------------------------");
 
-			System.out.println("---------------------------------------------");
-		
 	}
 
 	/**
@@ -116,6 +107,7 @@ public class PushMessageServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		//接收来子PrepareForPushServlet的嘉宾信息
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 		response.setCharacterEncoding("UTF-8");
@@ -128,41 +120,19 @@ public class PushMessageServlet extends HttpServlet {
 		} else {
 			timeout = 10 * 60 * 1000;
 		}
-//		final HttpServletResponse finalResponse = response;
-//		final AsyncContext ac = request.startAsync(request, finalResponse);
-		System.out.println("arrive!");
-		// 设置成长久链接
-//		ac.setTimeout(timeout);
-//		ac.addListener(new AsyncListener() {
-//			public void onComplete(AsyncEvent event) throws IOException {
-//				// log.info("onComplete Event!");
-//
-//				PushServletService.getInstance().removeAsyncContext(ac);
-//			}
-//
-//			public void onTimeout(AsyncEvent event) throws IOException {
-//				// log.info("onTimeout Event!");
-//
-//				PushServletService.getInstance().removeAsyncContext(ac);
-//				ac.complete();
-//			}
-//
-//			public void onError(AsyncEvent event) throws IOException {
-//
-//				PushServletService.getInstance().removeAsyncContext(ac);
-//				ac.complete();
-//			}
-//
-//			public void onStartAsync(AsyncEvent event) throws IOException {
-//				// log.info("onStartAsync Event!");
-//			}
-//		});
-		    System.out.println("guestmessage:"+request.getParameter("eid")+ request.getParameter("gname")+
-				request.getParameter("arrivingDate"));
-			PushServletService.getInstance().putMessage(
-					request.getParameter("eid"), request.getParameter("gname"),
-					request.getParameter("arrivingDate"));
-		
+		System.out.println("message arrive!");
+		System.out.println("guestmessage:" + request.getParameter("eid")
+				+ request.getParameter("gname")
+				+ request.getParameter("arrivingDate"));
+        String eid[]=request.getParameter("eid").split(";");
+        String arrivingDate=request.getParameter("arrivingDate");
+        String gname=request.getParameter("gname");
+        //将嘉宾信息加入消息队列，等待发送
+        for(int i=0;i<eid.length;i++){
+        	PushServletService.getInstance().putMessage(
+    				eid[i], gname,
+    				arrivingDate);
+        }
 	}
 
 	/**

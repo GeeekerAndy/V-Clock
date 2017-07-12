@@ -18,7 +18,7 @@ import util.GetHttpMessage;
 public class PushServletService {
 	// private static GetHttpMessage ghm=new GetHttpMessage();
 	// 异步Servlet上下文队列.
-	private final Map<User, AsyncContext> ASYNC_CONTEXT_MAP = new ConcurrentHashMap<User, AsyncContext>();
+	private final  Map<User, AsyncContext> ASYNC_CONTEXT_MAP = new ConcurrentHashMap<User, AsyncContext>();
 
 	// 消息队列.
 	private final BlockingQueue<JSONObject> TEXT_MESSAGE_QUEUE = new LinkedBlockingQueue<JSONObject>();
@@ -43,7 +43,13 @@ public class PushServletService {
 	 * @param asyncContext
 	 *            异步Servlet上下文.
 	 */
-	public void addAsyncContext(final AsyncContext asyncContext) {
+	public synchronized void addAsyncContext(final AsyncContext asyncContext) {
+//		try {
+//			Thread.sleep(100);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
 		// user.setEid((String)req.getSession().getAttribute("eid"));
@@ -53,26 +59,19 @@ public class PushServletService {
 		user.setMobile(GetHttpMessage.check(req.getHeader("USER-AGENT")));
 		// System.out.println(user.getEid()+"............");
 		// System.out.println(ASYNC_CONTEXT_MAP.size()+"---------");
-//		boolean isAdd = true;
-//		for (Entry<User, AsyncContext> entry : ASYNC_CONTEXT_MAP.entrySet()) {
-//			// System.out.println(entry.getKey().getEid());
-//			if (entry.getKey().getEid().equals(user.getEid())
-//					&& entry.getKey().getMobile() == user.getMobile()) {
-//				isAdd = false;
-//			}
-////			// System.out.println(entry.getKey().getMobile()+"====");
-////			// System.out.println("checking ！");
-////
-////			// }
-//		}
-		// System.out.println("============"+isAdd+"==========");
+		//boolean isAdd = true;
+		for (Entry<User, AsyncContext> entry : ASYNC_CONTEXT_MAP.entrySet()) {
+			if (entry.getKey().getEid().equals(user.getEid())
+					&& entry.getKey().getMobile() == user.getMobile()) {
+				ASYNC_CONTEXT_MAP.remove(entry.getKey());
+			}
+			
+		}
+		System.out.println("============"+ASYNC_CONTEXT_MAP.size()+"==========");
 		if (null != user ) {
 			System.out.println("****" + req.getHeader("USER-AGENT"));
 			System.out.println("客户端注册成功！");
 			ASYNC_CONTEXT_MAP.put(user, asyncContext);
-			// putMessage("0002", "123456","123456789");
-			// putMessage("0002", "123","1234");
-
 		}
 	}
 
@@ -89,9 +88,9 @@ public class PushServletService {
 
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
-		// user.setEid((String)req.getSession().getAttribute("eid"));
-		user.setEid(req.getParameter("eid"));
-		// user.setEid(req.getParameter("eid"));
+		//user.setEid((String)req.getSession().getAttribute("eid"));
+		//user.setEid(req.getParameter("eid"));
+		 user.setEid(req.getParameter("eid"));
 		user.setMobile(GetHttpMessage.check(req.getHeader("USER-AGENT")));
 		if (null != user) {
 			System.out.println("与客户端交互结束！");
