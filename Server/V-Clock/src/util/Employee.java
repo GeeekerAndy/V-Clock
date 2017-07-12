@@ -304,15 +304,17 @@ public class Employee implements objects.Employees{
 			return "0";
 		}
 		else if(type.equals("etel")){
-			String tip=checkphoNumber(content);
-			if(tip.equals("0"))
-				return "1";
-			else if(tip.equals("2"))
-				return "2";
-			pstmt=c.prepareStatement("update Employee set etel=? where eid=?");
+			pstmt=c.prepareStatement("select * from Employee where etel=? and eid<>?");
 			pstmt.setString(1, content);
 			pstmt.setString(2, eid);
-			pstmt.executeUpdate();
+			conn.setRs(pstmt.executeQuery());
+			if(conn.getRs().next()){
+				return "1";
+			}
+			PreparedStatement pstmts=c.prepareStatement("update Employee set etel=? where eid=?");
+			pstmts.setString(1, content);
+			pstmts.setString(2, eid);
+			pstmts.executeUpdate();
 			return "0";
 		}
 		else{

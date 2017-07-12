@@ -67,14 +67,16 @@ public class LoginServlet extends HttpServlet {
 		try {
 			eid = emp.login(etel, ephoto);
 			response.setCharacterEncoding("UTF-8");
-			System.out.println("eid:"+eid);
 			System.out.println("**********************");
 			PrintWriter out=null;
 			out=response.getWriter();
 			out.append(eid);
-			System.out.println(eid);
-			HttpSession session=request.getSession();
-			session.setAttribute("eid", eid);
+			System.out.println("eid(login):"+eid);
+			if(eid.length()==4){
+				HttpSession session=request.getSession();
+				session.setAttribute("etel", etel);
+				session.setAttribute("ephoto", ephoto);
+			}
 			out.flush();
 			out.close();
 		} catch (Exception e) {

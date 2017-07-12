@@ -46,19 +46,57 @@ public class VisitingRecord {
 			else
 				return false;
 		}
+		else if(type.equals("page")){
+			Matcher m=ifAllNumber.matcher(content);
+			boolean pageBool=m.matches();
+			if(pageBool){
+				return true;
+			}
+			else
+				return false;
+		}
 		else
 			return false;
 
 	}
 	
 	/**
+	 * 计算到访记录页数
+	 * 返回值(int):页数（计算成功），-1（数据错误）
+	 */
+	public int pageCount(String eid){
+		if(!codeLegitimate("eid",eid))
+			return -1;
+		String sql="select count(*) from Visitingrecord where eid=?";
+		try {
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, eid);
+			conn.setRs(pstmt.executeQuery());
+			if(conn.getRs().next()){
+				int count=conn.getRs().getInt("count(*)");
+				int extra=count%18;
+				if(extra!=0)
+					return (count/18)+1;
+				else
+					return count/18;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	/**
 	 * 展示到访记录
 	 * 返回值：jsonArray对象（到访记录获取成功），null（数据错误）
 	 */
-	public JSONArray displayVisitingRecord(String eid){
-		if(!codeLegitimate("eid",eid))
+	public JSONArray displayVisitingRecord(String eid,String page){
+		if(!codeLegitimate("eid",eid)||!codeLegitimate("page",page))
 			return null;
-		String sql="select * from Visitingrecord where eid=? order by arrivingdate desc";
+		int pagenumber=Integer.parseInt(page);
+		int startNumber=(pagenumber-1)*18;
+		String sql="select * from Visitingrecord where eid=? order by arrivingdate desc limit ?,18";
 		String gname,path,gphoto,arrivingdate;
 		JSONArray jsonArray=new JSONArray();
 		Date temp;
@@ -66,6 +104,7 @@ public class VisitingRecord {
 		try {
 			pstmt=c.prepareStatement(sql);
 			pstmt.setString(1, eid);
+			pstmt.setInt(2, startNumber);
 			conn.setRs(pstmt.executeQuery());
 			ResultSet result;
 			JSONObject jsons=new JSONObject();
@@ -75,9 +114,9 @@ public class VisitingRecord {
 				temp=new Date(conn.getRs().getTimestamp("arrivingdate").getTime());
 				arrivingdate=df.format(temp);
 				sql="select gphoto from guest where gname=?";
-				pstmt=c.prepareStatement(sql);
-				pstmt.setString(1, gname);
-				result=pstmt.executeQuery();
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				result=pstmts.executeQuery();
 				if(result.next()){
 					json=new JSONObject();
 					path=result.getString("gphoto");
@@ -105,7 +144,9 @@ public class VisitingRecord {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		VisitingRecord vr=new VisitingRecord();
-		vr.displayVisitingRecord("0000");
+		//vr.displayVisitingRecord("0000");
+		System.out.println(vr.pageCount("0001"));
+		
 
 	}
 

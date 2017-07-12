@@ -60,17 +60,32 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setCharacterEncoding("UTF-8");
-//		HttpSession session=request.getSession();
-//		String eid=(String) session.getAttribute("eid");
-		String eid=request.getParameter("eid");
-		System.out.println("输入eid:"+eid);
+		HttpSession session=request.getSession();
 		Employee emp=new Employee();
-		JSONObject json=emp.displayEmployeeInfo(eid);
-		PrintWriter out = response.getWriter();
-		out.append(json.toString());
-		//System.out.println(json.toString());
-		out.flush();
-		out.close();
+		String userTel=(String) session.getAttribute("etel");
+		String userPhoto=(String) session.getAttribute("ephoto");
+		if(userTel!=null&&userPhoto!=null){
+			try {
+				String loginBool=emp.checkuser(userTel, userPhoto);
+				if(loginBool.equals("0")){
+					String eid=request.getParameter("eid");
+					System.out.println("输入eid:"+eid);
+					JSONObject json=emp.displayEmployeeInfo(eid);
+					PrintWriter out = response.getWriter();
+					out.append(json.toString());
+					//System.out.println(json.toString());
+					out.flush();
+					out.close();
+				}
+				else
+					System.out.println("No Legitimate(2)");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else
+			System.out.println("No Legitimate(1)");
 	}
 
 	/**

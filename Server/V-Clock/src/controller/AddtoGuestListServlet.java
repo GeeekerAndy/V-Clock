@@ -57,17 +57,34 @@ public class AddtoGuestListServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-//		HttpSession session=request.getSession();
-//		String eid=(String) session.getAttribute("eid");
-		String gname=request.getParameter("gname");
-		String eid=request.getParameter("eid");
-		GuestList guestList=new GuestList();
-		String tip=guestList.addToGuestList(gname, eid);
-		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.write(tip);
-		out.flush();
-		out.close();
+		HttpSession session=request.getSession();
+		Employee emp=new Employee();
+		String userTel=(String) session.getAttribute("etel");
+		String userPhoto=(String) session.getAttribute("ephoto");
+		if(userTel!=null&&userPhoto!=null){
+			try {
+				String loginBool=emp.checkuser(userTel, userPhoto);
+				if(loginBool.equals("0")){
+					String gname=request.getParameter("gname");
+					String eid=request.getParameter("eid");
+					GuestList guestList=new GuestList();
+					String tip=guestList.addToGuestList(gname, eid);
+					response.setCharacterEncoding("UTF-8");
+					out.write(tip);
+					System.out.println("tip(AddtoGuestListServlet):"+tip);
+					out.flush();
+					out.close();
+				}
+				else
+					System.out.println("No Legitimate(2)");
+			} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+		}
+		else
+			System.out.println("No Legitimate(1)");
 	}
 
 	/**

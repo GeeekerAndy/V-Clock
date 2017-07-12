@@ -78,11 +78,13 @@ public class GuestList {
 			}
 			else{
 				sql="insert into guestlist(gname,eid) "+"values(?,?)";	
-				pstmt=c.prepareStatement(sql);
-				pstmt.setString(1, gname);
-				pstmt.setString(2, eid);
-				pstmt.executeUpdate();
-				return "0";
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				pstmts.setString(2, eid);
+				if(pstmts.executeUpdate()==1)
+					return "0";
+				else
+					return "2";
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -104,10 +106,10 @@ public class GuestList {
 			conn.setRs(pstmt.executeQuery());
 			if(conn.getRs().next()){
 				sql="delete from guestlist where gname=? and eid=?";
-				pstmt=c.prepareStatement(sql);
-				pstmt.setString(1, gname);
-				pstmt.setString(2, eid);
-				pstmt.executeUpdate();
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				pstmts.setString(2, eid);
+				pstmts.executeUpdate();
 				return "0";
 			}
 			else
@@ -138,9 +140,9 @@ public class GuestList {
 			while(conn.getRs().next()){
 				gname=conn.getRs().getString("gname");
 				sql="select * from guest where gname=?";
-				pstmt=c.prepareStatement(sql);
-				pstmt.setString(1, gname);
-				rs=pstmt.executeQuery();
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				rs=pstmts.executeQuery();
 				if(rs.next()){
 					json=new JSONObject();
 					gtel=rs.getString("gtel");

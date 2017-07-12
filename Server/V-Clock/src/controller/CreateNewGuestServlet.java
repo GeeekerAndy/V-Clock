@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import faceAPI.RecognizeFace;
 
 import objects.Guests;
+import util.Employee;
 import util.Guest;
 
 public class CreateNewGuestServlet extends HttpServlet {
@@ -72,39 +73,45 @@ public class CreateNewGuestServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-        String  imgIsValid="";
-		String glist[] = new String[guests.gmessage.length];
-		for (int i = 0; i < guests.gmessage.length; i++) {
-//		for (int i = 0; i < guests.gmessage.length-1; i++) {
-			glist[i] = request.getParameter(guests.gmessage[i]);
-			if(i!=guests.gmessage.length-2)
-				System.out.println(guests.gmessage[i]+":"+glist[i]);
-		}
-//		HttpSession session=request.getSession();
-//		glist[guests.gmessage.length-1]=(String) session.getAttribute("eid");
-		try {
-			imgIsValid=rf.computeFaceID(glist[4]);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		PrintWriter out = response.getWriter();
-		if(imgIsValid!=null){
-			Guest guest = new Guest();
-			String tip="";
+		HttpSession session=request.getSession();
+		Employee emp=new Employee();
+		String userTel=(String) session.getAttribute("etel");
+		String userPhoto=(String) session.getAttribute("ephoto");
+		if(userTel!=null&&userPhoto!=null){
 			try {
-				tip = guest.createNewGuest(glist[0], glist[1], glist[2], glist[3],
-						glist[4], glist[5]);
+				String loginBool=emp.checkuser(userTel, userPhoto);
+				if(loginBool.equals("0")){
+					String  imgIsValid="";
+					String glist[] = new String[guests.gmessage.length];
+					for (int i = 0; i < guests.gmessage.length; i++) {
+						glist[i] = request.getParameter(guests.gmessage[i]);
+						if(i!=guests.gmessage.length-2)
+							System.out.println(guests.gmessage[i]+":"+glist[i]);
+					}
+					imgIsValid=rf.computeFaceID(glist[4]);
+					PrintWriter out = response.getWriter();
+					if(imgIsValid!=null){
+						Guest guest = new Guest();
+						String tip="";
+						tip = guest.createNewGuest(glist[0], glist[1], glist[2], glist[3],
+								glist[4], glist[5]);
+						out.append(tip);
+						System.out.println("tip(create guest):"+tip);
+					}else{
+						out.append("2");
+					}
+					out.flush();
+					out.close();
+				}
+				else
+					System.out.println("No Legitimate(2)");
 			} catch (Exception e) {
-				e.printStackTrace();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			}
-			out.append(tip);
-			System.out.println("tip(create guest):"+tip);
-		}else{
-			out.append("2");
 		}
-		out.flush();
-		out.close();
+		else
+			System.out.println("No Legitimate(1)");
 	}
 
 	/**

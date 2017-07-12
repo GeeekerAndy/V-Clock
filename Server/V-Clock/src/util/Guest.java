@@ -111,14 +111,14 @@ public class Guest {
 			} else {
 				// 若该嘉宾不存在，在数据库中新建记录
 				String sql2 = "insert into guest(gname,gsex,gtel,gcompany,gphoto,regid) values(?,?,?,?,?,?)";
-				pstmt = c.prepareStatement(sql2);
-				pstmt.setString(1, gname);
-				pstmt.setString(2, gsex);
-				pstmt.setString(3, gtel);
-				pstmt.setString(4, gcompany);
-				pstmt.setString(5, gi.generateImg(gname, gphoto, 1));// 在服务器本地生成该嘉宾的照片,存储照片路径
-				pstmt.setString(6, regid);
-				if(pstmt.executeUpdate()==1)
+				PreparedStatement pstmts= c.prepareStatement(sql2);
+				pstmts.setString(1, gname);
+				pstmts.setString(2, gsex);
+				pstmts.setString(3, gtel);
+				pstmts.setString(4, gcompany);
+				pstmts.setString(5, gi.generateImg(gname, gphoto, 1));// 在服务器本地生成该嘉宾的照片,存储照片路径
+				pstmts.setString(6, regid);
+				if(pstmts.executeUpdate()==1)
 					success=true;
 				else
 					success=false;
