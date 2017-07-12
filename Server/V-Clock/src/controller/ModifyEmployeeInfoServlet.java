@@ -63,12 +63,12 @@ public class ModifyEmployeeInfoServlet extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session=request.getSession();
 		Employee emp=new Employee();
-		String userTel=(String) session.getAttribute("etel");
-		String userPhoto=(String) session.getAttribute("ephoto");
-		if(userTel!=null&&userPhoto!=null){
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
 			try {
-				String loginBool=emp.checkuser(userTel, userPhoto);
-				if(loginBool.equals("0")){
+//				String loginBool=emp.checkuser(userTel, userPhoto);
+//				if(loginBool.equals("0")){
 					String temp=request.getParameter("tip");
 					System.out.println("tip:"+temp);
 					if(temp!=null){
@@ -76,6 +76,7 @@ public class ModifyEmployeeInfoServlet extends HttpServlet {
 						String[] modifyContentList=new String[modifyTypeList.length];
 						String tip="";
 						String eid=request.getParameter("eid");
+//						String eid=(String) session.getAttribute("eid");
 						emp.getC().setAutoCommit(false);
 						int i=0;
 						for(i=0;i<modifyTypeList.length;i++){
@@ -100,16 +101,16 @@ public class ModifyEmployeeInfoServlet extends HttpServlet {
 						out.flush();
 						out.close();		
 					}
-				}
-				else
-					System.out.println("No Legitimate(2)");
+//				}
+//				else
+//					System.out.println("No Legitimate(2)");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		else
-			System.out.println("No Legitimate(1)");
+//		}
+//		else
+//			System.out.println("No Legitimate(1)");
 	}
 
 	/**

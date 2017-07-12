@@ -62,14 +62,15 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session=request.getSession();
-		Employee emp=new Employee();
-		String userTel=(String) session.getAttribute("etel");
-		String userPhoto=(String) session.getAttribute("ephoto");
-		if(userTel!=null&&userPhoto!=null){
-			try {
-				String loginBool=emp.checkuser(userTel, userPhoto);
-				if(loginBool.equals("0")){
+//		Employee emp=new Employee();
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
+//				String loginBool=emp.checkuser(userTel, userPhoto);
+//				if(loginBool.equals("0")){
 					String eid=request.getParameter("eid");
+//					String eid=(String) session.getAttribute("eid");
 					String page=request.getParameter("page");
 					System.out.println("eid(visitingRecord):"+eid);
 					VisitingRecord visitingRecord=new VisitingRecord();
@@ -89,16 +90,16 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 					out.append(json.toString());
 					out.flush();
 					out.close();
-				}
-				else
-					System.out.println("No Legitimate(2)");
-			} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			}
-		}
-		else
-			System.out.println("No Legitimate(1)");
+//				}
+//				else
+//					System.out.println("No Legitimate(2)");
+//			} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			}
+//		}
+//		else
+//			System.out.println("No Legitimate(1)");
 	}
 
 	/**

@@ -61,13 +61,13 @@ public class SearchGuestServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session=request.getSession();
-		Employee emp=new Employee();
-		String userTel=(String) session.getAttribute("etel");
-		String userPhoto=(String) session.getAttribute("ephoto");
-		if(userTel!=null&&userPhoto!=null){
-			try {
-				String loginBool=emp.checkuser(userTel, userPhoto);
-				if(loginBool.equals("0")){
+//		Employee emp=new Employee();
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
+//				String loginBool=emp.checkuser(userTel, userPhoto);
+//				if(loginBool.equals("0")){
 					String tip=request.getParameter("tip");
 					System.out.println("tip(SearchGuestServlet):"+tip);
 					Guest guest=new Guest();
@@ -76,6 +76,7 @@ public class SearchGuestServlet extends HttpServlet {
 					PrintWriter out = response.getWriter();
 					if(tip.equals("0")){//某工作人员对应的邀请名单中的嘉宾列表
 						String eid=request.getParameter("eid");
+//						String eid=(String) session.getAttribute("eid");
 						JSONArray temp=guestList.searchGuestList(eid);
 						JSONObject searchGuestList=new JSONObject();
 						if(temp==null)
@@ -107,16 +108,16 @@ public class SearchGuestServlet extends HttpServlet {
 					}
 					out.flush();
 					out.close();
-				}
-				else
-					System.out.println("No Legitimate(2)");
-			} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			}
-		}
-		else
-			System.out.println("No Legitimate(1)");
+//				}
+//				else
+//					System.out.println("No Legitimate(2)");
+//			} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			}
+//		}
+//		else
+//			System.out.println("No Legitimate(1)");
 	}
 
 	/**

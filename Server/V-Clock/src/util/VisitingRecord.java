@@ -96,6 +96,7 @@ public class VisitingRecord {
 			return null;
 		int pagenumber=Integer.parseInt(page);
 		int startNumber=(pagenumber-1)*18;
+		System.out.println("startNumber:"+startNumber);
 		String sql="select * from Visitingrecord where eid=? order by arrivingdate desc limit ?,18";
 		String gname,path,gphoto,arrivingdate;
 		JSONArray jsonArray=new JSONArray();
@@ -110,6 +111,7 @@ public class VisitingRecord {
 			JSONObject jsons=new JSONObject();
 			while(conn.getRs().next()){
 				gname=conn.getRs().getString("gname");
+				eid=conn.getRs().getString("eid");
 				//System.out.println("gname:"+gname);
 				temp=new Date(conn.getRs().getTimestamp("arrivingdate").getTime());
 				arrivingdate=df.format(temp);
@@ -123,6 +125,7 @@ public class VisitingRecord {
 					gphoto=imagecode.GetImageStr(path);
 					json.put("gname", gname);
 					json.put("arrivingdate", arrivingdate);
+					json.put("eid", eid);
 					json.put("gphoto", gphoto);
 					//System.out.println(json.toString());
 					jsonArray.add(json);
