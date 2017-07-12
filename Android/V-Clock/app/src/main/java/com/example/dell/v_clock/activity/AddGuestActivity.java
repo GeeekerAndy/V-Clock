@@ -51,6 +51,12 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     RadioButton rbt_man;
     Button bt_add;
 
+    //访问服务器请求队列
+    RequestQueue requestQueue;
+    //工作人员ID
+    String regid;
+    String name;
+
     Map<String, String> guestInfoMap = new HashMap<>();
 
     @Override
@@ -63,7 +69,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initComponents() {
-        //TODO iv_photo 的尺寸适配问题
+        //TODO iv_photo 的尺寸适配问题  图片的压缩
 
         ibt_back = (ImageButton) findViewById(R.id.img_bt_info_back);
         ibt_plus = (ImageButton) findViewById(R.id.img_bt_add_guest_photo);
@@ -118,11 +124,12 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 检查各项信息是否填写及符合要求
      */
     private void checkPerInfo() {
-        String name = et_name.getText().toString();
+        Log.i("AddGuestActivity","点击了添加");
+        name = et_name.getText().toString();
         String company = et_company.getText().toString();
         String phone = et_phone.getText().toString();
         String sex = "女";
-        String regid;
+
         if (!guestInfoMap.containsKey("gphoto")) {
             Toast.makeText(this, "请添加一张照片！", Toast.LENGTH_SHORT).show();
             return;
@@ -150,16 +157,16 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         guestInfoMap.put("gsex", sex);
         guestInfoMap.put("regid", regid);
 
-        //TODO 传输信息  暂时注释掉 方便测试
+        //传输信息  暂时注释掉 方便测试
         transferGuestInfo();
 
         //测试
-        Log.i("AddGuest", "name = " + name);
-        Log.i("AddGuest", "phone = " + phone);
-        Log.i("AddGuest", "company = " + company);
-        Log.i("AddGuest", "sex = " + sex);
-        Log.i("AddGuest", "regid = " + regid);
-        Log.i("AddGuest", "photo " + guestInfoMap.get("gphoto"));
+//        Log.i("AddGuest", "name = " + name);
+//        Log.i("AddGuest", "phone = " + phone);
+//        Log.i("AddGuest", "company = " + company);
+//        Log.i("AddGuest", "sex = " + sex);
+//        Log.i("AddGuest", "regid = " + regid);
+//        Log.i("AddGuest", "photo " + guestInfoMap.get("gphoto"));
     }
 
     /**
@@ -175,7 +182,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
         };
         //访问服务器请求队列
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(loginRequest);
     }
 
@@ -222,6 +229,19 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 等一段时间 后清空输入框信息
      */
     private void cleanGuestInfo() {
+        //添加至“我的嘉宾”
+        StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
+                new AddMyGuestResponseListener(), new AddGuestResponseErrorListener()) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> myGuestInfoMap = new HashMap<>();
+                myGuestInfoMap.put("gname", name);
+                myGuestInfoMap.put("eid", regid);
+                return myGuestInfoMap;
+            }
+        };
+        requestQueue.add(addRequest);
+        //等待
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -229,6 +249,40 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                 handler.sendEmptyMessage(0);
             }
         }).start();
+    }
+    /**
+     *
+     */
+    private class AddMyGuestResponseListener implements Response.Listener<String> {
+
+        @Override
+        public void onResponse(String response) {
+            Log.i("Transfer", "收到服务器回复");
+            int intOfResponse = -1;
+            try {
+                intOfResponse = Integer.parseInt(response);
+            } catch (NumberFormatException e) {
+                //返回数据包含非数字信息
+                Log.i("GuestInfoTransfer", "收到服务器回复 数据错误");
+                Log.i("AddGuest", "response 包含非数字信息");
+                e.printStackTrace();
+            }
+            switch (intOfResponse) {
+                case 0:
+                    //添加成功
+                    Toast.makeText(AddGuestActivity.this, "已添加至我的嘉宾", Toast.LENGTH_LONG).show();
+                    break;
+                case 1:
+                    //此嘉宾已存在
+                    Toast.makeText(AddGuestActivity.this, "此嘉宾已在我的嘉宾中！", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2:
+                    //数据错误
+                    Toast.makeText(AddGuestActivity.this, "数据传输错误，没有添加至我的嘉宾中！", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+
+        }
     }
 
     /**

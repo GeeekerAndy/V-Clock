@@ -2,7 +2,6 @@ package com.example.dell.v_clock.activity;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,31 +13,24 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
-import com.example.dell.v_clock.fragment.GuestListFragment;
+import com.example.dell.v_clock.adapter.SearchAdapter;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.example.dell.v_clock.util.ImageUtil;
+import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,14 +51,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //将数据添加到的view组件
     int[] to;
     //ListView 适配器
-    SimpleAdapter simpleAdapter;
-
-    //    final String MY_GEUST_SEATCH_TYPE = "0";
-//    final String PARTITIAL_NAME_SEATCH_TYPE = "1";
-    final String WHOLE_NAME_SEATCH_TYPE = "2";
+    SearchAdapter searchAdapter;
+    //search tip
+    final String WHOLE_NAME_SEARCH_TYPE = "2";
 
     //搜索结果 guest对象
     GuestInfo guestInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +75,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         from = new String[]{"iv_search_guest_avatar", "tv_search_guest_name"};
         to = new int[]{R.id.iv_search_guest_avatar, R.id.tv_search_guest_name};
-        simpleAdapter = new SimpleAdapter(this, dataList_guest, R.layout.item_search_guest, from, to);
 
-        lv_search_result.setAdapter(simpleAdapter);
+
+        searchAdapter = new SearchAdapter(this, dataList_guest, R.layout.item_search_guest, from, to);
+        lv_search_result.setAdapter(searchAdapter);
+
+
         lv_search_result.setOnItemClickListener(this);
+
     }
 
     /**
@@ -105,6 +100,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * 显示搜索结果 刷新ListView
      */
     private void refreshGuestList() {
+
+
         Log.i("Search", "刷新界面");
         if (guestInfo != null) {
             //显示结果
@@ -116,7 +113,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             et_search.setText("");
             Log.i("Search", "数据更新");
         }
-        simpleAdapter.notifyDataSetChanged();
+        searchAdapter.notifyDataSetChanged();
+
+
     }
 
     /**
@@ -160,71 +159,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * 向后台发送搜索请求
      */
     private void transferRequest(final String name) {
-        CustomRequest customRequest = new CustomRequest(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, null,
-                new SearchResponseListener(), new SearchResponseErrorListener()) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                //要传哪些参数
-                Map<String, String> searchInfo = new HashMap<>();
-                searchInfo.put("gname", name);
-                searchInfo.put("tip", WHOLE_NAME_SEATCH_TYPE);
-                SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
-                String eid = sp.getString("eid", null);
-                searchInfo.put("eid", eid);
-                return searchInfo;
-            }
-        };
+        //要传哪些参数
+        Map<String, String> searchInfo = new HashMap<>();
+        searchInfo.put("gname", name);
+        searchInfo.put("tip", WHOLE_NAME_SEARCH_TYPE);
+        SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
+        String eid = sp.getString("eid", null);
+        searchInfo.put("eid", eid);
+        JSONObjectRequestMapParams searchRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, searchInfo,
+                new SearchResponseListener(), new SearchResponseErrorListener());
         //访问服务器请求队列
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(customRequest);
-    }
-
-    /**
-     * 接收Json对象的Request类
-     */
-    private class CustomRequest extends Request<JSONObject> {
-
-        private Response.Listener<JSONObject> listener;
-        private Map<String, String> params;
-
-        public CustomRequest(String url, Map<String, String> params,
-                             Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
-            super(Method.GET, url, errorListener);
-            this.listener = reponseListener;
-            this.params = params;
-        }
-
-        public CustomRequest(int method, String url, Map<String, String> params,
-                             Response.Listener<JSONObject> reponseListener, Response.ErrorListener errorListener) {
-            super(method, url, errorListener);
-            this.listener = reponseListener;
-            this.params = params;
-        }
-
-        protected Map<String, String> getParams()
-                throws com.android.volley.AuthFailureError {
-            return params;
-        }
-
-        @Override
-        protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-            try {
-                String utf8String = new String(response.data, "UTF-8");
-                return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-            } catch (UnsupportedEncodingException e) {
-                // log error
-                return Response.error(new ParseError(e));
-            } catch (JSONException e) {
-                // log error
-                return Response.error(new ParseError(e));
-            }
-        }
-
-        @Override
-        protected void deliverResponse(JSONObject response) {
-            // TODOAuto-generated method stub
-            listener.onResponse(response);
-        }
+        requestQueue.add(searchRequest);
     }
 
     /**
@@ -233,7 +179,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private class SearchResponseListener implements Response.Listener<JSONObject> {
         @Override
         public void onResponse(JSONObject response) {
-            //TODO 判断返回是否有效
+            //判断返回是否有效
             try {
                 String tip = response.getString("tip");
                 if (tip.equals("2")) {
