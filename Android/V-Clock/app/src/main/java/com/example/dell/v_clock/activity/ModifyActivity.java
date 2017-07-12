@@ -112,7 +112,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
         Log.i("ModifyActiviyu", modify_type + ":" + afterModifyInfo);
         Log.i("ModifyActiviyu", "regid:" + regid);
 
-        StringRequest loginRequest = new StringRequest(Request.Method.POST, ServerInfo.MODIFY_GUEST_INFO_URL,
+        StringRequest modifyRequest = new StringRequest(Request.Method.POST, ServerInfo.MODIFY_GUEST_INFO_URL,
                 new ModifyResponseListener(), new ModifyResponseErrorListener()) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -122,7 +122,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
         };
         //访问服务器请求队列
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(loginRequest);
+        requestQueue.add(modifyRequest);
     }
 
     /**
