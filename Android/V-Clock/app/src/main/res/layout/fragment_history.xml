@@ -1,13 +1,32 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context="com.example.dell.v_clock.fragment.HistoryFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="@dimen/action_bar_size"
+        android:text="@string/fragment_history_title"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:textSize="20sp"/>
 
-</FrameLayout>
+    <com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout
+        android:id="@+id/srl_refresh_history_from_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:srl_direction="bottom">
+        <ListView
+            android:id="@+id/lv_history_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+        </ListView>
+    </com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout>
+
+
+</LinearLayout>

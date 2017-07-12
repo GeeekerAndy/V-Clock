@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_group_bar"
+    tools:context="com.example.dell.v_clock.activity.AddGuestActivity">
+
+    <RelativeLayout
+        android:id="@+id/relative_guest_info_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/colorPrimary">
+
+        <ImageButton
+            android:id="@+id/img_bt_info_back"
+            android:layout_width="@dimen/margin_20"
+            android:layout_height="@dimen/margin_20"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/margin_20"
+            android:background="@drawable/back_selector" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/add_guest"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/act_bar_text_size" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/relative_guest_info_bar"
+        android:orientation="vertical"
+        android:weightSum="10">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_0"
+            android:layout_weight="5">
+
+            <ImageView
+                android:id="@+id/iv_guest_photo"
+                android:layout_width="@dimen/width_150"
+                android:layout_height="@dimen/height_200"
+                android:layout_centerInParent="true"
+                android:background="@drawable/rounded_rectangle_white" />
+
+            <ImageButton
+                android:id="@+id/img_bt_add_guest_photo"
+                android:layout_width="@dimen/width_80"
+                android:layout_height="@dimen/width_80"
+                android:layout_centerInParent="true"
+                android:background="@drawable/plus_gray" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_0"
+            android:layout_weight="5"
+            android:orientation="vertical"
+            android:weightSum="5">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_0"
+                android:layout_weight="4">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical"
+                    android:weightSum="4">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/margin_50"
+                            android:layout_height="@dimen/height_30"
+                            android:text="@string/name"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/guest_size" />
+
+                        <EditText
+                            android:id="@+id/et_guest_name"
+                            android:layout_width="@dimen/height_200"
+                            android:layout_height="@dimen/height_30"
+                            android:background="@drawable/rounded_rectangle_white"
+                            android:lines="1"
+                            android:maxLength="20"
+                            android:paddingEnd="@dimen/margin_20"
+                            android:paddingStart="@dimen/margin_20"
+                            android:textColor="@color/colorBlack" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/height_30"
+                            android:layout_weight="1"
+                            android:text="@string/sex"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/guest_size" />
+
+                        <RadioGroup
+                            android:layout_width="@dimen/height_0"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:gravity="center_horizontal"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rd_bt_woman"
+                                android:layout_width="@dimen/height_0"
+                                android:layout_height="@dimen/height_30"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center_horizontal"
+                                android:text="@string/woman"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/guest_size" />
+
+                            <RadioButton
+                                android:id="@+id/rd_bt_man"
+                                android:layout_width="@dimen/height_0"
+                                android:layout_height="@dimen/height_30"
+                                android:layout_weight="1"
+                                android:gravity="center_horizontal"
+                                android:text="@string/man"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/guest_size" />
+                        </RadioGroup>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/margin_50"
+                            android:layout_height="@dimen/height_30"
+                            android:text="@string/company"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/guest_size" />
+
+                        <EditText
+                            android:id="@+id/et_guest_company"
+                            android:layout_width="@dimen/height_200"
+                            android:layout_height="@dimen/height_30"
+                            android:background="@drawable/rounded_rectangle_white"
+                            android:lines="1"
+                            android:maxLength="20"
+                            android:paddingEnd="@dimen/margin_20"
+                            android:paddingStart="@dimen/margin_20"
+                            android:textColor="@color/colorBlack" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/margin_50"
+                            android:layout_height="@dimen/height_30"
+                            android:text="@string/phone"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="@dimen/guest_size" />
+
+                        <EditText
+                            android:id="@+id/et_guest_phone"
+                            android:layout_width="@dimen/height_200"
+                            android:layout_height="@dimen/height_30"
+                            android:background="@drawable/rounded_rectangle_white"
+                            android:inputType="number"
+                            android:lines="1"
+                            android:maxLength="11"
+                            android:paddingEnd="@dimen/margin_20"
+                            android:paddingStart="@dimen/margin_20"
+                            android:textColor="@color/colorBlack" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_0"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/bt_add"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/margin_50"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/white_blue_selector"
+                    android:text="@string/add"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/act_bar_text_size" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

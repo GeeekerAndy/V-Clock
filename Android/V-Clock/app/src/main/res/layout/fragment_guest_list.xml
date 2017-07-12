@@ -1,13 +1,64 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.dell.v_clock.fragment.GuestListFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
+        android:id="@+id/relative_search"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_search"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_30"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginRight="@dimen/margin_20"
+            android:layout_toStartOf="@+id/img_bt_add"
+            android:background="@drawable/rounded_rectangle_white"
+            android:gravity="center"
+            android:text="@string/search"
+            android:textColor="@color/gray_dark"
+            android:textSize="@dimen/bt_search_text_size" />
+
+        <ImageButton
+            android:id="@+id/img_bt_add"
+            android:layout_width="@dimen/width_25"
+            android:layout_height="@dimen/width_25"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="@dimen/margin_15"
+            android:background="@drawable/plus_selector" />
+    </RelativeLayout>
+
+    <ScrollView
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:fillViewport="true"
+        android:layout_below="@+id/relative_search">
 
-</FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ExpandableListView
+                android:id="@+id/explv_my_guest_list"
+                android:indicatorStart="0dp"
+                android:indicatorEnd="50dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </ExpandableListView>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

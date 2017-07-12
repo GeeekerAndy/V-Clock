@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
+import com.example.dell.v_clock.ServerInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,12 +40,12 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        final RequestQueue requestQueue = Volley.newRequestQueue(this);
+        //异步检测保留
+//        final RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         final EditText employeeName = (EditText) findViewById(R.id.et_employee_name);
-        RadioGroup sexGroup = (RadioGroup) findViewById(R.id.rg_sex_group);
         final RadioButton sexMan = (RadioButton) findViewById(R.id.rb_sex_man);
-        RadioButton sexWoman = (RadioButton) findViewById(R.id.rb_sex_woman);
+        final RadioButton sexWoman = (RadioButton) findViewById(R.id.rb_sex_woman);
         final EditText employeePhone = (EditText) findViewById(R.id.et_employee_phone);
 
         sexMan.setChecked(true);
@@ -55,40 +56,38 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
 
-                //Go to select photos activity.
-                //跳转到选择用头像的活动
-//                Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
-//                startActivity(intent);
 
                 if (employeeName.getText().toString().equals("")) {
                     Toast.makeText(RegisterActivity.this, "姓名为空!", Toast.LENGTH_SHORT).show();
+                } else if(employeeName.getText().toString().length() >= 20) {
+                    Toast.makeText(RegisterActivity.this, "姓名长度过长！", Toast.LENGTH_SHORT).show();
                 } else if (employeePhone.getText().length() != 11) {
                     Toast.makeText(RegisterActivity.this, "手机号格式错误！", Toast.LENGTH_SHORT).show();
                 } else {
                     //The information of employee if legal. Judge whether employee tel is registered.
-                    // 数据已合法。判断工作人员手机是否被注册。
-                    String url = "http://192.168.2.101:80/serlet/loginServlet";
-                    StringRequest registerStat = new StringRequest(url, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-//                            if(requestQueue.equals())
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                        }
-                    });
-                    requestQueue.add(registerStat);
+                    // 数据已合法。判断工作人员手机是否被注册。异步检测保留
+//                    StringRequest registerStat = new StringRequest(ServerInfo.LOGIN_URL, new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//                            //Check whether etel is registered here.
+//                            //在此处检测手机号是否已经注册。
+//                        }
+//                    }, new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//
+//                        }
+//                    });
+//                    requestQueue.add(registerStat);
 
 
                     //employee tel is not registered.
 
                     HashMap<String, String> employeeInfoMap = new HashMap<>();
                     employeeInfoMap.put("ename", employeeName.getText().toString());
-                    if (sexMan.isSelected()) {
+                    if (sexMan.isChecked()) {
                         employeeInfoMap.put("esex", "男");
-                    } else {
+                    } else if(sexWoman.isChecked()){
                         employeeInfoMap.put("esex", "女");
                     }
                     employeeInfoMap.put("etel", employeePhone.getText().toString());
@@ -97,7 +96,6 @@ public class RegisterActivity extends AppCompatActivity {
                     Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
                     intent.putExtra("employeeInfoHashMap", employeeInfoMap);
                     startActivity(intent);
-
 
                 }
             }
