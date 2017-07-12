@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import util.Employee;
 
@@ -59,19 +60,23 @@ public class LoginServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		String etel=request.getParameter("etel");
-		String ephoto=request.getParameter("ephoto");
+		String ephoto=request.getParameter("ephoto");	
 		System.out.println("login:"+etel);
 		Employee emp=new Employee();
 		String eid;
 		try {
-			//String tip=emp.checkphoNumber(etel);
 			eid = emp.login(etel, ephoto);
 			response.setCharacterEncoding("UTF-8");
-			//response.setContentType("application/json; charset=utf-8");
-			System.out.println("eid:"+eid);
+			System.out.println("**********************");
 			PrintWriter out=null;
 			out=response.getWriter();
-			out.write(eid);
+			out.append(eid);
+			System.out.println("eid(login):"+eid);
+			if(eid.length()==4){
+				HttpSession session=request.getSession();
+				session.setAttribute("etel", etel);
+				session.setAttribute("ephoto", ephoto);
+			}
 			out.flush();
 			out.close();
 		} catch (Exception e) {

@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -41,6 +42,7 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -57,19 +59,33 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		String eid=request.getParameter("eid");
-		System.out.println("输入eid:"+eid);
+		response.setCharacterEncoding("UTF-8");
+		HttpSession session=request.getSession();
 		Employee emp=new Employee();
-		JSONObject json=emp.display(eid);
-		PrintWriter out = response.getWriter();
-		if(json!=null)
-			out.append(json.toString());
-		else{
-			System.out.println("fail!!!!");
-			out.write("2");
+		String userTel=(String) session.getAttribute("etel");
+		String userPhoto=(String) session.getAttribute("ephoto");
+		if(userTel!=null&&userPhoto!=null){
+			try {
+				String loginBool=emp.checkuser(userTel, userPhoto);
+				if(loginBool.equals("0")){
+					String eid=request.getParameter("eid");
+					System.out.println("输入eid:"+eid);
+					JSONObject json=emp.displayEmployeeInfo(eid);
+					PrintWriter out = response.getWriter();
+					out.append(json.toString());
+					//System.out.println(json.toString());
+					out.flush();
+					out.close();
+				}
+				else
+					System.out.println("No Legitimate(2)");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		out.flush();
-		out.close();
+		else
+			System.out.println("No Legitimate(1)");
 	}
 
 	/**

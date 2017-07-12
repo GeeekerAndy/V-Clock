@@ -9,22 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import faceAPI.RecognizeFace;
-
-import objects.Guests;
 import util.Employee;
-import util.Guest;
+import util.GuestList;
 
-public class CreateNewGuestServlet extends HttpServlet {
+public class DeleteFromGuestListServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public CreateNewGuestServlet() {
+	public DeleteFromGuestListServlet() {
 		super();
-
-		guests = new Guests();
-		rf =new RecognizeFace();
 	}
 
 	/**
@@ -37,17 +31,13 @@ public class CreateNewGuestServlet extends HttpServlet {
 
 	/**
 	 * The doGet method of the servlet. <br>
-	 * 
+	 *
 	 * This method is called when a form has its tag value method equals to get.
 	 * 
-	 * @param request
-	 *            the request send by the client to the server
-	 * @param response
-	 *            the response send by the server to the client
-	 * @throws ServletException
-	 *             if an error occurred
-	 * @throws IOException
-	 *             if an error occurred
+	 * @param request the request send by the client to the server
+	 * @param response the response send by the server to the client
+	 * @throws ServletException if an error occurred
+	 * @throws IOException if an error occurred
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -57,18 +47,13 @@ public class CreateNewGuestServlet extends HttpServlet {
 
 	/**
 	 * The doPost method of the servlet. <br>
+	 *
+	 * This method is called when a form has its tag value method equals to post.
 	 * 
-	 * This method is called when a form has its tag value method equals to
-	 * post.
-	 * 
-	 * @param request
-	 *            the request send by the client to the server
-	 * @param response
-	 *            the response send by the server to the client
-	 * @throws ServletException
-	 *             if an error occurred
-	 * @throws IOException
-	 *             if an error occurred
+	 * @param request the request send by the client to the server
+	 * @param response the response send by the server to the client
+	 * @throws ServletException if an error occurred
+	 * @throws IOException if an error occurred
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -81,33 +66,22 @@ public class CreateNewGuestServlet extends HttpServlet {
 			try {
 				String loginBool=emp.checkuser(userTel, userPhoto);
 				if(loginBool.equals("0")){
-					String  imgIsValid="";
-					String glist[] = new String[guests.gmessage.length];
-					for (int i = 0; i < guests.gmessage.length; i++) {
-						glist[i] = request.getParameter(guests.gmessage[i]);
-						if(i!=guests.gmessage.length-2)
-							System.out.println(guests.gmessage[i]+":"+glist[i]);
-					}
-					imgIsValid=rf.computeFaceID(glist[4]);
+					String gname=request.getParameter("gname");
+					String eid=request.getParameter("eid");
+					System.out.println("(gname+eid):"+gname+"+"+eid);
+					GuestList guestList=new GuestList();
+					String tip=guestList.deleteFromGuestList(gname, eid);
+					response.setCharacterEncoding("UTF-8");
 					PrintWriter out = response.getWriter();
-					if(imgIsValid!=null){
-						Guest guest = new Guest();
-						String tip="";
-						tip = guest.createNewGuest(glist[0], glist[1], glist[2], glist[3],
-								glist[4], glist[5]);
-						out.append(tip);
-						System.out.println("tip(create guest):"+tip);
-					}else{
-						out.append("2");
-					}
+					out.write(tip);
 					out.flush();
 					out.close();
 				}
 				else
 					System.out.println("No Legitimate(2)");
 			} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		else
@@ -116,14 +90,11 @@ public class CreateNewGuestServlet extends HttpServlet {
 
 	/**
 	 * Initialization of the servlet. <br>
-	 * 
-	 * @throws ServletException
-	 *             if an error occurs
+	 *
+	 * @throws ServletException if an error occurs
 	 */
 	public void init() throws ServletException {
 		// Put your code here
 	}
 
-	private Guests guests;
-	private RecognizeFace rf;
 }
