@@ -1,13 +1,19 @@
 package com.example.dell.v_clock.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,6 +36,7 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.ImageUtil;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +57,12 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     RadioButton rbt_woman;
     RadioButton rbt_man;
     Button bt_add;
-
+    //READ权限请求码
+    final int MY_PERMISSION_REQUEST_READ = 0;
+    //剪裁图片的请求码
+    final int CROP_REQUEST_CODE = 2;
+    //剪裁图片的存放路径
+    Uri tempFile;
     //访问服务器请求队列
     RequestQueue requestQueue;
     //工作人员ID
@@ -69,7 +81,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initComponents() {
-        //TODO iv_photo 的尺寸适配问题  图片的压缩
+        //的尺寸适配问题  图片的压缩
 
         ibt_back = (ImageButton) findViewById(R.id.img_bt_info_back);
         ibt_plus = (ImageButton) findViewById(R.id.img_bt_add_guest_photo);
@@ -91,8 +103,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     bt_add.setTextColor(AddGuestActivity.this.getResources().getColor(R.color.colorBlack));
-                }else if(motionEvent.getAction()==MotionEvent.ACTION_UP)
-                {
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     bt_add.setTextColor(AddGuestActivity.this.getResources().getColor(R.color.white));
                 }
                 return false;
@@ -110,6 +121,14 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             case R.id.img_bt_add_guest_photo:
             case R.id.iv_guest_photo:
                 //调用系统相册
+                //运行时权限
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_DENIED) {
+                    //读取sdCard权限未授予  申请权限
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
+                    return;
+                }
                 pickImage();
                 break;
             case R.id.bt_add:
@@ -124,7 +143,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 检查各项信息是否填写及符合要求
      */
     private void checkPerInfo() {
-        Log.i("AddGuestActivity","点击了添加");
+        Log.i("AddGuestActivity", "点击了添加");
         name = et_name.getText().toString();
         String company = et_company.getText().toString();
         String phone = et_phone.getText().toString();
@@ -250,6 +269,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
         }).start();
     }
+
     /**
      *
      */
@@ -317,29 +337,59 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     public void pickImage() {
         Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickImageIntent.setType("image/*");
-        pickImageIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+//        pickImageIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
         startActivityForResult(pickImageIntent, PICK_PHOTO_FOR_AVATAR);
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == RESULT_OK) {
-            if (data == null) {
-                Toast.makeText(AddGuestActivity.this, "Oops, 发生错误！", Toast.LENGTH_SHORT).show();
-            } else {
-                try {
-                    Uri selectedImage = data.getData();
-                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                    iv_photo.setImageBitmap(imageBitmap);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PICK_PHOTO_FOR_AVATAR:
+                    //剪裁图片
+                    ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
+                    break;
+                case CROP_REQUEST_CODE://返回剪裁后的图片
+                    Bitmap bmp_photo = ImageUtil.getCropImage(this);
+                    if (bmp_photo == null) {
+                        return;
+                    }
+                    iv_photo.setImageBitmap(bmp_photo);
                     ibt_plus.setVisibility(View.INVISIBLE);
                     iv_photo.setBackgroundResource(R.color.gray_group_bar);
-                    guestInfoMap.put("gphoto", ImageUtil.convertImage(imageBitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    String str_photo = ImageUtil.convertImage(bmp_photo);
+                    guestInfoMap.put("gphoto", str_photo);
+                    break;
             }
         }
     }
+
+//    /**
+//     * 剪裁图片
+//     */
+//    private void startPhotoZoom(Uri data) {
+//        Intent intentCrop = new Intent("com.android.camera.action.CROP");
+//        intentCrop.setDataAndType(data, "image/*");
+//        //设置剪裁
+//        intentCrop.putExtra("crop", "true");
+//        //aspectX aspectY  宽高比例
+//        intentCrop.putExtra("aspectX", 3);
+//        intentCrop.putExtra("aspectY", 4);
+//        //outputX outputY  剪裁图片宽高
+//        intentCrop.putExtra("outputX", 480);
+//        intentCrop.putExtra("outputY", 640);
+//        //MIUI 有问题
+////        intentCrop.putExtra("return-data", "true");
+//        //先保存
+//        tempFile = Uri.parse("file://" + "/"
+//                + Environment.getExternalStorageDirectory().getPath() + "/" + "temp.jpg");
+//
+//        Log.i("GuestInfoActiviyu", "tempFile: " + tempFile);
+//        intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, tempFile);
+//        intentCrop.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+//        startActivityForResult(intentCrop, CROP_REQUEST_CODE);
+//    }
+
+
 }

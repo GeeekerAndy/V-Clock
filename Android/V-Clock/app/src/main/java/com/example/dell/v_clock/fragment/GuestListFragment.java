@@ -263,7 +263,8 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(getContext(), "服务器连接失败", Toast.LENGTH_SHORT).show();
-            refreshChildList();
+            //todo  隔一段时间再请求
+//            refreshChildList();
         }
     }
 
