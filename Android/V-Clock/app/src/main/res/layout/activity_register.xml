@@ -58,7 +58,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:textSize="23sp"
-                        android:text="姓名："/>
+                        android:text="@string/register_name"/>
                     <EditText
                         android:id="@+id/et_employee_name"
                         android:layout_width="match_parent"
@@ -85,7 +85,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:textSize="23sp"
-                        android:text="性别："/>
+                        android:text="@string/register_sex"/>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -97,7 +97,7 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="男"
+                        android:text="@string/register_male"
                         android:textSize="20sp"
                         android:textColor="@color/colorBlack" />
                     <RadioButton
@@ -108,7 +108,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:textSize="20sp"
-                        android:text="女"
+                        android:text="@string/register_female"
                         android:textColor="@color/colorBlack" />
                 </RadioGroup>
                 <LinearLayout
@@ -125,7 +125,7 @@
                         android:gravity="center"
                         android:textSize="23sp"
                         android:textColor="@color/colorBlack"
-                        android:text="手机："/>
+                        android:text="@string/register_phone"/>
                     <EditText
                         android:id="@+id/et_employee_phone"
                         android:layout_width="match_parent"
@@ -147,9 +147,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:elevation="4dp"
+        android:elevation="@dimen/elevation"
         android:background="@color/colorPrimary"
-        android:text="下一步">
+        android:text="@string/register_next">
     </Button>
 
 </LinearLayout>

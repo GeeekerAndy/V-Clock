@@ -4,9 +4,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera2"
-                android:required="true"/>
-    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -15,17 +21,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity"></activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarTheme" />
+
         <activity
             android:name=".activity.LoginActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RegisterActivity">
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -34,14 +47,42 @@
         </activity>
         <activity
             android:name=".activity.CameraActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".activity.SelectPhotoActivity"
-            android:screenOrientation="portrait">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.dell.v_clock.activity.RegisterActivity" />
-        </activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SelectPhotoActivity"
+            android:screenOrientation="portrait" />
+
+
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.dell.v_clock.activity.RegisterActivity" />
+
+
+        <activity
+            android:name=".activity.SearchActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.AddGuestActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.GuestInfoActivity"
+            android:theme="@style/NoActionBarTheme" />
+
+
+        <service
+            android:name=".service.GetMessageService"
+            android:enabled="true"
+
+            android:exported="true" />
+
+        <activity
+            android:name=".activity.ModifyActivity"
+            android:theme="@style/NoActionBarTheme" />
+
+
+        <activity android:name=".activity.UpdateEmployeePwdActivity"></activity>
+
     </application>
 
 </manifest>

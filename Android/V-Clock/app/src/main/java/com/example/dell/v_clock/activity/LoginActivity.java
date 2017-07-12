@@ -3,6 +3,7 @@ package com.example.dell.v_clock.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.v_clock.R;
-import com.smartshino.face.SsDuck;
 
 /**
  * This activity is the interface for the stuff to login which can jump to RegisterActivity.
@@ -56,19 +56,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        //读取上次登录的信息 如果没有注销登录直接登录
+        SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
+        String eid = sp.getString("eid", null);
+        if (eid != null) {
+            Log.i("ReadSharedPrefer",eid);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
         //初始化控件
         initComponents();
-
-        //TODO 测试SsDuck
-        SsDuck ssDuck = new SsDuck();
-        int test = ssDuck.SsMobiVersn(1, "w3434t4");
-//        int test2 = ssDuck.Test();
-        Log.i("Test", "test = " + test);
-//        Long phEveSet = new Long(0);
-//        Void v = null;
-//        int s = ssDuck.SsMobiDinit(v, 300, 400, 0, "", 1);
-//        Log.i("Test", "s = " + s + "phEveSet = " + phEveSet);
     }
 
     @Override
@@ -133,8 +131,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.tv_sign_up:
                 //通过Intent对象跳转到注册界面
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                phoneNum = et_phone.getText().toString();
-                intent.putExtra("etel", phoneNum);
                 startActivity(intent);
                 break;
             //默认操作
@@ -150,11 +146,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //检测手机号输入的长度是否合适
         //在布局设置中已经设置过只能输入数字，且最多11位，所以只需检测数字是否足够11位即可
         String phoneNumber = et_phone.getText().toString();
+        Log.i("Login", "测试 phoneNumber = " + phoneNumber);
         int lengthOfPhone = phoneNumber.length();
         if (lengthOfPhone < 11) {
             Toast.makeText(LoginActivity.this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
-            //TODO  方便测试 暂时注释掉下一行
-//            return;
+            //方便测试 暂时注释掉下一行
+            return;
         }
         //TODO 向服务器查询输入手机号是否已注册
 
@@ -169,7 +166,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //Camera权限被授予
             //跳转到人脸识别界面
             Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
+            phoneNum = et_phone.getText().toString();
+            Log.i("LoginActivity", "phoneNum = " + phoneNumber);
+            intent.putExtra("etel", phoneNum);
             startActivity(intent);
+//            LoginActivity.this.finish();
         }
 
     }
@@ -184,6 +185,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     //Camera权限被授予
                     //跳转到人脸识别界面
                     Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
+                    phoneNum = et_phone.getText().toString();
+                    intent.putExtra("etel", phoneNum);
                     startActivity(intent);
                 } else {
                     Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();

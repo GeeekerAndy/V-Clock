@@ -40,7 +40,13 @@ public class RecognizeFace {
 			throws Exception {
 		String result;
 		String fid1 = computeFaceID(imgStr1);
-		String fid2 = computeFaceID(ic.GetImageStr(imgFilePath2));
+
+		String fid2 = computeFaceID( ic.GetImageStr(imgFilePath2));
+		System.out.println(fid1+"1");
+		System.out.println(fid2+"2");
+		if(fid1==null)
+			return -1;
+
 		if(!fid1.equals("")&&!fid2.equals("")){
 			// 设置参数
 			String param = "app_id=" + URLEncoder.encode(conf.getAppID(), "utf-8")
@@ -49,7 +55,9 @@ public class RecognizeFace {
 					+ "face_id1=" + URLEncoder.encode(fid1, "utf-8") + "&"
 					+ "face_id2=" + URLEncoder.encode(fid2, "utf-8");
 			result = hgp.sendGet(conf.getUrl2(), param);
-            //System.out.println(fid1+"@"+fid2);
+
+            System.out.println(result);
+
 			return getSimilarityBetweenTwoImages(result);
 		}else{
 			return 0;
@@ -160,7 +168,9 @@ public class RecognizeFace {
 		//System.out.println(result);
 		JSONObject object = JSONObject.fromObject(result);
 		similarity = Float.parseFloat(object.getString("similarity"));
-		//System.out.println(similarity);
+
+		System.out.println(similarity);
+
 		return similarity;
 	}
     

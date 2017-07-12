@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import util.*;
 
@@ -39,6 +40,7 @@ public class AddtoGuestListServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -55,15 +57,35 @@ public class AddtoGuestListServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
+		PrintWriter out = response.getWriter();
+		HttpSession session=request.getSession();
+		Employee emp=new Employee();
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
+//				String loginBool=emp.checkuser(userTel, userPhoto);
+//				if(loginBool.equals("0")){
 		String gname=request.getParameter("gname");
 		String eid=request.getParameter("eid");
+//		String eid=(String) session.getAttribute("eid");
 		GuestList guestList=new GuestList();
 		String tip=guestList.addToGuestList(gname, eid);
 		response.setCharacterEncoding("UTF-8");
-		PrintWriter out = response.getWriter();
 		out.write(tip);
+		System.out.println("tip(AddtoGuestListServlet):"+tip);
 		out.flush();
 		out.close();
+//		}
+//		else
+//			System.out.println("No Legitimate(2)");
+//	} catch (Exception e) {
+//	// TODO Auto-generated catch block
+//	e.printStackTrace();
+//	}
+//}
+//else
+//	System.out.println("No Legitimate(1)");
 	}
 
 	/**

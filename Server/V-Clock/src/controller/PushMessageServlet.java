@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +14,7 @@ import objects.PushServletService;
 
 import org.apache.commons.lang.StringUtils;
 import org.omg.IOP.ServiceContext;
+
 
 public class PushMessageServlet extends HttpServlet {
 
@@ -50,6 +48,7 @@ public class PushMessageServlet extends HttpServlet {
 	 *             if an error occurred
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
+
 			throws ServletException, IOException, IllegalStateException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
@@ -87,6 +86,7 @@ public class PushMessageServlet extends HttpServlet {
 		});
 		PushServletService.getInstance().addAsyncContext(ac);
 		System.out.println("---------------------------------------------");
+
 
 	}
 

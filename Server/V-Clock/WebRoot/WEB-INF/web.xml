@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance http://www.springmodules.org/schema/cache/springmodules-cache.xsd http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd 
 "
@@ -29,6 +30,7 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+
 
 	<servlet>
 		<servlet-name>Login</servlet-name>
@@ -76,56 +78,61 @@
 		<servlet-name>SearchGuest</servlet-name>
 		<servlet-class>controller.SearchGuestServlet</servlet-class>
 	</servlet>
+  <servlet>
+    <servlet-name>DeleteFromGuestList<servlet-name>
+    <servlet-class>controller.DeleteFromGuestListServlet</servlet-class>
+  <servlet>
 
-
-
-
-
-	<servlet-mapping>
-		<servlet-name>Login</servlet-name>
-		<url-pattern>/servlet/LoginServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Register</servlet-name>
-		<url-pattern>/servlet/RegisterServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ModifyEmployeeInfo</servlet-name>
-		<url-pattern>/servlet/ModifyEmployeeInfoServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>CreateNewGuest</servlet-name>
-		<url-pattern>/servlet/CreateNewGuestServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>DisplayEmployeeInfo</servlet-name>
-		<url-pattern>/servlet/DisplayEmployeeInfoServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ModifyGuestInfo</servlet-name>
-		<url-pattern>/servlet/ModifyGuestInfoServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AddtoGuestList</servlet-name>
-		<url-pattern>/servlet/AddtoGuestListServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>DisplayVisitingRecord</servlet-name>
-		<url-pattern>/servlet/DisplayVisitingRecordServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>PushMessage</servlet-name>
-		<url-pattern>/servlet/PushMessageServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-
+  
+  
+  <servlet-mapping>
+    <servlet-name>Login</servlet-name>
+    <url-pattern>/servlet/LoginServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Register</servlet-name>
+    <url-pattern>/servlet/RegisterServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ModifyEmployeeInfo</servlet-name>
+    <url-pattern>/servlet/ModifyEmployeeInfoServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>CreateNewGuest</servlet-name>
+    <url-pattern>/servlet/CreateNewGuestServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DisplayEmployeeInfo</servlet-name>
+    <url-pattern>/servlet/DisplayEmployeeInfoServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ModifyGuestInfo</servlet-name>
+    <url-pattern>/servlet/ModifyGuestInfoServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AddtoGuestList</servlet-name>
+    <url-pattern>/servlet/AddtoGuestListServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DisplayVisitingRecord</servlet-name>
+    <url-pattern>/servlet/DisplayVisitingRecordServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>PushMessage</servlet-name>
+    <url-pattern>/servlet/PushMessageServlet</url-pattern>
+  </servlet-mapping>
+  	<servlet-mapping>
 		<servlet-name>PrepareForPushServlet</servlet-name>
 		<url-pattern>/servlet/PrepareForPushServlet</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>SearchGuest</servlet-name>
-		<url-pattern>/servlet/SearchGuestServlet</url-pattern>
+  <servlet-mapping>
+    <servlet-name>SearchGuest</servlet-name>
+    <url-pattern>/servlet/SearchGuestServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DeleteFromGuestList</servlet-name>
+    <url-pattern>/servlet/DeleteFromGuestListServlet</url-pattern>
+  </servlet-mapping>
 
-	</servlet-mapping>
 </web-app>
 

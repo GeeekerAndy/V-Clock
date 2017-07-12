@@ -2,6 +2,7 @@ package util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +13,7 @@ import net.sf.json.JSONObject;
 import objects.Guests;
 
 public class GuestList {
-	private Connect conn;
+	private Connect conn=new Connect();
 	private Connection c;
 	private PreparedStatement pstmt;
 	//内部属性
@@ -24,6 +25,7 @@ public class GuestList {
 		json=new JSONObject();
 		imagecode=new ImageCoding();
 		guest=new Guests();
+		c=conn.con();
 	}
 	
 	/**
@@ -76,12 +78,42 @@ public class GuestList {
 			}
 			else{
 				sql="insert into guestlist(gname,eid) "+"values(?,?)";	
-				pstmt=c.prepareStatement(sql);
-				pstmt.setString(1, gname);
-				pstmt.setString(2, eid);
-				pstmt.executeUpdate();
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				pstmts.setString(2, eid);
+				if(pstmts.executeUpdate()==1)
+					return "0";
+				else
+					return "2";
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "2";
+	}
+	
+	/**
+	 * 从邀请名单删除嘉宾
+	 * 返回值：0（添加成功），1（此嘉宾已在该工作人员邀请名单中），null（数据错误）
+	 */
+	public String deleteFromGuestList(String gname,String eid){
+		String sql="select * from guestlist where gname=? and eid=?";
+		try {
+			pstmt=c.prepareStatement(sql);
+			pstmt.setString(1, gname);
+			pstmt.setString(2, eid);
+			conn.setRs(pstmt.executeQuery());
+			if(conn.getRs().next()){
+				sql="delete from guestlist where gname=? and eid=?";
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				pstmts.setString(2, eid);
+				pstmts.executeUpdate();
 				return "0";
 			}
+			else
+				return "1";
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,20 +131,22 @@ public class GuestList {
 		String sql="select * from guestlist where eid=?";
 		String gname,path,gphoto,gtel;
 		JSONArray jsonArray=new JSONArray();
+		JSONObject jsons=new JSONObject();
+		ResultSet rs;
 		try {
 			pstmt=c.prepareStatement(sql);
 			pstmt.setString(1, eid);
 			conn.setRs(pstmt.executeQuery());
 			while(conn.getRs().next()){
 				gname=conn.getRs().getString("gname");
-				sql="select * from guest where game=?";
-				pstmt=c.prepareStatement(sql);
-				pstmt.setString(1, gname);
-				conn.setRs(pstmt.executeQuery());
-				if(conn.getRs().next()){
+				sql="select * from guest where gname=?";
+				PreparedStatement pstmts=c.prepareStatement(sql);
+				pstmts.setString(1, gname);
+				rs=pstmts.executeQuery();
+				if(rs.next()){
 					json=new JSONObject();
-					gtel=conn.getRs().getString("gtel");
-					path=conn.getRs().getString("gphoto");
+					gtel=rs.getString("gtel");
+					path=rs.getString("gphoto");
 					gphoto=imagecode.GetImageStr(path);
 					json.put("gname", gname);
 					json.put("gtel", gtel);
@@ -120,6 +154,8 @@ public class GuestList {
 					jsonArray.add(json);
 				}
 			}
+			//jsons.put("GuestList", jsonArray);
+			//System.out.println("jsons:"+jsons.toString());
 			return jsonArray;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

@@ -26,6 +26,7 @@ public class Guest {
 	//内部属性
 	private JSONObject json;
 	private ImageCoding imagecode;
+	private CheckingPhoto checking;
 	private Guests guest;
 	
 	public Connection getC() {
@@ -33,11 +34,13 @@ public class Guest {
 	}
 	public Guest() {
 		conn = new Connect();
+		c=conn.con();
 		atc = new AddtoCrowd();
 		gi = new GenerateImage();
 		rf=new RecognizeFace();
 		json=new JSONObject();
 		imagecode=new ImageCoding();
+		checking=new CheckingPhoto();
 		guest=new Guests();
 
 	}
@@ -93,29 +96,40 @@ public class Guest {
 			return "2";
 		ResultSet rs;
 		boolean success;
-		// 根据嘉宾姓名，判断该嘉宾是否已存在
+		// 根据嘉宾姓名和照片，判断该嘉宾是否已存在
 		String sql1 = "select * from guest where gname=?";
 		try {
+			//String gphototip=checking.doesThePersonExist(gphoto,1);
 			pstmt = c.prepareStatement(sql1);
 			pstmt.setString(1, gname);
 			rs = pstmt.executeQuery();
-			if (!rs.next()) {
+			//if (rs.next()||(!gphototip.equals("0")&&!gphototip.equals("1"))) {
+			if (rs.next()) {
 				// 该嘉宾已存在
+				System.out.println("guest exist!!");
 				return "1";
 			} else {
 				// 若该嘉宾不存在，在数据库中新建记录
 				String sql2 = "insert into guest(gname,gsex,gtel,gcompany,gphoto,regid) values(?,?,?,?,?,?)";
-				pstmt = c.prepareStatement(sql2);
-				pstmt.setString(1, gname);
-				pstmt.setString(2, gsex);
-				pstmt.setString(3, gtel);
-				pstmt.setString(4, gcompany);
-				pstmt.setString(5, gi.generateImg(gname, gphoto, 1));// 在服务器本地生成该嘉宾的照片,存储照片路径
-				pstmt.setString(6, regid);
-				success = pstmt.execute();
+				PreparedStatement pstmts= c.prepareStatement(sql2);
+				pstmts.setString(1, gname);
+				pstmts.setString(2, gsex);
+				pstmts.setString(3, gtel);
+				pstmts.setString(4, gcompany);
+				pstmts.setString(5, gi.generateImg(gname, gphoto, 1));// 在服务器本地生成该嘉宾的照片,存储照片路径
+				pstmts.setString(6, regid);
+				if(pstmts.executeUpdate()==1)
+					success=true;
+				else
+					success=false;
+				System.out.println("success:"+success);
+//				// 在crowd of guest中加入该嘉宾
+//				atc.add(gphoto, gname, 1);
+//				return "0";
 				if (success) {
 					// 在crowd of guest中加入该嘉宾
 					atc.add(gphoto, gname, 1);
+					System.out.println("crowd of guest:"+gname);
 					return "0";
 				} else {
 					return "2";
@@ -132,9 +146,9 @@ public class Guest {
 	public String modifyInfo(String gname, String information, String infoType) throws Exception {
 
 		// // 返回值： 0(修改信息成功),1(修改信息失败)
-		// infoType： 1 注册人员编号rgid 2嘉宾手机号 gtel 3嘉宾公司 gcompany 4嘉宾照片 gphoto
+		// infoType： 1 注册人员编号regid 2嘉宾手机号 gtel 3嘉宾公司 gcompany 4嘉宾照片 gphoto
 		if(!codeLegitimate("gname",gname)||!codeLegitimate(infoType,information))
-			return "2";
+			return "1";
 		boolean success;
 		String sql="";
 		sql = "update guest set "+infoType+"=? where gname=? ";
@@ -146,7 +160,10 @@ public class Guest {
 				pstmt.setString(1, information);
 				pstmt.setString(2, gname);
 		}
-		success=pstmt.execute();
+		if(pstmt.executeUpdate()==1)
+			success=true;
+		else
+			success=false;
 		if(success){
 			if("gphoto".equals(infoType)){
 				//先删除该people原绑定的face
@@ -172,6 +189,7 @@ public class Guest {
 		String sql;
 		String gname,path,gphoto;
 		JSONArray jsonArray=new JSONArray();
+		//JSONObject jsons=new JSONObject();
 		sql="select gname,gphoto from Guest where gname regexp '^"+gnamePart+"'";
 		try {
 			pstmt=c.prepareStatement(sql);
@@ -185,6 +203,7 @@ public class Guest {
 				json.put("gphoto", gphoto);
 				jsonArray.add(json);
 			}
+			//jsons.put("Guest", jsonArray);
 			return jsonArray;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -203,6 +222,7 @@ public class Guest {
 		String sql="select * from Guest where gname=?";
 		String temp,path;
 		int gLength=guest.gmessage.length;
+		json.put("tip", "0");
 		try {
 			pstmt=c.prepareStatement(sql);
 			pstmt.setString(1, gname);
@@ -225,9 +245,17 @@ public class Guest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		json=new JSONObject();
+		json.put("tip", "2");
+		return json;
 	}
-	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Guest g=new Guest();
+		//e.insert("张三", "男", "18247965198", "D:\\1.jpg");
+		g.searchGuest("J");
+
+	}
 	
 
 }

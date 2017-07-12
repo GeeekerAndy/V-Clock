@@ -1,14 +1,15 @@
 package com.example.dell.v_clock.activity;
 
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,11 +25,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.ImageUtil;
 
 public class SelectPhotoActivity extends AppCompatActivity {
@@ -38,8 +39,6 @@ public class SelectPhotoActivity extends AppCompatActivity {
     ImageView employeePicture;
     HashMap<String , String> employeeInfoMap = new HashMap<>();
     RequestQueue requestQueue;
-    String registerURL = "http://121.250.222.39:8080/V-Clock/servlet/RegisterServlet";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
         Button takePhoto = (Button)findViewById(R.id.bt_take_photo);
         Button selectPhoto = (Button)findViewById(R.id.bt_select_photo);
         Button completeRegister = (Button)findViewById(R.id.bt_complete_register);
-        employeePicture = (ImageView)findViewById(R.id.iv_employee_picture);
+        employeePicture = (ImageView)findViewById(R.id.iv_employee_register_picture);
         requestQueue = Volley.newRequestQueue(this);
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
@@ -73,8 +72,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                 if(!employeeInfoMap.containsKey("ephoto")) {
                     Toast.makeText(SelectPhotoActivity.this, "请添加照片", Toast.LENGTH_SHORT).show();
                 } else {
-                    System.out.println(employeeInfoMap);
-                    StringRequest registerRequest = new StringRequest(Request.Method.POST, registerURL,
+                    StringRequest registerRequest = new StringRequest(Request.Method.POST, ServerInfo.REGISTER_URL,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -115,9 +113,20 @@ public class SelectPhotoActivity extends AppCompatActivity {
     }
 
     public void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        //权限申请RequestCode
+        final int MY_PERMISSION_REQUEST_CAMERA = 1;
+        //动态添加权限
+        //Android 6.0 以上需要添加运行时权限 才可以使用Camera
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED) {
+            //Camera权限未授予  申请Camera权限
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
+        } else {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
 
@@ -133,6 +142,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap)extras.get("data");
+            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
             employeePicture.setImageBitmap(imageBitmap);
             employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
         }
@@ -143,6 +153,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                 try {
                     Uri selectedImage = data.getData();
                     Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
                     employeePicture.setImageBitmap(imageBitmap);
                     employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
                 } catch (IOException e) {

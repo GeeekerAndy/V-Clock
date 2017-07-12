@@ -18,8 +18,8 @@ android {
         }
     }
 
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             jniLibs.srcDirs = ['libs'];
         }
     }
@@ -34,5 +34,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.android.support:support-v4:26.+'
+    compile 'com.koushikdutta.async:androidasync:2.+'
+    compile 'com.android.support:design:26.+'
+    compile 'com.android.support:support-vector-drawable:26.+'
+    compile 'com.github.omadahealth:swipy:1.2.3@aar'
     testCompile 'junit:junit:4.12'
 }
