@@ -79,9 +79,9 @@
 		<servlet-class>controller.SearchGuestServlet</servlet-class>
 	</servlet>
   <servlet>
-    <servlet-name>DeleteFromGuestList<servlet-name>
+    <servlet-name>DeleteFromGuestList</servlet-name>
     <servlet-class>controller.DeleteFromGuestListServlet</servlet-class>
-  <servlet>
+  </servlet>
 
   
   
@@ -121,6 +121,7 @@
     <servlet-name>PushMessage</servlet-name>
     <url-pattern>/servlet/PushMessageServlet</url-pattern>
   </servlet-mapping>
+
   	<servlet-mapping>
 		<servlet-name>PrepareForPushServlet</servlet-name>
 		<url-pattern>/servlet/PrepareForPushServlet</url-pattern>

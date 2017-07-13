@@ -24,7 +24,7 @@ public class DeleteFromGuestListServlet extends HttpServlet {
 	 */
 	public DeleteFromGuestListServlet() {
 		super();
-		c = conn.con();
+		//c = conn.con();
 	}
 
 	/**
