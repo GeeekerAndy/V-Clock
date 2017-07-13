@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dell.v_clock.R;
+import com.org.afinal.simplecache.ACache;
 
 import java.security.acl.Group;
 import java.util.List;
@@ -147,6 +148,10 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
                 }
             }
         });
+
+        //todo test
+        ACache mACache = ACache.get(context);
+        Log.i("GuestListAdapter", "ACache test = " + mACache.getAsString("test"));
 
         return view;
     }

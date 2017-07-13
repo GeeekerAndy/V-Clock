@@ -37,6 +37,7 @@ import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -118,6 +119,10 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         eid = sp.getString("eid", null);
         //加载嘉宾信息
         loadGuestInfo();
+
+        //TODO 测试ACache
+//        ACache mACache = ACache.get(this);
+//        Log.i("GuestInfoActivity",mACache.getAsString("test"));
     }
 
     /**
@@ -208,13 +213,13 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             case R.id.iv_guest_info_photo:
                 //为嘉宾选择新的照片
                 //运行时权限
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_DENIED) {
-                    //读取sdCard权限未授予  申请权限
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
-                    return;
-                }
+//                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                        == PackageManager.PERMISSION_DENIED) {
+//                    //读取sdCard权限未授予  申请权限
+//                    ActivityCompat.requestPermissions(this,
+//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
+//                    return;
+//                }
                 modifyGuestPhoto();
                 break;
             case R.id.relative_company:
@@ -437,23 +442,23 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         requestQueue.add(modifyRequest);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSION_REQUEST_READ:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    Toast.makeText(this, "权限不足，无法读取图片！", Toast.LENGTH_SHORT).show();
-                    //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
-                    Context context = this.getApplicationContext();
-                    Uri packageURI = Uri.parse("package:" + context.getPackageName());
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
-                    startActivity(intent);
-                } else {
-                    //跳转到相册
-                    modifyGuestPhoto();
-                }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case MY_PERMISSION_REQUEST_READ:
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+//                    Toast.makeText(this, "权限不足，无法读取图片！", Toast.LENGTH_SHORT).show();
+//                    //跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
+//                    Context context = this.getApplicationContext();
+//                    Uri packageURI = Uri.parse("package:" + context.getPackageName());
+//                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+//                    startActivity(intent);
+//                } else {
+//                    //跳转到相册
+//                    modifyGuestPhoto();
+//                }
+//        }
+//    }
 
     /**
      * 请求嘉宾信息的监听器
