@@ -24,6 +24,7 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.activity.AddGuestActivity;
 import com.example.dell.v_clock.activity.GuestInfoActivity;
+import com.example.dell.v_clock.activity.MainActivity;
 import com.example.dell.v_clock.activity.SearchActivity;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
 import com.example.dell.v_clock.util.ImageUtil;
@@ -60,9 +61,9 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private List<List<Map<String, Object>>> guestChildList;
 
     //我的嘉宾
-    final String MY_GEUST_SEATCH_TYPE = "0";
+    final String MY_GUEST_SEARCH_TYPE = "0";
     //全部嘉宾（gname="") 异步搜索
-    final String PARTITIAL_NAME_SEATCH_TYPE = "1";
+    final String PARTIAL_NAME_SEARCH_TYPE = "1";
 
     JSONObjectRequestMapParams myGuestRequest;
     JSONObjectRequestMapParams allGuestRequest;
@@ -106,9 +107,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, guestChildList);
         guestList.setAdapter(guestListAdapter);
         //加载ChildList数据
+
         //向服务器发送请求  请求我的嘉宾
         Map<String, String> my_searchInfo = new HashMap<>();
-        my_searchInfo.put("tip", MY_GEUST_SEATCH_TYPE);
+        my_searchInfo.put("tip", MY_GUEST_SEARCH_TYPE);
         SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
         String eid = sp.getString("eid", null);
         my_searchInfo.put("eid", eid);
@@ -117,13 +119,18 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         //  请求全部嘉宾
         Map<String, String> all_searchInfo = new HashMap<>();
         all_searchInfo.put("gname", "");
-        all_searchInfo.put("tip", PARTITIAL_NAME_SEATCH_TYPE);
+        all_searchInfo.put("tip", PARTIAL_NAME_SEARCH_TYPE);
         my_searchInfo.put("eid", eid);
         allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
                 new AllGuestListResponseListener(), new GuestListResponseErrorListener());
 
         //访问服务器请求队列
         requestQueue = Volley.newRequestQueue(getContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         refreshChildList();
     }
 
@@ -148,7 +155,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     /**
      * 搜索按钮点击事件的监听
      *
-     * @param view
+     * @param view 点击的控件
      */
     @Override
     public void onClick(View view) {
@@ -182,8 +189,18 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         //T判断点击的是哪一项
         String name = (String) guestChildList.get(groupPosition).get(childPosition).get("name");
         Intent guestInfoIntent = new Intent(getContext(), GuestInfoActivity.class);
-        guestInfoIntent.putExtra("guest_type",groupPosition);
-        guestInfoIntent.putExtra("gname",name);
+        int guest_type = groupPosition;
+        if (groupPosition == 1) {
+            //判断是不是我的嘉宾
+            for (int i = 0; i < guestChildList.get(0).size(); i++) {
+                if (guestChildList.get(0).get(i).get("name").equals(name)) {
+                    guest_type = 0;
+                    break;
+                }
+            }
+        }
+        guestInfoIntent.putExtra("guest_type", guest_type);
+        guestInfoIntent.putExtra("gname", name);
         startActivity(guestInfoIntent);
         return false;
     }
@@ -202,16 +219,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                 if (guestChildList.size() > 0) {
                     guestChildList.get(0).clear();
                 }
-                List<Map<String, Object>> tempList = new ArrayList<>();
-                for (int i = 0; i < jsonObjects.length(); i++) {
-                    Map<String, Object> tempMap = new HashMap();
-                    String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
-                    tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
-                    tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
-                    tempList.add(tempMap);
-                    //手机号暂时不用
-//                    String phone = response.getString("gtel");
-                }
+                List<Map<String, Object>> tempList = jsonToList(jsonObjects);
                 guestChildList.add(0, tempList);
                 handler.sendEmptyMessage(0);
             } catch (JSONException e) {
@@ -235,16 +243,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                 if (guestChildList.size() > 1) {
                     guestChildList.get(1).clear();
                 }
-                List<Map<String, Object>> tempList = new ArrayList<>();
-                for (int i = 0; i < jsonObjects.length(); i++) {
-                    Map<String, Object> tempMap = new HashMap();
-                    String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
-                    tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
-                    tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
-                    tempList.add(tempMap);
-                    //手机号暂时不用
-//                    String phone = response.getString("gtel");
-                }
+                List<Map<String, Object>> tempList = jsonToList(jsonObjects);
                 guestChildList.add(1, tempList);
                 handler.sendEmptyMessage(1);
             } catch (JSONException e) {
@@ -252,6 +251,31 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 将JSONArray里的数据提取出来
+     *
+     * @param jsonObjects JasonArray对象
+     * @return List对象
+     */
+    private List<Map<String, Object>> jsonToList(JSONArray jsonObjects) {
+        List<Map<String, Object>> tempList = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonObjects.length(); i++) {
+                Map<String, Object> tempMap = new HashMap();
+                String basePhoto = null;
+                basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
+                //手机号暂时不用
+//              String phone = response.getString("gtel");
+                tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
+                tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
+                tempList.add(tempMap);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return tempList;
     }
 
     /**
@@ -263,7 +287,8 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(getContext(), "服务器连接失败", Toast.LENGTH_SHORT).show();
-            refreshChildList();
+            //todo  隔一段时间再请求
+//            refreshChildList();
         }
     }
 

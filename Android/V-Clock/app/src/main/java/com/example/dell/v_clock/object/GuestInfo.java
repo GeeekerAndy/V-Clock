@@ -15,6 +15,8 @@ public class GuestInfo {
 //    private String guestBasePhoto = null;
     private Bitmap guestBitmapPhoto = null;
 
+    private boolean isMyGuest = false;
+
     public GuestInfo(String guestName) {
         this.guestName = guestName;
     }
@@ -45,6 +47,13 @@ public class GuestInfo {
         this.guestBitmapPhoto = guestBitmapPhoto;
     }
 
+    public boolean isMyGuest() {
+        return isMyGuest;
+    }
+
+    public void setMyGuest(boolean myGuest) {
+        isMyGuest = myGuest;
+    }
     public String getGuestName() {
         return guestName;
     }

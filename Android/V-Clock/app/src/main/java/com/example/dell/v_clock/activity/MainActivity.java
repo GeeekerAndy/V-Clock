@@ -78,5 +78,4 @@ public class MainActivity extends AppCompatActivity {
         Intent startServiceIntent = new Intent(this, GetMessageService.class);
         startService(startServiceIntent);
     }
-
 }

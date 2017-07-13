@@ -304,7 +304,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 //传输图片与用户手机号
                 if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
                     isWaited = true;
-                    Log.i("Transger","向服务器发送数据");
+                    Log.i("Transger", "向服务器发送数据");
                     transferPhoneImg(bmp_rotated);
                 }
             }
@@ -387,6 +387,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 map.put("etel", phoneNum);
                 Log.i("CameraActivity", "phoneTo = " + phoneNum);
                 String imgStr = ImageUtil.convertImage(bmp_rotated);
+                Log.i("CameraActivity", "length of img Str = " + imgStr.length());
                 map.put("ephoto", imgStr);
                 return map;
             }
@@ -404,7 +405,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 intOfResponse = Integer.parseInt(response);
             } catch (NumberFormatException e) {
                 //返回数据包含非数字信息
-                Log.i("Transfer","收到服务器回复 数据错误");
+                Log.i("Transfer", "收到服务器回复 数据错误");
                 Log.i("CameraActivity", "response 包含非数字信息");
                 e.printStackTrace();
             }
@@ -420,19 +421,19 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     case 2:
                         //数据错误
                         isMatch = false;
-                        Log.i("Transfer","收到服务器回复 数据错误");
+                        Log.i("Transfer", "收到服务器回复 数据错误");
                         break;
                     case 3:
                         //登录人脸不匹配
                         isMatch = false;
-                        Log.i("Transfer","收到服务器回复 人脸不匹配");
+                        Log.i("Transfer", "收到服务器回复 人脸不匹配");
                         break;
                 }
             } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
                 isMatch = true;
                 //TODO 有待测试  登录成功 setOneShotPreview() NullPointer
                 mFaceTask.cancel(true);
-                Log.i("Transfer","收到服务器回复 登录成功");
+                Log.i("Transfer", "收到服务器回复 登录成功");
                 //跳转到主界面 传入eid
                 //
                 //提示匹配成功信息
@@ -453,13 +454,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
     /**
      * 保存用户登录信息 下次启动程序以上一次登录时的账号进入程序
+     *
      * @param response
      */
     private void saveLoginInfo(String response) {
         SharedPreferences sp = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
-        Log.i("SaveLoginInfo",response);
+        Log.i("SaveLoginInfo", response);
         SharedPreferences.Editor editor = sp.edit();
-        editor.putString("eid",response);
+        editor.putString("eid", response);
         editor.apply();
     }
 
@@ -467,7 +469,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.i("Transfer","收到服务器回复");
+            Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             isWaited = false;
             Toast.makeText(CameraActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();

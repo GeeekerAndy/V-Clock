@@ -1,12 +1,20 @@
 package com.example.dell.v_clock.activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -76,6 +84,9 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     final int COMPANY_REQUEST_CODE = 1;
     final int PHONE_REQUEST_CODE = 2;
     final int PHOTO_REQUEST_CODE = 3;
+    final int CROP_REQUEST_CODE = 4;
+    //申请read权限
+    final int MY_PERMISSION_REQUEST_READ = 0;
 
     //修改性别选择框
     AlertDialog.Builder sexDialog;
@@ -153,6 +164,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 tv_phone.setText(guestInfo.getGuestPhone());
                 tv_company.setText(guestInfo.getGuestCompany());
                 tv_sex.setText(guestInfo.getGuestSex());
+                newSex = guestInfo.getGuestSex();
                 if (guestInfo.getGuestSex().equals("女")) {
                     sexIndex = 0;
                 } else {
@@ -173,7 +185,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     /**
      * 监听各种点击事件
      *
-     * @param view
+     * @param view  点击控件
      */
     @Override
     public void onClick(View view) {
@@ -194,8 +206,16 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 }
                 break;
             case R.id.iv_guest_info_photo:
-                //TODO 为嘉宾选择新的照片
-
+                //为嘉宾选择新的照片
+                //运行时权限
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_DENIED) {
+                    //读取sdCard权限未授予  申请权限
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
+                    return;
+                }
+                modifyGuestPhoto();
                 break;
             case R.id.relative_company:
                 //跳转到修改嘉宾单位信息
@@ -207,7 +227,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 startActivityForResult(companyIntent, COMPANY_REQUEST_CODE, null);
                 break;
             case R.id.relative_sex:
-                //修改嘉宾性别 TODO dialog？
+                //修改嘉宾性别
                 sexDialog = new AlertDialog.Builder(this);
                 sexDialog.setTitle("性别");
                 sexDialog.setSingleChoiceItems(new String[]{"女", "男"}, sexIndex, new SexDialogOnClickListener());
@@ -227,6 +247,16 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     }
 
     /**
+     * 修改嘉宾照片
+     */
+    private void modifyGuestPhoto() {
+        Intent intentFromGallery = new Intent();
+        intentFromGallery.setAction(Intent.ACTION_GET_CONTENT);
+        intentFromGallery.setType("image/*");
+        startActivityForResult(intentFromGallery, PHOTO_REQUEST_CODE);
+    }
+
+    /**
      * 性别选择框 点击监听器
      */
     private class SexDialogOnClickListener implements DialogInterface.OnClickListener {
@@ -237,12 +267,14 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             if (i == 0) {
                 //点击了“女”
                 if (tv_sex.getText().toString().equals("女")) {
+                    dialogInterface.cancel();
                     return;
                 }
                 newSex = "女";
             } else if (i == 1) {
                 //点击了“男”
                 if (tv_sex.getText().toString().equals("男")) {
+                    dialogInterface.cancel();
                     return;
                 }
                 newSex = "男";
@@ -343,9 +375,9 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     /**
      * 从修改界面返回后的处理 更新信息
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode   请求码
+     * @param resultCode    结果码
+     * @param data          返回数据
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -357,14 +389,69 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 case PHONE_REQUEST_CODE:
                     tv_phone.setText(data.getStringExtra("gtel"));
                     break;
-                case PHOTO_REQUEST_CODE:
-
+                case PHOTO_REQUEST_CODE://返回相册选择的图片
+                    //剪裁图片
+//                    startPhotoZoom(data.getData());
+                    ImageUtil.startPhotoZoom(data.getData(),this,CROP_REQUEST_CODE);
+                    break;
+                case CROP_REQUEST_CODE://返回剪裁后的图片
+                    //更改显示、上传图片
+                    transferPhoto();
                     break;
             }
             //修改成功 若该嘉宾非我的嘉宾 则添加到我的嘉宾
             if (guest_type == ALL_GUEST) {
                 addToGuest();
             }
+        }
+    }
+
+    /**
+     * 更改显示、上传图片
+     *
+     */
+    private void transferPhoto() {
+        Bitmap bmp_photo = ImageUtil.getCropImage(this);
+        if (bmp_photo == null) {
+            return;
+        }
+        Log.i("GuestInfoActivity", "更改图片");
+        iv_photo.setImageBitmap(bmp_photo);
+        //传输图片
+        String str_photo = ImageUtil.convertImage(bmp_photo);
+//        Log.i("GuestInfoActivity", "photo.length" + str_photo.length());
+        //发送修改信息
+        final Map<String, String> modifyMap = new HashMap<>();
+        modifyMap.put("tip", "regid;gphoto");
+        modifyMap.put("gname", guest_name);
+        modifyMap.put("gphoto", str_photo);
+        modifyMap.put("regid", eid);
+        StringRequest modifyRequest = new StringRequest(Request.Method.POST, ServerInfo.MODIFY_GUEST_INFO_URL,
+                new ModifyResponseListener(), new GuestInfoResponseErrorListener()) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                return modifyMap;
+            }
+        };
+        requestQueue.add(modifyRequest);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_READ:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    Toast.makeText(this, "权限不足，无法读取图片！", Toast.LENGTH_SHORT).show();
+                    //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
+                    Context context = this.getApplicationContext();
+                    Uri packageURI = Uri.parse("package:" + context.getPackageName());
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+                    startActivity(intent);
+                } else {
+                    //跳转到相册
+                    modifyGuestPhoto();
+                }
         }
     }
 
@@ -380,8 +467,8 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 if (tip.equals("2")) {
                     //数据错误
                     Toast.makeText(GuestInfoActivity.this, "数据错误", Toast.LENGTH_SHORT).show();
-                    refreshData();
-                    return;
+                    //TODO   隔一段时间再刷新
+//                    refreshData();
                 } else if (tip.equals("0")) {
                     //接收成功
                     Log.i("Search", "接收成功");
@@ -395,10 +482,10 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     //发送Message 更新UI
                     handler.sendEmptyMessage(0);
                 }
-
             } catch (JSONException e) {
 //                Toast.makeText(GuestInfoActivity.this, "该嘉宾未添加！", Toast.LENGTH_SHORT).show();
-                refreshData();
+                //TODO   隔一段时间再刷新
+//                refreshData();
                 e.printStackTrace();
             }
         }
@@ -413,7 +500,8 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(GuestInfoActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
-            refreshData();
+            //todo  隔一段时间再刷新
+//            refreshData();
         }
     }
 
