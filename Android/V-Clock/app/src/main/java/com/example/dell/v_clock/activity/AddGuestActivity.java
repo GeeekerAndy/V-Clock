@@ -176,16 +176,8 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         guestInfoMap.put("gsex", sex);
         guestInfoMap.put("regid", regid);
 
-        //传输信息  暂时注释掉 方便测试
+        //传输信息
         transferGuestInfo();
-
-        //测试
-//        Log.i("AddGuest", "name = " + name);
-//        Log.i("AddGuest", "phone = " + phone);
-//        Log.i("AddGuest", "company = " + company);
-//        Log.i("AddGuest", "sex = " + sex);
-//        Log.i("AddGuest", "regid = " + regid);
-//        Log.i("AddGuest", "photo " + guestInfoMap.get("gphoto"));
     }
 
     /**
@@ -364,32 +356,5 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
-
-//    /**
-//     * 剪裁图片
-//     */
-//    private void startPhotoZoom(Uri data) {
-//        Intent intentCrop = new Intent("com.android.camera.action.CROP");
-//        intentCrop.setDataAndType(data, "image/*");
-//        //设置剪裁
-//        intentCrop.putExtra("crop", "true");
-//        //aspectX aspectY  宽高比例
-//        intentCrop.putExtra("aspectX", 3);
-//        intentCrop.putExtra("aspectY", 4);
-//        //outputX outputY  剪裁图片宽高
-//        intentCrop.putExtra("outputX", 480);
-//        intentCrop.putExtra("outputY", 640);
-//        //MIUI 有问题
-////        intentCrop.putExtra("return-data", "true");
-//        //先保存
-//        tempFile = Uri.parse("file://" + "/"
-//                + Environment.getExternalStorageDirectory().getPath() + "/" + "temp.jpg");
-//
-//        Log.i("GuestInfoActiviyu", "tempFile: " + tempFile);
-//        intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, tempFile);
-//        intentCrop.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-//        startActivityForResult(intentCrop, CROP_REQUEST_CODE);
-//    }
-
 
 }

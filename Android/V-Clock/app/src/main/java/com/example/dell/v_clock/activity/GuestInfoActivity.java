@@ -7,13 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -44,7 +41,6 @@ import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,8 +77,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     int guest_type;
     final int MY_GUEST = 0;
     final int ALL_GUEST = 1;
-    //剪裁图片的存放路径
-    Uri tempFile;
 
     //请求类型
     final String WHOLE_NAME_SEARCH_TYPE = "2";
@@ -191,7 +185,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     /**
      * 监听各种点击事件
      *
-     * @param view
+     * @param view  点击控件
      */
     @Override
     public void onClick(View view) {
@@ -381,9 +375,9 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     /**
      * 从修改界面返回后的处理 更新信息
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode   请求码
+     * @param resultCode    结果码
+     * @param data          返回数据
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -423,7 +417,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         }
         Log.i("GuestInfoActivity", "更改图片");
         iv_photo.setImageBitmap(bmp_photo);
-        //todo 传输图片
+        //传输图片
         String str_photo = ImageUtil.convertImage(bmp_photo);
 //        Log.i("GuestInfoActivity", "photo.length" + str_photo.length());
         //发送修改信息
@@ -462,36 +456,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     }
 
     /**
-     * 调用系统具有剪裁功能应用 剪裁图片
-     *
-     * @param data 图片文件的路径
-     */
-//    private void startPhotoZoom(Uri data) {
-//        Log.i("GuestInfoActivity", "剪裁图片");
-//        Log.i("GuestInfoActivity", "Uri = " + data);
-//        Intent intentCrop = new Intent("com.android.camera.action.CROP");
-//        intentCrop.setDataAndType(data, "image/*");
-//        //设置剪裁
-//        intentCrop.putExtra("crop", "true");
-//        //aspectX aspectY  宽高比例
-//        intentCrop.putExtra("aspectX", 3);
-//        intentCrop.putExtra("aspectY", 4);
-//        //outputX outputY  剪裁图片宽高
-//        intentCrop.putExtra("outputX", 480);
-//        intentCrop.putExtra("outputY", 640);
-//        //MIUI 有问题
-////        intentCrop.putExtra("return-data", "true");
-//        //先保存
-//        tempFile = Uri.parse("file://" + "/"
-//                + Environment.getExternalStorageDirectory().getPath() + "/" + "temp.jpg");
-//
-//        Log.i("GuestInfoActiviyu", "tempFile: " + tempFile);
-//        intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, tempFile);
-//        intentCrop.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-//        startActivityForResult(intentCrop, CROP_REQUEST_CODE);
-//    }
-
-    /**
      * 请求嘉宾信息的监听器
      */
     private class GuestInfoResponseListener implements Response.Listener<JSONObject> {
@@ -503,8 +467,8 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 if (tip.equals("2")) {
                     //数据错误
                     Toast.makeText(GuestInfoActivity.this, "数据错误", Toast.LENGTH_SHORT).show();
-                    refreshData();
-                    return;
+                    //TODO   隔一段时间再刷新
+//                    refreshData();
                 } else if (tip.equals("0")) {
                     //接收成功
                     Log.i("Search", "接收成功");
@@ -518,7 +482,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     //发送Message 更新UI
                     handler.sendEmptyMessage(0);
                 }
-
             } catch (JSONException e) {
 //                Toast.makeText(GuestInfoActivity.this, "该嘉宾未添加！", Toast.LENGTH_SHORT).show();
                 //TODO   隔一段时间再刷新
