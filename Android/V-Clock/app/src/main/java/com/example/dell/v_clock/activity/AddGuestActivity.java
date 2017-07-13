@@ -58,11 +58,9 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     RadioButton rbt_man;
     Button bt_add;
     //READ权限请求码
-    final int MY_PERMISSION_REQUEST_READ = 0;
+//    final int MY_PERMISSION_REQUEST_READ = 0;
     //剪裁图片的请求码
     final int CROP_REQUEST_CODE = 2;
-    //剪裁图片的存放路径
-    Uri tempFile;
     //访问服务器请求队列
     RequestQueue requestQueue;
     //工作人员ID
@@ -121,14 +119,14 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             case R.id.img_bt_add_guest_photo:
             case R.id.iv_guest_photo:
                 //调用系统相册
-                //运行时权限
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_DENIED) {
-                    //读取sdCard权限未授予  申请权限
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
-                    return;
-                }
+                //运行时权限 todo
+//                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                        == PackageManager.PERMISSION_DENIED) {
+//                    //读取sdCard权限未授予  申请权限
+//                    ActivityCompat.requestPermissions(this,
+//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
+//                    return;
+//                }
                 pickImage();
                 break;
             case R.id.bt_add:

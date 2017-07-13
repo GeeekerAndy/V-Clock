@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //图片标题
     private ImageView iv_title;
     //权限申请RequestCode
-    private final int MY_PERMISSION_REQUEST_CAMERA = 1;
+    private final int MY_PERMISSION_REQUEST = 1;
     //用户的手机号
     String phoneNum = "";
 
@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         SharedPreferences sp = getSharedPreferences("loginInfo", MODE_PRIVATE);
         String eid = sp.getString("eid", null);
         if (eid != null) {
-            Log.i("ReadSharedPrefer",eid);
+            Log.i("ReadSharedPrefer", eid);
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -72,6 +72,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        //申请权限 Camera Read
+        grantPermission();
         //判断是不是从注册界面跳转过来 获取intent中的手机号信息
         try {
             Intent register_intent = this.getIntent();
@@ -115,6 +117,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tv_sign_up.setOnClickListener(this);
     }
 
+
+    /**
+     * 申请应用所需权限
+     */
+    private void grantPermission() {
+
+        String[] permissions = {Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            //权限未授予  申请权限
+            ActivityCompat.requestPermissions(this, permissions, MY_PERMISSION_REQUEST);
+        }
+    }
+
     /**
      * 实现OnClickListener接口的onClick监听方法
      *
@@ -155,24 +174,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         //TODO 向服务器查询输入手机号是否已注册
 
-        //动态添加权限
-        //Android 6.0 以上需要添加运行时权限 才可以使用Camera
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_DENIED) {
-            //Camera权限未授予  申请Camera权限
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
-        } else {
-            //Camera权限被授予
-            //跳转到人脸识别界面
-            Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
-            phoneNum = et_phone.getText().toString();
-            Log.i("LoginActivity", "phoneNum = " + phoneNumber);
-            intent.putExtra("etel", phoneNum);
-            startActivity(intent);
-//            LoginActivity.this.finish();
-        }
-
+        //跳转到人脸识别界面
+        Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
+        phoneNum = et_phone.getText().toString();
+        Log.i("LoginActivity", "phoneNum = " + phoneNumber);
+        intent.putExtra("etel", phoneNum);
+        startActivity(intent);
     }
 
     @Override
@@ -180,23 +187,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case MY_PERMISSION_REQUEST_CAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Camera权限被授予
-                    //跳转到人脸识别界面
-                    Intent intent = new Intent(LoginActivity.this, CameraActivity.class);
-                    phoneNum = et_phone.getText().toString();
-                    intent.putExtra("etel", phoneNum);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();
-                    //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
-                    Context context = this.getApplicationContext();
-                    Uri packageURI = Uri.parse("package:" + context.getPackageName());
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
-                    startActivity(intent);
+            case MY_PERMISSION_REQUEST:
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result == PackageManager.PERMISSION_DENIED) {
+                            Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();
+                            startPermissionSetting();
+                            break;
+                        }
+                    }
                 }
+                break;
         }
 
     }
+
+    /**
+     * 跳转到权限设置界面  //TODO 跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
+     */
+    private void startPermissionSetting() {
+        Context context = this.getApplicationContext();
+        Uri packageURI = Uri.parse("package:" + context.getPackageName());
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+        startActivity(intent);
+    }
+
 }

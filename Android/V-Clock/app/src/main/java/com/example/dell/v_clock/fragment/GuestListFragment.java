@@ -27,8 +27,10 @@ import com.example.dell.v_clock.activity.GuestInfoActivity;
 import com.example.dell.v_clock.activity.MainActivity;
 import com.example.dell.v_clock.activity.SearchActivity;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +47,8 @@ import static android.content.Context.MODE_PRIVATE;
  * This fragment shows the list of my guest and all guest.
  * 这个碎片展示我的嘉宾和所有嘉宾
  */
-public class GuestListFragment extends Fragment implements View.OnClickListener, ExpandableListView.OnChildClickListener {
+public class GuestListFragment extends Fragment implements View.OnClickListener,
+        ExpandableListView.OnChildClickListener {
 
     //嘉宾列表
     private ExpandableListView guestList;
@@ -60,14 +63,15 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     //内层列表的数据源
     private List<List<Map<String, Object>>> guestChildList;
 
-    //我的嘉宾
-    final String MY_GUEST_SEARCH_TYPE = "0";
-    //全部嘉宾（gname="") 异步搜索
-    final String PARTIAL_NAME_SEARCH_TYPE = "1";
+    //缓存对象
+    private ACache mACache;
+    //myGuestJson对象
+    private JSONArray myGuestJsonArray = null;
+    //allGuestJson对象
+    private JSONArray allGuestJsonArray = null;
 
-    JSONObjectRequestMapParams myGuestRequest;
-    JSONObjectRequestMapParams allGuestRequest;
-    RequestQueue requestQueue;
+    //是否可加载  请求服务器时 不可加载
+    private boolean isLoadable = false;
 
 
     @Override
@@ -106,51 +110,87 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         //设置适配器
         guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, guestChildList);
         guestList.setAdapter(guestListAdapter);
+
         //加载ChildList数据
-
-        //向服务器发送请求  请求我的嘉宾
-        Map<String, String> my_searchInfo = new HashMap<>();
-        my_searchInfo.put("tip", MY_GUEST_SEARCH_TYPE);
-        SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
-        String eid = sp.getString("eid", null);
-        my_searchInfo.put("eid", eid);
-        myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
-                new MyGuestListResponseListener(), new GuestListResponseErrorListener());
-        //  请求全部嘉宾
-        Map<String, String> all_searchInfo = new HashMap<>();
-        all_searchInfo.put("gname", "");
-        all_searchInfo.put("tip", PARTIAL_NAME_SEARCH_TYPE);
-        my_searchInfo.put("eid", eid);
-        allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
-                new AllGuestListResponseListener(), new GuestListResponseErrorListener());
-
-        //访问服务器请求队列
-        requestQueue = Volley.newRequestQueue(getContext());
+        //判断是否有缓存数据
+        mACache = ACache.get(getContext());
+        myGuestJsonArray = mACache.getAsJSONArray(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+        allGuestJsonArray = mACache.getAsJSONArray(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
+        if (myGuestJsonArray == null || allGuestJsonArray == null) {
+            isLoadable = false;
+            //请求服务器
+            GuestListUtil.requestGuestList(getContext());
+        } else {
+            isLoadable = true;
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (isLoadable) {
+            loadChildListData(myGuestJsonArray, 0);
+            loadChildListData(allGuestJsonArray, 1);
+        }
         refreshChildList();
     }
+
+    /**
+     * 加载ChildList信息
+     *
+     * @param guestJsonArray 嘉宾信息
+     * @param i              我的嘉宾：0； 全部嘉宾：1
+     */
+    private void loadChildListData(JSONArray guestJsonArray, int i) {
+        if (guestJsonArray != null) {
+            if (guestChildList.size() > i) {
+                guestChildList.get(i).clear();
+            }
+            List<Map<String, Object>> tempList = GuestListUtil.jsonToList(guestJsonArray);
+            guestChildList.add(i, tempList);
+        }
+    }
+
+    //TODO 下拉刷新  isLoadable = false
 
     /**
      * 刷新ChildList的数据
      */
     private void refreshChildList() {
-        //发出请求
-        requestQueue.add(myGuestRequest);
-        requestQueue.add(allGuestRequest);
+        //启动一个线程 检查数据是否更新完成
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        Thread.sleep(1000);
+                        myGuestJsonArray = GuestListUtil.getMyGuestJsonArray();
+                        allGuestJsonArray = GuestListUtil.getAllGuestJsonArray();
+                        if (myGuestJsonArray != null && !isLoadable) {
+                            //更新我的嘉宾列表
+                            loadChildListData(myGuestJsonArray, 0);
+                            //存储缓存
+                            mACache.put(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE,
+                                    myGuestJsonArray, GuestListUtil.SAVE_TIME);
+                        }
+                        if (allGuestJsonArray != null  && !isLoadable) {
+                            //更新全部嘉宾列表
+                            loadChildListData(allGuestJsonArray, 1);
+                            //存储缓存
+                            mACache.put(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE,
+                                    allGuestJsonArray, GuestListUtil.SAVE_TIME);
+                        }
+                        if (myGuestJsonArray != null && allGuestJsonArray != null) {
+                            //数据更新完成
+                            break;
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
-
-    //捕捉数据更新完成的信息
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            //数据改变 刷新UI
-            guestListAdapter.notifyDataSetChanged();
-        }
-    };
 
     /**
      * 搜索按钮点击事件的监听
@@ -204,92 +244,4 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         startActivity(guestInfoIntent);
         return false;
     }
-
-    /**
-     *
-     */
-    private class MyGuestListResponseListener implements Response.Listener<JSONObject> {
-        @Override
-        public void onResponse(JSONObject response) {
-            //判断返回是否有效
-            JSONArray jsonObjects;
-            try {
-                jsonObjects = response.getJSONArray("GuestList");
-                //更新data
-                if (guestChildList.size() > 0) {
-                    guestChildList.get(0).clear();
-                }
-                List<Map<String, Object>> tempList = jsonToList(jsonObjects);
-                guestChildList.add(0, tempList);
-                handler.sendEmptyMessage(0);
-            } catch (JSONException e) {
-                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     *
-     */
-    private class AllGuestListResponseListener implements Response.Listener<JSONObject> {
-        @Override
-        public void onResponse(JSONObject response) {
-            //判断返回是否有效
-            JSONArray jsonObjects;
-            try {
-                jsonObjects = response.getJSONArray("Guest");
-                //更新data
-                if (guestChildList.size() > 1) {
-                    guestChildList.get(1).clear();
-                }
-                List<Map<String, Object>> tempList = jsonToList(jsonObjects);
-                guestChildList.add(1, tempList);
-                handler.sendEmptyMessage(1);
-            } catch (JSONException e) {
-                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * 将JSONArray里的数据提取出来
-     *
-     * @param jsonObjects JasonArray对象
-     * @return List对象
-     */
-    private List<Map<String, Object>> jsonToList(JSONArray jsonObjects) {
-        List<Map<String, Object>> tempList = new ArrayList<>();
-        try {
-            for (int i = 0; i < jsonObjects.length(); i++) {
-                Map<String, Object> tempMap = new HashMap();
-                String basePhoto = null;
-                basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
-                //手机号暂时不用
-//              String phone = response.getString("gtel");
-                tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
-                tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
-                tempList.add(tempMap);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return tempList;
-    }
-
-    /**
-     *
-     */
-    private class GuestListResponseErrorListener implements Response.ErrorListener {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.i("Transfer", "收到服务器回复");
-            //提示网络连接失败
-            Toast.makeText(getContext(), "服务器连接失败", Toast.LENGTH_SHORT).show();
-            //todo  隔一段时间再请求
-//            refreshChildList();
-        }
-    }
-
 }
