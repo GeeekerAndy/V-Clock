@@ -1,19 +1,11 @@
 package com.example.dell.v_clock.activity;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -34,10 +26,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +58,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     //工作人员ID
     String regid;
     String name;
+    Bitmap bmp_photo;
 
     Map<String, String> guestInfoMap = new HashMap<>();
 
@@ -80,7 +73,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
 
     private void initComponents() {
         //的尺寸适配问题  图片的压缩
-
         ibt_back = (ImageButton) findViewById(R.id.img_bt_info_back);
         ibt_plus = (ImageButton) findViewById(R.id.img_bt_add_guest_photo);
         iv_photo = (ImageView) findViewById(R.id.iv_guest_photo);
@@ -216,6 +208,9 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                 case 0:
                     //添加成功
                     Toast.makeText(AddGuestActivity.this, "添加成功", Toast.LENGTH_LONG).show();
+                    //更改GuestUtil静态信息  更改本地缓存
+                    GuestInfo guestInfo = new GuestInfo(name,bmp_photo);
+                    GuestListUtil.addGuest(guestInfo);
                     //清空输入信息
                     cleanGuestInfo();
                     break;
@@ -238,18 +233,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 等一段时间 后清空输入框信息
      */
     private void cleanGuestInfo() {
-        //添加至“我的嘉宾”
-        StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
-                new AddMyGuestResponseListener(), new AddGuestResponseErrorListener()) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> myGuestInfoMap = new HashMap<>();
-                myGuestInfoMap.put("gname", name);
-                myGuestInfoMap.put("eid", regid);
-                return myGuestInfoMap;
-            }
-        };
-        requestQueue.add(addRequest);
         //等待
         new Thread(new Runnable() {
             @Override
@@ -258,41 +241,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                 handler.sendEmptyMessage(0);
             }
         }).start();
-    }
-
-    /**
-     *
-     */
-    private class AddMyGuestResponseListener implements Response.Listener<String> {
-
-        @Override
-        public void onResponse(String response) {
-            Log.i("Transfer", "收到服务器回复");
-            int intOfResponse = -1;
-            try {
-                intOfResponse = Integer.parseInt(response);
-            } catch (NumberFormatException e) {
-                //返回数据包含非数字信息
-                Log.i("GuestInfoTransfer", "收到服务器回复 数据错误");
-                Log.i("AddGuest", "response 包含非数字信息");
-                e.printStackTrace();
-            }
-            switch (intOfResponse) {
-                case 0:
-                    //添加成功
-                    Toast.makeText(AddGuestActivity.this, "已添加至我的嘉宾", Toast.LENGTH_LONG).show();
-                    break;
-                case 1:
-                    //此嘉宾已存在
-                    Toast.makeText(AddGuestActivity.this, "此嘉宾已在我的嘉宾中！", Toast.LENGTH_SHORT).show();
-                    break;
-                case 2:
-                    //数据错误
-                    Toast.makeText(AddGuestActivity.this, "数据传输错误，没有添加至我的嘉宾中！", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-
-        }
     }
 
     /**
@@ -331,6 +279,12 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         startActivityForResult(pickImageIntent, PICK_PHOTO_FOR_AVATAR);
     }
 
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -341,7 +295,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                     ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
                     break;
                 case CROP_REQUEST_CODE://返回剪裁后的图片
-                    Bitmap bmp_photo = ImageUtil.getCropImage(this);
+                    bmp_photo = ImageUtil.getCropImage(this);
                     if (bmp_photo == null) {
                         return;
                     }
