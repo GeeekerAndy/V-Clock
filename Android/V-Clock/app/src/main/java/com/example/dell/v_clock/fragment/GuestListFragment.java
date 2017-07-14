@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +40,7 @@ import static android.content.Context.MODE_PRIVATE;
  * 这个碎片展示我的嘉宾和所有嘉宾
  */
 public class GuestListFragment extends Fragment implements View.OnClickListener,
-        ExpandableListView.OnChildClickListener {
+        ExpandableListView.OnChildClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     //嘉宾列表
     private ExpandableListView guestList;
@@ -70,9 +71,9 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
 
     private final int MY_GUEST_IDENTITOR = 0;
     private final int ALL_GUEST_IDENTITOR = 1;
-    private final int FINISH_GET_MY_CACHE = 2;
-    private final int FINISH_GET_All_CACHE = 3;
     private final int FRESH_UI = 4;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     String TAG = "StartGuestList";
 
@@ -88,11 +89,14 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         guestList = view.findViewById(R.id.explv_my_guest_list);
         ibt_addGuest = view.findViewById(R.id.img_bt_add);
         bt_search = view.findViewById(R.id.bt_search);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_guest_list);
 
         ibt_addGuest.setOnClickListener(this);
         bt_search.setOnClickListener(this);
 
         guestList.setOnChildClickListener(this);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         //初始化嘉宾列表
         initGuestList();
@@ -198,6 +202,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                 case FRESH_UI:
                     //数据更新 刷新UI
                     guestListAdapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
             }
         }
     };
@@ -225,7 +230,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             }
         }).start();
 
-        //todo 启动线程  检测是否需要写缓存
+        //启动线程  检测是否需要写缓存
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -280,7 +285,12 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    //TODO 下拉刷新
+    //下拉刷新 重新请求数据库
+    @Override
+    public void onRefresh() {
+        GuestListUtil.requestMyGuestList(getContext(), requestQueue, eid);
+        GuestListUtil.requestAllGuestList(getContext(), requestQueue, eid);
+    }
 
     /**
      * 刷新ChildList的数据
@@ -376,4 +386,5 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         startActivity(guestInfoIntent);
         return false;
     }
+
 }
