@@ -208,8 +208,8 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         };
         requestQueue.add(addRequest);
         //更新内存
-        GuestInfo guestInfo =new GuestInfo(guest_name);
-        GuestListUtil.deleteFromMyGuest(guestInfo);
+        GuestInfo guestInfo = new GuestInfo(guest_name);
+        GuestListUtil.deleteFromMyGuest(guestInfo, context);
     }
 
     /**
@@ -232,8 +232,8 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         };
         requestQueue.add(addRequest);
         //更新内存
-        GuestInfo guestInfo =new GuestInfo(guest_name,guest_photo);
-        GuestListUtil.addToMyGuest(guestInfo);
+        GuestInfo guestInfo = new GuestInfo(guest_name, guest_photo);
+        GuestListUtil.addToMyGuest(guestInfo, context);
     }
 
     /**

@@ -210,7 +210,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(AddGuestActivity.this, "添加成功", Toast.LENGTH_LONG).show();
                     //更改GuestUtil静态信息  更改本地缓存
                     GuestInfo guestInfo = new GuestInfo(name,bmp_photo);
-                    GuestListUtil.addGuest(guestInfo);
+                    GuestListUtil.addGuest(guestInfo,AddGuestActivity.this);
                     //清空输入信息
                     cleanGuestInfo();
                     break;

@@ -17,7 +17,7 @@ public class GuestInfo {
     //    private String guestBasePhoto = null;
     private Bitmap guestBitmapPhoto = null;
 
-    private int guest_type = GuestListUtil.ALL_SAVE_TIME;
+    private int guest_type = 1;
 
 
     public GuestInfo(String guestName) {

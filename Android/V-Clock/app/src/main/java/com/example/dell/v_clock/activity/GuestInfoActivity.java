@@ -332,7 +332,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                         //修改内存信息
                         GuestInfo guestInfo = new GuestInfo(guest_name, guest_photo);
                         guestInfo.setGuest_type(guest_type);
-                        GuestListUtil.modifyPhoto(guestInfo);
+                        GuestListUtil.modifyPhoto(guestInfo, GuestInfoActivity.this);
                         isPhotoChanged = false;
                     }
                     break;
@@ -522,14 +522,14 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                         guest_type = ALL_GUEST;
                         tv_add.setText("添加");
                         //更改内存中的GuestList
-                        GuestListUtil.deleteFromMyGuest(guestInfo);
+                        GuestListUtil.deleteFromMyGuest(guestInfo, GuestInfoActivity.this);
                     } else if (guest_type == ALL_GUEST) {
                         //添加成功
                         Toast.makeText(GuestInfoActivity.this, "已添加至我的嘉宾", Toast.LENGTH_LONG).show();
                         guest_type = MY_GUEST;
                         tv_add.setText("移除");
                         //更改内存中的GuestList
-                        GuestListUtil.addToMyGuest(guestInfo);
+                        GuestListUtil.addToMyGuest(guestInfo, GuestInfoActivity.this);
                     }
                     //todo 本地缓存
 

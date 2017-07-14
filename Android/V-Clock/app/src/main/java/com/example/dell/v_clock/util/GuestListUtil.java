@@ -1,10 +1,7 @@
 package com.example.dell.v_clock.util;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -13,8 +10,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.ServerInfo;
-import com.example.dell.v_clock.activity.MainActivity;
 import com.example.dell.v_clock.object.GuestInfo;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,50 +61,41 @@ public class GuestListUtil {
     private static boolean isMyFreshed = false;
     private static boolean isAllFreshed = false;
 
-    //我的嘉宾 请求对象
-    private static JSONObjectRequestMapParams myGuestRequest;
-    //全部嘉宾 请求对象
-    private static JSONObjectRequestMapParams allGuestRequest;
-    //请求队列
-    private static RequestQueue requestQueue;
-
-    String TAG = "GuestListUtil";
+    private static String TAG = "GuestListUtil";
 
     static {
         guestChildList.add(new ArrayList<Map<String, Object>>());
         guestChildList.add(new ArrayList<Map<String, Object>>());
+        myGuestJsonArray = new JSONArray();
+        allGuestJsonArray = new JSONArray();
     }
 
-    public static void requestMyGuestList(Context context) {
+    public static void requestMyGuestList(Context context, RequestQueue requestQueue, String eid) {
         isMyFreshed = false;
         //向服务器发送请求  请求我的嘉宾
         Map<String, String> my_searchInfo = new HashMap<>();
         my_searchInfo.put("tip", MY_GUEST_SEARCH_TYPE);
-        SharedPreferences sp = context.getSharedPreferences("loginInfo", MODE_PRIVATE);
-        String eid = sp.getString("eid", null);
         my_searchInfo.put("eid", eid);
-        myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
+        JSONObjectRequestMapParams myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
                 new MyGuestListResponseListener(), new GuestListResponseErrorListener());
-        requestQueue = Volley.newRequestQueue(context);
         //发出请求
+        Log.i(TAG, "向服务器发出 我的嘉宾 请求");
         requestQueue.add(myGuestRequest);
     }
 
-    public static void requestAllGuestList(Context context) {
+    public static void requestAllGuestList(Context context, RequestQueue requestQueue, String eid) {
         isAllFreshed = false;
         //  请求全部嘉宾
         Map<String, String> all_searchInfo = new HashMap<>();
-        all_searchInfo.put("gname", "");
+        //TODO
+        all_searchInfo.put("gname", " ");
         all_searchInfo.put("tip", PARTIAL_NAME_SEARCH_TYPE);
-        SharedPreferences sp = context.getSharedPreferences("loginInfo", MODE_PRIVATE);
-        String eid = sp.getString("eid", null);
         all_searchInfo.put("eid", eid);
-        allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
+        JSONObjectRequestMapParams allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
                 new AllGuestListResponseListener(), new GuestListResponseErrorListener());
-        //访问服务器请求队列
-        requestQueue = Volley.newRequestQueue(context);
         //发出请求
-        requestQueue.add(allGuestRequest);
+        Log.i(TAG, "向服务器发出 全部嘉宾 请求");
+//        requestQueue.add(allGuestRequest);
     }
 
     /**
@@ -115,14 +103,17 @@ public class GuestListUtil {
      *
      * @param guest 嘉宾信息
      */
-    public static void addGuest(GuestInfo guest) {
+    public static void addGuest(GuestInfo guest, Context context) {
+        //更新内存数据
         Map<String, Object> temp = new HashMap<>();
         temp.put("name", guest.getGuestName());
         temp.put("avatar", guest.getGuestBitmapPhoto());
         guestChildList.get(ALL_GUEST_IDENTITOR).add(temp);
         isAllFreshed = true;
 
-        //todo  更新本地缓存
+        //移除本地缓存
+        removeCache(MY_GUEST_IDENTITOR, context);
+        removeCache(ALL_GUEST_IDENTITOR, context);
     }
 
     /**
@@ -130,14 +121,28 @@ public class GuestListUtil {
      *
      * @param guest 嘉宾信息
      */
-    public static void addToMyGuest(GuestInfo guest) {
+    public static void addToMyGuest(GuestInfo guest, Context context) {
+        //更新内存数据
         Map<String, Object> temp = new HashMap<>();
         temp.put("name", guest.getGuestName());
         temp.put("avatar", guest.getGuestBitmapPhoto());
         guestChildList.get(MY_GUEST_IDENTITOR).add(temp);
         isMyFreshed = true;
 
-        //todo 更新本地缓存
+        //移除本地缓存
+        removeCache(MY_GUEST_IDENTITOR, context);
+    }
+
+    /**
+     * @param context
+     */
+    private static void removeCache(int identitor, Context context) {
+        ACache mACache = ACache.get(context);
+        if (identitor == MY_GUEST_IDENTITOR) {
+            mACache.remove(MY_GUEST_JSON_ARRAY_CACHE);
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
+            mACache.remove(ALL_GUEST_JSON_ARRAY_CACHE);
+        }
     }
 
     /**
@@ -145,7 +150,8 @@ public class GuestListUtil {
      *
      * @param guest 嘉宾信息
      */
-    public static void deleteFromMyGuest(GuestInfo guest) {
+    public static void deleteFromMyGuest(GuestInfo guest, Context context) {
+        //更新内存数据
         int index = 0;
         for (Map<String, Object> temp : guestChildList.get(MY_GUEST_IDENTITOR)) {
             if (temp.get("name").equals(guest.getGuestName())) {
@@ -156,21 +162,15 @@ public class GuestListUtil {
         }
         isMyFreshed = true;
 
-        //todo 更新本地缓存
+        removeCache(MY_GUEST_IDENTITOR, context);
     }
-
-
-
-
-
-
 
     /**
      * 修改照片
      *
-     * @param guest
+     * @param guest 嘉宾信息
      */
-    public static void modifyPhoto(GuestInfo guest) {
+    public static void modifyPhoto(GuestInfo guest, Context context) {
         for (Map<String, Object> temp : guestChildList.get(guest.getGuest_type())) {
             if (temp.get("name").equals(guest.getGuestName())) {
                 temp.put("avatar", guest.getGuestBitmapPhoto());
@@ -184,8 +184,14 @@ public class GuestListUtil {
                     break;
                 }
             }
+            removeCache(MY_GUEST_IDENTITOR, context);
+            removeCache(ALL_GUEST_IDENTITOR, context);
+        } else {
+            removeCache(ALL_GUEST_IDENTITOR, context);
         }
         isMyFreshed = true;
+
+        removeCache(guest.getGuest_type(), context);
     }
 
 
@@ -196,6 +202,9 @@ public class GuestListUtil {
      * @param toList     目的List
      */
     public static void setValueToList(List<Map<String, Object>> sourceList, List<Map<String, Object>> toList) {
+        if (toList.size() > 0) {
+            toList.clear();
+        }
         for (Map<String, Object> temp : sourceList) {
             toList.add(temp);
         }
@@ -212,7 +221,8 @@ public class GuestListUtil {
             JSONArray jsonObjects;
             try {
                 jsonObjects = response.getJSONArray("GuestList");
-                myGuestJsonArray = jsonObjects;
+                Log.i(TAG, "收到服务器 我的嘉宾 回复 JsonArray.length = " + jsonObjects.length());
+                setValueToJason(jsonObjects, myGuestJsonArray);
                 loadChildListData(myGuestJsonArray, MY_GUEST_IDENTITOR);
             } catch (JSONException e) {
                 //todo
@@ -232,11 +242,29 @@ public class GuestListUtil {
             JSONArray jsonObjects;
             try {
                 jsonObjects = response.getJSONArray("Guest");
-                allGuestJsonArray = jsonObjects;
+                Log.i(TAG, "收到服务器 全部嘉宾 回复 JsonArray.length = " + jsonObjects.length());
+                setValueToJason(jsonObjects, allGuestJsonArray);
                 loadChildListData(allGuestJsonArray, ALL_GUEST_IDENTITOR);
             } catch (JSONException e) {
+                Log.i(TAG, "收到服务器 全部嘉宾 数据错误回复");
                 //todo
 //                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Jason的数据传递
+     *
+     * @param sourceJson 源Json
+     * @param toJson     目的Json
+     */
+    private static void setValueToJason(JSONArray sourceJson, JSONArray toJson) {
+        for (int i = 0; i < sourceJson.length(); i++) {
+            try {
+                toJson.put(i, sourceJson.getJSONObject(i));
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -257,9 +285,11 @@ public class GuestListUtil {
             List<Map<String, Object>> tempList = jsonToList(guestJsonArray);
             guestChildList.add(i, tempList);
             if (i == MY_GUEST_IDENTITOR) {
+                Log.i(TAG, "我的嘉宾 数据转换完成 guestChildList.get(0).size() = " + guestChildList.get(i).size());
                 isMyFreshed = true;
             } else if (i == ALL_GUEST_IDENTITOR) {
-                isAllFreshed = false;
+                Log.i(TAG, "全部嘉宾 数据转换完成 guestChildList.get(1).size() = " + guestChildList.get(i).size());
+                isAllFreshed = true;
             }
         }
     }
@@ -276,8 +306,7 @@ public class GuestListUtil {
         try {
             for (int i = 0; i < jsonObjects.length(); i++) {
                 Map<String, Object> tempMap = new HashMap();
-                String basePhoto = null;
-                basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
+                String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
                 //手机号暂时不用
 //              String phone = response.getString("gtel");
                 tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
