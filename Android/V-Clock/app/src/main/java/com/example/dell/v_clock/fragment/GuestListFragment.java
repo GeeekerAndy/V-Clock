@@ -386,5 +386,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         startActivity(guestInfoIntent);
         return false;
     }
-
 }
+
+

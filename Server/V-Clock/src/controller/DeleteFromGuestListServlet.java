@@ -2,6 +2,9 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -9,17 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONObject;
 
 import util.Employee;
+import util.GuestList;
 
-public class DisplayEmployeeInfoServlet extends HttpServlet {
+public class DeleteFromGuestListServlet extends HttpServlet {
+
 
 	/**
 	 * Constructor of the object.
 	 */
-	public DisplayEmployeeInfoServlet() {
+	public DeleteFromGuestListServlet() {
 		super();
+		//c = conn.con();
 	}
 
 	/**
@@ -29,6 +34,7 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 		super.destroy(); // Just puts "destroy" string in log
 		// Put your code here
 	}
+
 
 	/**
 	 * The doGet method of the servlet. <br>
@@ -45,43 +51,42 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
-
 	/**
 	 * The doPost method of the servlet. <br>
-	 *
-	 * This method is called when a form has its tag value method equals to post.
 	 * 
-	 * @param request the request send by the client to the server
-	 * @param response the response send by the server to the client
-	 * @throws ServletException if an error occurred
-	 * @throws IOException if an error occurred
+	 * This method is called when a form has its tag value method equals to
+	 * post.
+	 * 
+	 * @param request
+	 *            the request send by the client to the server
+	 * @param response
+	 *            the response send by the server to the client
+	 * @throws ServletException
+	 *             if an error occurred
+	 * @throws IOException
+	 *             if an error occurred
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		String userAgent=request.getHeader("user-agent");
-		//int androidBool=userAgent.indexOf("Android");
-		//boolean appBool=userAgent.matches(".*V-Clock.*");
-		response.setCharacterEncoding("UTF-8");
 		HttpSession session=request.getSession();
-//		String sessionId=session.getId();
 		Employee emp=new Employee();
-//		if(session.isNew()){
-//			System.out.println("新建一个sessionid");
-//		}else{
 //		String userTel=(String) session.getAttribute("etel");
 //		String userPhoto=(String) session.getAttribute("ephoto");
-//		if((userTel!=null&&userPhoto!=null)||appBool){
-//			try {6F795C5C7072B8A6CEEFF361ABCB72F6
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
 //				String loginBool=emp.checkuser(userTel, userPhoto);
-//				if(loginBool.equals("0")||appBool){
+//				if(loginBool.equals("0")){
+					String gname=request.getParameter("gname");
 					String eid=request.getParameter("eid");
 //					String eid=(String) session.getAttribute("eid");
-					System.out.println("输入eid:"+eid);
-					JSONObject json=emp.displayEmployeeInfo(eid);
+					System.out.println("(gname+eid):"+gname+"+"+eid);
+					GuestList guestList=new GuestList();
+					String tip=guestList.deleteFromGuestList(gname, eid);
+					response.setCharacterEncoding("UTF-8");
 					PrintWriter out = response.getWriter();
-					out.append(json.toString());
-					//System.out.println(json.toString());
+					out.write(tip);
 					out.flush();
 					out.close();
 //				}
@@ -94,13 +99,14 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 //		}
 //		else
 //			System.out.println("No Legitimate(1)");
-//		}
+
 	}
 
 	/**
 	 * Initialization of the servlet. <br>
-	 *
-	 * @throws ServletException if an error occurs
+	 * 
+	 * @throws ServletException
+	 *             if an error occurs
 	 */
 	public void init() throws ServletException {
 		// Put your code here

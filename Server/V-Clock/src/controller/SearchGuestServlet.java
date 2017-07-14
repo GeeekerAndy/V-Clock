@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -42,6 +43,7 @@ public class SearchGuestServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		doPost(request,response);
 	}
 
@@ -58,43 +60,64 @@ public class SearchGuestServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		String tip=request.getParameter("tip");
-		Guest guest=new Guest();
-		GuestList guestList=new GuestList();
-		response.setCharacterEncoding("UTF-8");
-		PrintWriter out = response.getWriter();
-		if(tip.equals("0")){//某工作人员对应的邀请名单中的嘉宾列表
-			String eid=request.getParameter("eid");
-			JSONArray searchGuestList=guestList.searchGuestList(eid);
-			if(searchGuestList==null)
-				out.write("2");
-			else if(searchGuestList.size()==0)
-				out.write("1");
-			else
-				out.append(searchGuestList.toString());
-		}
-		else if(tip.equals("1")){//某搜索对应的嘉宾列表
-			String gname=request.getParameter("gname");
-			JSONArray searchGuestArray=guest.searchGuest(gname);
-			if(searchGuestArray==null){
-				out.append("2");
-			}
-			else if(searchGuestArray.size()==0)
-				out.append("1");
-			else
-				out.append(searchGuestArray.toString());
-		}
-		else{//某搜索对应对应的嘉宾
-			String gname=request.getParameter("gname");
-			JSONObject searchGuest=guest.searchOneGuest(gname);
-			if(searchGuest!=null){
-				out.append(searchGuest.toString());
-			}
-			else
-				out.append("2");
-		}
-		out.flush();
-		out.close();
+		HttpSession session=request.getSession();
+//		Employee emp=new Employee();
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
+//				String loginBool=emp.checkuser(userTel, userPhoto);
+//				if(loginBool.equals("0")){
+					String tip=request.getParameter("tip");
+					System.out.println("tip(SearchGuestServlet):"+tip);
+					Guest guest=new Guest();
+					GuestList guestList=new GuestList();
+					response.setCharacterEncoding("UTF-8");
+					PrintWriter out = response.getWriter();
+					if(tip.equals("0")){//某工作人员对应的邀请名单中的嘉宾列表
+						String eid=request.getParameter("eid");
+//						String eid=(String) session.getAttribute("eid");
+						JSONArray temp=guestList.searchGuestList(eid);
+						JSONObject searchGuestList=new JSONObject();
+						if(temp==null)
+							searchGuestList.put("tip", "2");
+						else{
+							searchGuestList.put("tip", "0");
+							searchGuestList.put("GuestList", temp);
+						}
+						out.append(searchGuestList.toString());
+						//System.out.println("searchGuestList:"+searchGuestList.toString());
+					}
+					else if(tip.equals("1")){//某搜索对应的嘉宾列表
+						String gname=request.getParameter("gname");
+						JSONArray temp=guest.searchGuest(gname);
+						JSONObject searchGuest=new JSONObject();
+						if(temp==null)
+							searchGuest.put("tip", "2");
+						else{
+							searchGuest.put("tip", "0");
+							searchGuest.put("Guest", temp);
+						}
+						out.append(searchGuest.toString());
+						//System.out.println("searchGuest:"+searchGuest.toString());
+					}
+					else{//某搜索对应对应的嘉宾
+						String gname=request.getParameter("gname");
+						JSONObject searchOneGuest=guest.searchOneGuest(gname);
+						out.append(searchOneGuest.toString());
+					}
+					out.flush();
+					out.close();
+//				}
+//				else
+//					System.out.println("No Legitimate(2)");
+//			} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			}
+//		}
+//		else
+//			System.out.println("No Legitimate(1)");
 	}
 
 	/**

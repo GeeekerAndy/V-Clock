@@ -1,6 +1,9 @@
 package com.example.dell.v_clock.fragment;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,10 +11,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Layout;
 import android.util.Log;
@@ -37,6 +44,8 @@ import java.util.List;
  */
 public class MessageListFragment extends Fragment {
 
+    final String TAG = "MessageList";
+
     MessageDBHelper dbHelper;
     MessageListAdapter messageListAdapter;
     ContentValues messageValues;
@@ -44,6 +53,7 @@ public class MessageListFragment extends Fragment {
     View layoutView;
     List<GuestMessage> guestMessageList;
     SwipeRefreshLayout refreshLayout;
+    MessageBroadCastReceiver broadCastReceiver;
 
     public MessageListFragment() {
         // Required empty public constructor
@@ -60,7 +70,7 @@ public class MessageListFragment extends Fragment {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("MESSAGE_ARRIVE_BROADCAST");
-        MessageBroadCastReceiver broadCastReceiver = new MessageBroadCastReceiver();
+        broadCastReceiver = new MessageBroadCastReceiver();
         getContext().registerReceiver(broadCastReceiver, intentFilter);
 
         refreshLayout = layoutView.findViewById(R.id.srl_refresh_layout);
@@ -139,13 +149,14 @@ public class MessageListFragment extends Fragment {
         guestMessageView.setOnTouchListener(touchListener);
         guestMessageView.setAdapter(messageListAdapter);
         refreshLayout.setRefreshing(false);
-        Log.d("TAG", "onStart");
+        Log.d(TAG, "onStart");
         super.onStart();
     }
 
     @Override
     public void onDestroy() {
         dbHelper.close();
+        getContext().unregisterReceiver(broadCastReceiver);
         super.onDestroy();
     }
 
@@ -154,13 +165,13 @@ public class MessageListFragment extends Fragment {
         protected Void doInBackground(String... visitInfo) {
             db = dbHelper.getWritableDatabase();
             if (visitInfo.length < 1) {
-                Log.d("TAG", "数据库删除失败！嘉宾信息不完整");
+                Log.d(TAG, "数据库删除失败！嘉宾信息不完整");
             } else {
                 String selection = VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=? and " +
                         VClockContract.MessageInfo.COLUMN_NAME_DATE + "=?";
                 String[] selectionArgs = {visitInfo[0], visitInfo[1]};
                 db.delete(VClockContract.MessageInfo.TABLE_NAME, selection, selectionArgs);
-                Log.d("TAG", "删除一条消息, 嘉宾姓名：" + visitInfo[0] + "，到访时间：" + visitInfo[1]);
+                Log.d(TAG, "删除一条消息, 嘉宾姓名：" + visitInfo[0] + "，到访时间：" + visitInfo[1]);
             }
             return null;
         }
@@ -198,7 +209,21 @@ public class MessageListFragment extends Fragment {
     public class MessageBroadCastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            messageListAdapter.notifyDataSetChanged();
+            String gname = intent.getStringExtra("gname");
+            Intent checkMessageIntent = new Intent(context, MainActivity.class);
+            checkMessageIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, checkMessageIntent, 0);
+            NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new NotificationCompat.Builder(getContext())
+                    .setContentTitle("一位嘉宾到访")
+                    .setContentText("嘉宾" + gname + "到达")
+                    .setAutoCancel(true)
+                    .setSmallIcon(R.drawable.ic_person_pin_circle_white_36dp)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.login_logo))
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setContentIntent(pendingIntent)
+                    .build();
+            manager.notify(1, notification);
         }
     }
 }

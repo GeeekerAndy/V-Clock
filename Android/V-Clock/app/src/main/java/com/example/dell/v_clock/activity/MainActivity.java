@@ -7,8 +7,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.RadioButton;
 
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.fragment.GuestListFragment;
@@ -23,6 +21,8 @@ import com.example.dell.v_clock.service.GetMessageService;
  */
 
 public class MainActivity extends AppCompatActivity {
+
+    final String TAG = "MainActivity";
 
     final MessageListFragment messageListFragment = new MessageListFragment();
     final GuestListFragment guestListFragment = new GuestListFragment();
@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         }
-
     };
 
 

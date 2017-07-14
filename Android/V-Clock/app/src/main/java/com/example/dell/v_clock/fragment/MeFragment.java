@@ -6,15 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +33,7 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.VClockContract;
 import com.example.dell.v_clock.activity.LoginActivity;
-import com.example.dell.v_clock.activity.UpdateEmployeePwdActivity;
+import com.example.dell.v_clock.activity.UpdatePwdActivity;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
@@ -57,7 +55,14 @@ public class MeFragment extends Fragment {
 
     boolean isOnEdit = false;
     String eid;
-
+    RequestQueue requestQueue;
+    HashMap<String, String> emploeeInfo;
+    SharedPreferences sp;
+    ImageView employeeAvatar;
+    EditText employeeName;
+    EditText employeeGender;
+    TextView employeeID;
+    EditText employeeTel;
 
     public MeFragment() {
         // Required empty public constructor
@@ -69,16 +74,17 @@ public class MeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_me, container, false);
-        final HashMap<String, String> emploeeInfo = new HashMap<>();
-        final RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        final SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
-        final ImageView employeeAvatar = view.findViewById(R.id.iv_employee_avatar);
-        final EditText employeeName = view.findViewById(R.id.tv_employee_name);
-        final EditText employeeGender = view.findViewById(R.id.tv_employee_gender);
-        final TextView employeeID = view.findViewById(R.id.tv_employee_id);
-        final EditText employeeTel = view.findViewById(R.id.tv_employee_tel);
+        emploeeInfo = new HashMap<>();
+        sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
+        employeeAvatar = view.findViewById(R.id.iv_employee_avatar);
+        employeeName = view.findViewById(R.id.tv_employee_name);
+        employeeGender = view.findViewById(R.id.tv_employee_gender);
+        employeeID = view.findViewById(R.id.tv_employee_id);
+        employeeTel = view.findViewById(R.id.tv_employee_tel);
         eid = sp.getString("eid", null);
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
+        requestQueue = Volley.newRequestQueue(getContext());
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
         signOut.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +110,7 @@ public class MeFragment extends Fragment {
         changePwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), UpdateEmployeePwdActivity.class);
+                Intent intent = new Intent(getContext(), UpdatePwdActivity.class);
                 startActivity(intent);
             }
         });
@@ -167,8 +173,8 @@ public class MeFragment extends Fragment {
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
-                            }
+                                Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
+                        }
                         }) {
                             @Override
                             public Map<String, String> getParams() {
@@ -180,6 +186,11 @@ public class MeFragment extends Fragment {
                 }
             }
         });
+        return view;
+    }
+
+    @Override
+    public void onStart() {
         JSONObjectRequestMapParams getEmployeeInfo = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_EMPLOYEE_INFO_URL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -196,7 +207,7 @@ public class MeFragment extends Fragment {
                                 Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e("ERROE", e.getMessage());
+                            Log.e("ERROR", e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -214,13 +225,14 @@ public class MeFragment extends Fragment {
         };
         requestQueue.add(getEmployeeInfo);
 
-        return view;
+        super.onStart();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         isOnEdit = false;
+        requestQueue.stop();
+        super.onDestroy();
     }
 
 }

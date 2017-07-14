@@ -24,8 +24,9 @@ import java.util.List;
 
 public class MessageHistoryAdapter extends ArrayAdapter<GuestHistory> {
 
-    private int historyLayoutID;
+    final String TAG = "MessageHistory";
 
+    private int historyLayoutID;
 
     public MessageHistoryAdapter(Context context, int layoutID, List<GuestHistory> guestHistoryList) {
         super(context, layoutID, guestHistoryList);
@@ -86,7 +87,7 @@ public class MessageHistoryAdapter extends ArrayAdapter<GuestHistory> {
         }
         viewHolder.guestName.setText("嘉宾 " + guestHistory.getGuestName());
         viewHolder.arriveTime.setText(guestHistory.getArriveTime());
-        viewHolder.myGuestAvatar.setImageBitmap(ImageUtil.convertImage(guestHistory.getBase64Pic()));
+        viewHolder.myGuestAvatar.setImageBitmap(ImageUtil.decodeBitmapFromBase64(guestHistory.getBase64Pic(), 64, 48));
         return view;
     }
 

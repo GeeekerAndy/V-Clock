@@ -14,6 +14,7 @@ public class CheckingPhoto {
 			throws Exception {
 		float similarity = rf.compareOnewithAnother(photoStr1,
 				photoFilePath2);
+		System.out.println(similarity);
 		if (similarity >= 80)
 			return true;
 		else

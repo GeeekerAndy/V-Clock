@@ -1,79 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance http://www.springmodules.org/schema/cache/springmodules-cache.xsd http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd 
-" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-  <display-name />
-  <servlet>
-    <servlet-name>action</servlet-name>
-    <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
-    <init-param>
-      <param-name>config</param-name>
-      <param-value>/WEB-INF/struts-config.xml</param-value>
-    </init-param>
-    <init-param>
-      <param-name>debug</param-name>
-      <param-value>3</param-value>
-    </init-param>
-    <init-param>
-      <param-name>detail</param-name>
-      <param-value>3</param-value>
-    </init-param>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>action</servlet-name>
-    <url-pattern>*.do</url-pattern>
-  </servlet-mapping>
-  <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
-  
-   <servlet>
-    <servlet-name>Login</servlet-name>
-    <servlet-class>controller.LoginServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>Register</servlet-name>
-    <servlet-class>controller.RegisterServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>ModifyEmployeeInfo</servlet-name>
-    <servlet-class>controller.ModifyEmployeeInfoServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>CreateNewGuest</servlet-name>
-    <servlet-class>controller.CreateNewGuestServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>DisplayEmployeeInfo</servlet-name>
-    <servlet-class>controller.DisplayEmployeeInfoServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>ModifyGuestInfo</servlet-name>
-    <servlet-class>controller.ModifyGuestInfoServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>AddtoGuestList</servlet-name>
-    <servlet-class>controller.AddtoGuestListServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>DisplayVisitingRecord</servlet-name>
-    <servlet-class>controller.DisplayVisitingRecordServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>PushMessage</servlet-name>
-    <servlet-class>controller.PushMessageServlet</servlet-class>
-    <asyncSupported>true</asyncSupported>
-  </servlet>
-  <servlet>
-    <servlet-name>PrepareForPushServlet</servlet-name>
-    <servlet-class>controller.PrepareForPushServlet</servlet-class>
-  </servlet>
-    <servlet>
-    <servlet-name>SearchGuest</servlet-name>
-    <servlet-class>controller.SearchGuestServlet</servlet-class>
-  </servlet>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance http://www.springmodules.org/schema/cache/springmodules-cache.xsd http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd 
+"
+	version="3.0"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<display-name />
+	<servlet>
+		<servlet-name>action</servlet-name>
+		<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+		<init-param>
+			<param-name>config</param-name>
+			<param-value>/WEB-INF/struts-config.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>3</param-value>
+		</init-param>
+		<init-param>
+			<param-name>detail</param-name>
+			<param-value>3</param-value>
+		</init-param>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
 
 
+	<servlet>
+		<servlet-name>Login</servlet-name>
+		<servlet-class>controller.LoginServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Register</servlet-name>
+		<servlet-class>controller.RegisterServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ModifyEmployeeInfo</servlet-name>
+		<servlet-class>controller.ModifyEmployeeInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>CreateNewGuest</servlet-name>
+		<servlet-class>controller.CreateNewGuestServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DisplayEmployeeInfo</servlet-name>
+		<servlet-class>controller.DisplayEmployeeInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ModifyGuestInfo</servlet-name>
+		<servlet-class>controller.ModifyGuestInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>AddtoGuestList</servlet-name>
+		<servlet-class>controller.AddtoGuestListServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DisplayVisitingRecord</servlet-name>
+		<servlet-class>controller.DisplayVisitingRecordServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>PushMessage</servlet-name>
+		<servlet-class>controller.PushMessageServlet</servlet-class>
+		<asyncSupported>true</asyncSupported>
+	</servlet>
+	<servlet>
+
+		<servlet-name>PrepareForPushServlet</servlet-name>
+		<servlet-class>controller.PrepareForPushServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>SearchGuest</servlet-name>
+		<servlet-class>controller.SearchGuestServlet</servlet-class>
+	</servlet>
+  <servlet>
+    <servlet-name>DeleteFromGuestList</servlet-name>
+    <servlet-class>controller.DeleteFromGuestListServlet</servlet-class>
+  </servlet>
 
   
   
@@ -113,14 +121,19 @@
     <servlet-name>PushMessage</servlet-name>
     <url-pattern>/servlet/PushMessageServlet</url-pattern>
   </servlet-mapping>
+
+  	<servlet-mapping>
+		<servlet-name>PrepareForPushServlet</servlet-name>
+		<url-pattern>/servlet/PrepareForPushServlet</url-pattern>
+	</servlet-mapping>
   <servlet-mapping>
-
-    <servlet-name>PrepareForPushServlet</servlet-name>
-    <url-pattern>/servlet/PrepareForPushServlet</url-pattern>
-
     <servlet-name>SearchGuest</servlet-name>
     <url-pattern>/servlet/SearchGuestServlet</url-pattern>
-
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DeleteFromGuestList</servlet-name>
+    <url-pattern>/servlet/DeleteFromGuestListServlet</url-pattern>
+  </servlet-mapping>
+
 </web-app>
 
