@@ -34,8 +34,10 @@ import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.VClockContract;
 import com.example.dell.v_clock.activity.LoginActivity;
 import com.example.dell.v_clock.activity.UpdatePwdActivity;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,6 +90,11 @@ public class MeFragment extends Fragment {
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //删除本地缓存
+                ACache aCache = ACache.get(getContext());
+                aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
+                aCache.remove(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+
                 SharedPreferences.Editor editor = sp.edit();
                 editor.remove("eid");
                 editor.apply();

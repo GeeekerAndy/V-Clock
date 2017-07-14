@@ -10,6 +10,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.object.GuestInfo;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,9 +33,16 @@ public class GuestListUtil {
     public static final String MY_GUEST_JSON_ARRAY_CACHE = "myGuestJsonArray";
     //全部嘉宾 缓存 键名
     public static final String ALL_GUEST_JSON_ARRAY_CACHE = "allGuestJsonArray";
-    //缓存保存时间 单位 秒
-    public static final int SAVE_TIME = 3600;
-
+    //我的嘉宾缓存保存时间 单位 秒
+    public static final int MY_SAVE_TIME = 3600;
+    //全部嘉宾缓存保存时间 单位 秒
+    public static final int ALL_SAVE_TIME = 1800;
+    //广播相关
+//    public static final String BROADCAST_ACTION = "jason.broadcast.action";
+//    public static final String BROADCAST_KEY = "receiver";
+//    public static final String BROADCAST_VALUE = "GuestListFragment";
+//    public static final String MY_GUEST = "myGuest";
+//    public static final String ALL_GUEST = "allGuest";
 
     //我的嘉宾 请求tip
     private static final String MY_GUEST_SEARCH_TYPE = "0";
@@ -43,58 +52,167 @@ public class GuestListUtil {
     private static JSONArray myGuestJsonArray = null;
     //allGuestJson对象
     private static JSONArray allGuestJsonArray = null;
+    //ChildList数据
+    private static List<List<Map<String, Object>>> guestChildList = new ArrayList<>();
 
+    private static final int MY_GUEST_IDENTITOR = 0;
+    private static final int ALL_GUEST_IDENTITOR = 1;
 
-    public static void requestGuestList(Context context) {
-        //重置数据
-        myGuestJsonArray = null;
-        allGuestJsonArray = null;
+    private static boolean isMyFreshed = false;
+    private static boolean isAllFreshed = false;
 
-        //我的嘉宾 请求对象
-        JSONObjectRequestMapParams myGuestRequest;
-        //全部嘉宾 请求对象
-        JSONObjectRequestMapParams allGuestRequest;
-        //请求队列
-        RequestQueue requestQueue;
+    private static String TAG = "GuestListUtil";
 
+    static {
+        guestChildList.add(new ArrayList<Map<String, Object>>());
+        guestChildList.add(new ArrayList<Map<String, Object>>());
+        myGuestJsonArray = new JSONArray();
+        allGuestJsonArray = new JSONArray();
+    }
+
+    public static void requestMyGuestList(Context context, RequestQueue requestQueue, String eid) {
+        isMyFreshed = false;
         //向服务器发送请求  请求我的嘉宾
         Map<String, String> my_searchInfo = new HashMap<>();
         my_searchInfo.put("tip", MY_GUEST_SEARCH_TYPE);
-        SharedPreferences sp = context.getSharedPreferences("loginInfo", MODE_PRIVATE);
-        String eid = sp.getString("eid", null);
         my_searchInfo.put("eid", eid);
-        myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
+        JSONObjectRequestMapParams myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
                 new MyGuestListResponseListener(), new GuestListResponseErrorListener());
+        //发出请求
+        Log.i(TAG, "向服务器发出 我的嘉宾 请求");
+        requestQueue.add(myGuestRequest);
+    }
+
+    public static void requestAllGuestList(Context context, RequestQueue requestQueue, String eid) {
+        isAllFreshed = false;
         //  请求全部嘉宾
         Map<String, String> all_searchInfo = new HashMap<>();
-        all_searchInfo.put("gname", "");
+        //TODO
+        all_searchInfo.put("gname", " ");
         all_searchInfo.put("tip", PARTIAL_NAME_SEARCH_TYPE);
-        my_searchInfo.put("eid", eid);
-        allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
+        all_searchInfo.put("eid", eid);
+        JSONObjectRequestMapParams allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
                 new AllGuestListResponseListener(), new GuestListResponseErrorListener());
-        //访问服务器请求队列
-        requestQueue = Volley.newRequestQueue(context);
         //发出请求
-        requestQueue.add(myGuestRequest);
-        requestQueue.add(allGuestRequest);
+        Log.i(TAG, "向服务器发出 全部嘉宾 请求");
+//        requestQueue.add(allGuestRequest);
     }
 
     /**
-     * @return myGuestJsonArray
-     */
-    public static JSONArray getMyGuestJsonArray() {
-        return myGuestJsonArray;
-    }
-
-    /**
-     * @return allGuestJsonArray
-     */
-    public static JSONArray getAllGuestJsonArray() {
-        return allGuestJsonArray;
-    }
-
-    /**
+     * 新增嘉宾
      *
+     * @param guest 嘉宾信息
+     */
+    public static void addGuest(GuestInfo guest, Context context) {
+        //更新内存数据
+        Map<String, Object> temp = new HashMap<>();
+        temp.put("name", guest.getGuestName());
+        temp.put("avatar", guest.getGuestBitmapPhoto());
+        guestChildList.get(ALL_GUEST_IDENTITOR).add(temp);
+        isAllFreshed = true;
+
+        //移除本地缓存
+        removeCache(MY_GUEST_IDENTITOR, context);
+        removeCache(ALL_GUEST_IDENTITOR, context);
+    }
+
+    /**
+     * 已有嘉宾添加至我的嘉宾
+     *
+     * @param guest 嘉宾信息
+     */
+    public static void addToMyGuest(GuestInfo guest, Context context) {
+        //更新内存数据
+        Map<String, Object> temp = new HashMap<>();
+        temp.put("name", guest.getGuestName());
+        temp.put("avatar", guest.getGuestBitmapPhoto());
+        guestChildList.get(MY_GUEST_IDENTITOR).add(temp);
+        isMyFreshed = true;
+
+        //移除本地缓存
+        removeCache(MY_GUEST_IDENTITOR, context);
+    }
+
+    /**
+     * @param context
+     */
+    private static void removeCache(int identitor, Context context) {
+        ACache mACache = ACache.get(context);
+        if (identitor == MY_GUEST_IDENTITOR) {
+            mACache.remove(MY_GUEST_JSON_ARRAY_CACHE);
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
+            mACache.remove(ALL_GUEST_JSON_ARRAY_CACHE);
+        }
+    }
+
+    /**
+     * 从我的嘉宾中移除
+     *
+     * @param guest 嘉宾信息
+     */
+    public static void deleteFromMyGuest(GuestInfo guest, Context context) {
+        //更新内存数据
+        int index = 0;
+        for (Map<String, Object> temp : guestChildList.get(MY_GUEST_IDENTITOR)) {
+            if (temp.get("name").equals(guest.getGuestName())) {
+                index = guestChildList.get(MY_GUEST_IDENTITOR).indexOf(temp);
+                guestChildList.get(MY_GUEST_IDENTITOR).remove(index);
+                break;
+            }
+        }
+        isMyFreshed = true;
+
+        removeCache(MY_GUEST_IDENTITOR, context);
+    }
+
+    /**
+     * 修改照片
+     *
+     * @param guest 嘉宾信息
+     */
+    public static void modifyPhoto(GuestInfo guest, Context context) {
+        for (Map<String, Object> temp : guestChildList.get(guest.getGuest_type())) {
+            if (temp.get("name").equals(guest.getGuestName())) {
+                temp.put("avatar", guest.getGuestBitmapPhoto());
+                break;
+            }
+        }
+        if (guest.getGuest_type() == MY_GUEST_IDENTITOR) {
+            for (Map<String, Object> temp : guestChildList.get(ALL_GUEST_IDENTITOR)) {
+                if (temp.get("name").equals(guest.getGuestName())) {
+                    temp.put("avatar", guest.getGuestBitmapPhoto());
+                    break;
+                }
+            }
+            removeCache(MY_GUEST_IDENTITOR, context);
+            removeCache(ALL_GUEST_IDENTITOR, context);
+        } else {
+            removeCache(ALL_GUEST_IDENTITOR, context);
+        }
+        isMyFreshed = true;
+
+        removeCache(guest.getGuest_type(), context);
+    }
+
+
+    /**
+     * 复制一个List 到 另一个List
+     *
+     * @param sourceList 源List
+     * @param toList     目的List
+     */
+    public static void setValueToList(List<Map<String, Object>> sourceList, List<Map<String, Object>> toList) {
+        if (toList.size() > 0) {
+            toList.clear();
+        }
+        for (Map<String, Object> temp : sourceList) {
+            toList.add(temp);
+        }
+    }
+
+
+    /**
+     * 获取 我的嘉宾 信息的 后台回复监听器
      */
     private static class MyGuestListResponseListener implements Response.Listener<JSONObject> {
         @Override
@@ -103,7 +221,9 @@ public class GuestListUtil {
             JSONArray jsonObjects;
             try {
                 jsonObjects = response.getJSONArray("GuestList");
-                myGuestJsonArray = jsonObjects;
+                Log.i(TAG, "收到服务器 我的嘉宾 回复 JsonArray.length = " + jsonObjects.length());
+                setValueToJason(jsonObjects, myGuestJsonArray);
+                loadChildListData(myGuestJsonArray, MY_GUEST_IDENTITOR);
             } catch (JSONException e) {
                 //todo
 //                Toast.makeText(context, "数据错误", Toast.LENGTH_SHORT).show();
@@ -113,7 +233,7 @@ public class GuestListUtil {
     }
 
     /**
-     *
+     * 获取 全部嘉宾 信息的 后台回复监听器
      */
     private static class AllGuestListResponseListener implements Response.Listener<JSONObject> {
         @Override
@@ -122,14 +242,58 @@ public class GuestListUtil {
             JSONArray jsonObjects;
             try {
                 jsonObjects = response.getJSONArray("Guest");
-                allGuestJsonArray = jsonObjects;
+                Log.i(TAG, "收到服务器 全部嘉宾 回复 JsonArray.length = " + jsonObjects.length());
+                setValueToJason(jsonObjects, allGuestJsonArray);
+                loadChildListData(allGuestJsonArray, ALL_GUEST_IDENTITOR);
             } catch (JSONException e) {
+                Log.i(TAG, "收到服务器 全部嘉宾 数据错误回复");
                 //todo
 //                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
         }
     }
+
+    /**
+     * Jason的数据传递
+     *
+     * @param sourceJson 源Json
+     * @param toJson     目的Json
+     */
+    private static void setValueToJason(JSONArray sourceJson, JSONArray toJson) {
+        for (int i = 0; i < sourceJson.length(); i++) {
+            try {
+                toJson.put(i, sourceJson.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * 加载ChildList信息
+     *
+     * @param guestJsonArray 嘉宾信息
+     * @param i              我的嘉宾：0 ； 全部嘉宾：1
+     */
+    private static void loadChildListData(JSONArray guestJsonArray, int i) {
+        if (guestJsonArray != null) {
+            if (guestChildList.size() > i) {
+                guestChildList.get(i).clear();
+            }
+            List<Map<String, Object>> tempList = jsonToList(guestJsonArray);
+            guestChildList.add(i, tempList);
+            if (i == MY_GUEST_IDENTITOR) {
+                Log.i(TAG, "我的嘉宾 数据转换完成 guestChildList.get(0).size() = " + guestChildList.get(i).size());
+                isMyFreshed = true;
+            } else if (i == ALL_GUEST_IDENTITOR) {
+                Log.i(TAG, "全部嘉宾 数据转换完成 guestChildList.get(1).size() = " + guestChildList.get(i).size());
+                isAllFreshed = true;
+            }
+        }
+    }
+
 
     /**
      * 将JSONArray里的数据提取出来
@@ -142,8 +306,7 @@ public class GuestListUtil {
         try {
             for (int i = 0; i < jsonObjects.length(); i++) {
                 Map<String, Object> tempMap = new HashMap();
-                String basePhoto = null;
-                basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
+                String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
                 //手机号暂时不用
 //              String phone = response.getString("gtel");
                 tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
@@ -170,5 +333,92 @@ public class GuestListUtil {
         }
     }
 
+    /**
+     * @return myGuestJsonArray
+     */
+    public static JSONArray getMyGuestJsonArray() {
+        return myGuestJsonArray;
+    }
+
+    /**
+     * @return allGuestJsonArray
+     */
+    public static JSONArray getAllGuestJsonArray() {
+        return allGuestJsonArray;
+    }
+
+    /**
+     * @return isMyFreshed
+     */
+    public static boolean isMyFreshed() {
+        return isMyFreshed;
+    }
+
+    /**
+     * @return isAllFreshed
+     */
+    public static boolean isAllFreshed() {
+        return isAllFreshed;
+    }
+
+    /**
+     * @return 我的嘉宾列表数据
+     */
+    public static List<Map<String, Object>> getMyGuestList() {
+        if (guestChildList.size() < MY_GUEST_IDENTITOR) {
+            guestChildList.add(MY_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
+        }
+        return guestChildList.get(MY_GUEST_IDENTITOR);
+    }
+
+    /**
+     * @param myGuestList myGuestList
+     */
+    public static void setMyGuestList(List<Map<String, Object>> myGuestList) {
+        if (guestChildList.size() < MY_GUEST_IDENTITOR) {
+            guestChildList.add(MY_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
+        }
+        setValueToList(myGuestList, guestChildList.get(MY_GUEST_IDENTITOR));
+//        for (Map<String, Object> temp : myGuestList) {
+//            guestChildList.get(MY_GUEST_IDENTITOR).add(temp);
+//        }
+    }
+
+    /**
+     * @return 全部嘉宾列表数据
+     */
+    public static List<Map<String, Object>> getAllGuestList() {
+        if (guestChildList.size() < ALL_GUEST_IDENTITOR) {
+            guestChildList.add(ALL_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
+        }
+        return guestChildList.get(ALL_GUEST_IDENTITOR);
+    }
+
+    /**
+     * @param allGuestList
+     */
+    public static void setAllGuestList(List<Map<String, Object>> allGuestList) {
+        if (guestChildList.size() < ALL_GUEST_IDENTITOR) {
+            guestChildList.add(ALL_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
+        }
+        setValueToList(allGuestList, guestChildList.get(ALL_GUEST_IDENTITOR));
+//        for (Map<String, Object> temp : allGuestList) {
+//            guestChildList.get(ALL_GUEST_IDENTITOR).add(temp);
+//        }
+    }
+
+    /**
+     * @param isMyFreshed isMyFreshed
+     */
+    public static void setIsMyFreshed(boolean isMyFreshed) {
+        GuestListUtil.isMyFreshed = isMyFreshed;
+    }
+
+    /**
+     * @param isAllFreshed isAllFreshed
+     */
+    public static void setIsAllFreshed(boolean isAllFreshed) {
+        GuestListUtil.isAllFreshed = isAllFreshed;
+    }
 
 }

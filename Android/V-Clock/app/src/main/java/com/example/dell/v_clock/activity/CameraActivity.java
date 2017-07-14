@@ -209,6 +209,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     @Override
     public void onPreviewFrame(final byte[] bytes, Camera camera) {
+
         if (null != mFaceTask) {
             switch (mFaceTask.getStatus()) {
                 case RUNNING:
@@ -239,22 +240,28 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 //                //旋转图像
 //                Matrix matrix = new Matrix();
 //                //小米手机翻转90   三星、oneplus：270
-//                matrix.postRotate(90);
+//                matrix.postRotate(270);
 //                Bitmap bmp_rotated = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-//                //测试一下数据是否可以显示
-//                Message msg = handler.obtainMessage();
-//                msg.obj = bmp_rotated;
-//                handler.sendMessage(msg);
-//
-//                //进行人脸识别等一系列操作
+//                //TODO　进行人脸识别等一系列操作
 //                //进行人脸检测
-//                FaceAttr faceAttr = faceCheck.detectFace(mData, width, height, 1);
-////            Log.i(TAG, "score:" + faceAttr.getScor()[0]);
-////            Log.i(TAG, "pose:" + faceAttr.getHeadPosition()[0] + " " + faceAttr.getHeadPosition()[1] + " " + faceAttr.getHeadPosition()[2]);
-////            Log.i(TAG, "rect:" + faceAttr.getFaceRect()[0] + " " + faceAttr.getFaceRect()[1] + " " + faceAttr.getFaceRect()[2] + " " + faceAttr.getFaceRect()[3]);
-//                faceCheck.exitTask();
+//                FaceAttr faceAttr = faceCheck.detectFace(bmp_rotated, width, height, 1);
+//                //测试一下数据是否可以显示
+//                if (faceAttr.isIncludeFace()) {
+//                    Message msg = handler.obtainMessage();
+//                    msg.arg1 = 0;
+//                    msg.obj = bmp_rotated;
+//                    handler.sendMessage(msg);
+//                    //传输图片与用户手机号
+//                    if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
+//                        isWaited = true;
+//                        Log.i("Transger", "向服务器发送数据");
+//                        transferPhoneImg(bmp_rotated);
+//                    }
+//                }
 //            }
 //        }).start();
+
+        //todo
         mFaceTask = new FaceTask(bytes);
         mFaceTask.execute((Void) null);
     }
@@ -273,6 +280,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         protected Void doInBackground(Void... voids) {
+            //test
+            Log.i("CameraActivity","doInBackground");
+
             Camera.Size size = mCamera.getParameters().getPreviewSize();
             final int width = size.width;
             final int height = size.height;
@@ -330,7 +340,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                         break;
                     }
                     if (null != mCamera) {
-                        //获取人脸时 自动对焦 这样写是否有效？
+                        //获取人脸时 自动对焦 这样写是否有效？TODO  三星note3  不可以
                         mCamera.autoFocus(new Camera.AutoFocusCallback() {
                             @Override
                             public void onAutoFocus(boolean b, Camera camera) {

@@ -1,20 +1,12 @@
 package com.example.dell.v_clock.activity;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,9 +27,9 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
-import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,7 +55,10 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     RelativeLayout relative_sex;
     //该嘉宾姓名
     String guest_name;
-    //嘉宾信息对象
+    //该嘉宾图片
+    Bitmap guest_photo;
+    Boolean isPhotoChanged = false;
+    //    //嘉宾信息对象
     GuestInfo guestInfo;
     //用户ID
     String eid;
@@ -87,7 +82,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     final int PHOTO_REQUEST_CODE = 3;
     final int CROP_REQUEST_CODE = 4;
     //申请read权限
-    final int MY_PERMISSION_REQUEST_READ = 0;
+//    final int MY_PERMISSION_REQUEST_READ = 0;
 
     //修改性别选择框
     AlertDialog.Builder sexDialog;
@@ -131,10 +126,16 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     private void loadGuestInfo() {
         //从上个Activity中，通过Intent获取嘉宾姓名、类型
         guest_name = getIntent().getStringExtra("gname");
+//        Bundle temp = getIntent().getExtras();
+//        guest_photo = temp.getParcelable("gphoto");
         guest_type = getIntent().getIntExtra("guest_type", MY_GUEST);
 
-//        Log.i("GuestInfoActivity", "guest_type = " + guest_type);
-//        Log.i("GuestInfoActivity", "guest_name = " + guest_name);
+//        if (guest_photo == null) {
+//         Log.i("GuestInfoActivity","guest_photo = null");
+//        }
+
+//        iv_photo.setImageBitmap(guest_photo);
+        tv_name.setText(guest_name);
 
         //发送查询嘉宾信息的请求
         Map<String, String> searchInfo = new HashMap<>();
@@ -165,6 +166,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             if (msg.what == 0) {
                 //更改UI
                 iv_photo.setImageBitmap(guestInfo.getGuestBitmapPhoto());
+                guest_photo = guestInfo.getGuestBitmapPhoto();
                 tv_name.setText(guestInfo.getGuestName());
                 tv_phone.setText(guestInfo.getGuestPhone());
                 tv_company.setText(guestInfo.getGuestCompany());
@@ -190,17 +192,20 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     /**
      * 监听各种点击事件
      *
-     * @param view  点击控件
+     * @param view 点击控件
      */
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.img_bt_info_back) {//返回上个页面
+            finish();
+        }
         if (guestInfo == null) {
             return;
         }
         switch (view.getId()) {
-            case R.id.img_bt_info_back://返回上个页面
-                finish();
-                break;
+//            case R.id.img_bt_info_back://返回上个页面
+//                finish();
+//                break;
             case R.id.tv_guest_add://根据嘉宾类型 选择不同操作
                 if (guest_type == MY_GUEST) {
                     //将该嘉宾从我的嘉宾中移除
@@ -212,14 +217,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.iv_guest_info_photo:
                 //为嘉宾选择新的照片
-                //运行时权限
-//                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//                        == PackageManager.PERMISSION_DENIED) {
-//                    //读取sdCard权限未授予  申请权限
-//                    ActivityCompat.requestPermissions(this,
-//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
-//                    return;
-//                }
                 modifyGuestPhoto();
                 break;
             case R.id.relative_company:
@@ -331,6 +328,13 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     } else {
                         sexIndex = 1;
                     }
+                    if (isPhotoChanged) {
+                        //修改内存信息
+                        GuestInfo guestInfo = new GuestInfo(guest_name, guest_photo);
+                        guestInfo.setGuest_type(guest_type);
+                        GuestListUtil.modifyPhoto(guestInfo, GuestInfoActivity.this);
+                        isPhotoChanged = false;
+                    }
                     break;
                 case 1:
                     //修改失败
@@ -380,9 +384,9 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     /**
      * 从修改界面返回后的处理 更新信息
      *
-     * @param requestCode   请求码
-     * @param resultCode    结果码
-     * @param data          返回数据
+     * @param requestCode 请求码
+     * @param resultCode  结果码
+     * @param data        返回数据
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -397,7 +401,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 case PHOTO_REQUEST_CODE://返回相册选择的图片
                     //剪裁图片
 //                    startPhotoZoom(data.getData());
-                    ImageUtil.startPhotoZoom(data.getData(),this,CROP_REQUEST_CODE);
+                    ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
                     break;
                 case CROP_REQUEST_CODE://返回剪裁后的图片
                     //更改显示、上传图片
@@ -413,18 +417,18 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
 
     /**
      * 更改显示、上传图片
-     *
      */
     private void transferPhoto() {
-        Bitmap bmp_photo = ImageUtil.getCropImage(this);
-        if (bmp_photo == null) {
+        guest_photo = ImageUtil.getCropImage(this);
+        if (guest_photo == null) {
             return;
         }
         Log.i("GuestInfoActivity", "更改图片");
-        iv_photo.setImageBitmap(bmp_photo);
+        iv_photo.setImageBitmap(guest_photo);
+        isPhotoChanged = true;
         //传输图片
-        String str_photo = ImageUtil.convertImage(bmp_photo);
-//        Log.i("GuestInfoActivity", "photo.length" + str_photo.length());
+        String str_photo = ImageUtil.convertImage(guest_photo);
+//        Log.i("GuestInfoActivity", "bmp_photo.length" + str_photo.length());
         //发送修改信息
         final Map<String, String> modifyMap = new HashMap<>();
         modifyMap.put("tip", "regid;gphoto");
@@ -441,24 +445,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         };
         requestQueue.add(modifyRequest);
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        switch (requestCode) {
-//            case MY_PERMISSION_REQUEST_READ:
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-//                    Toast.makeText(this, "权限不足，无法读取图片！", Toast.LENGTH_SHORT).show();
-//                    //跳转到权限设置界面 小米手机在该界面授予权限后会有问题 程序会崩掉
-//                    Context context = this.getApplicationContext();
-//                    Uri packageURI = Uri.parse("package:" + context.getPackageName());
-//                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
-//                    startActivity(intent);
-//                } else {
-//                    //跳转到相册
-//                    modifyGuestPhoto();
-//                }
-//        }
-//    }
 
     /**
      * 请求嘉宾信息的监听器
@@ -529,17 +515,24 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             }
             switch (intOfResponse) {
                 case 0:
+                    GuestInfo guestInfo = new GuestInfo(guest_name, guest_photo);
                     if (guest_type == MY_GUEST) {
                         //移除成功
                         Toast.makeText(GuestInfoActivity.this, "已从我的嘉宾中移除", Toast.LENGTH_LONG).show();
                         guest_type = ALL_GUEST;
                         tv_add.setText("添加");
+                        //更改内存中的GuestList
+                        GuestListUtil.deleteFromMyGuest(guestInfo, GuestInfoActivity.this);
                     } else if (guest_type == ALL_GUEST) {
                         //添加成功
                         Toast.makeText(GuestInfoActivity.this, "已添加至我的嘉宾", Toast.LENGTH_LONG).show();
                         guest_type = MY_GUEST;
                         tv_add.setText("移除");
+                        //更改内存中的GuestList
+                        GuestListUtil.addToMyGuest(guestInfo, GuestInfoActivity.this);
                     }
+                    //todo 本地缓存
+
                     break;
                 case 1:
                     if (guest_type == MY_GUEST) {
