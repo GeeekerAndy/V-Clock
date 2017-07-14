@@ -18,6 +18,8 @@ import java.util.List;
 
 public class MessageListAdapter extends ArrayAdapter<GuestMessage> {
 
+    final String TAG = "MessageListAdapter";
+
     private int messageLayoutID;
 
     public MessageListAdapter(Context context, int layoutID, List<GuestMessage> guestList) {

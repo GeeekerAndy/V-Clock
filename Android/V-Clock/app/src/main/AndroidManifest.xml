@@ -32,9 +32,9 @@
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -69,31 +69,28 @@
         <activity
             android:name=".activity.GuestInfoActivity"
             android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.ModifyActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity android:name=".activity.UpdatePwdActivity">
+        </activity>
 
         <service
             android:name=".service.GetMessageService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".activity.ModifyActivity"
-            android:theme="@style/NoActionBarTheme" />
-        <activity android:name=".activity.UpdateEmployeePwdActivity">
-
-        </activity>
-
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
+            android:authorities="com.example.android.provider"
             android:exported="false"
             android:grantUriPermissions="true">
+
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths">
-
             </meta-data>
         </provider>
-
     </application>
 
 </manifest>

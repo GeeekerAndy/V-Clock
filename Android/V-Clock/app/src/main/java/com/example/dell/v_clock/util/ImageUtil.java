@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 
 public class ImageUtil {
 
+    final String TAG = "ImageUtil";
+
     public static Bitmap convertImage(String base64Str) throws IllegalArgumentException {
         byte[] decodeBytes = Base64.decode(
                 base64Str.substring(base64Str.indexOf(",") + 1),

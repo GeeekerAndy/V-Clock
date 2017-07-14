@@ -24,8 +24,9 @@ import java.util.List;
 
 public class MessageHistoryAdapter extends ArrayAdapter<GuestHistory> {
 
-    private int historyLayoutID;
+    final String TAG = "MessageHistory";
 
+    private int historyLayoutID;
 
     public MessageHistoryAdapter(Context context, int layoutID, List<GuestHistory> guestHistoryList) {
         super(context, layoutID, guestHistoryList);

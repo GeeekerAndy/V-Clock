@@ -26,7 +26,10 @@ import org.json.JSONObject;
 
 public class GetMessageService extends Service {
 
+    final String TAG = "GetMessageService";
+
     RequestQueue requestQueue;
+    SQLiteDatabase db;
 
     public GetMessageService() {
     }
@@ -41,12 +44,12 @@ public class GetMessageService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("TAG", "service onCreate");
+        Log.d(TAG, "service onCreate");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("TAG", "service onStartCommand");
+        Log.d(TAG, "service onStartCommand");
         //Polling to obtain server information
         //轮询获取服务器嘉宾到访信息
         requestQueue = Volley.newRequestQueue(getBaseContext());
@@ -58,7 +61,7 @@ public class GetMessageService extends Service {
                     @Override
                     public void onResponse(JSONObject response) {
                         //Json object example {"eid":4,"gname":12,"arrivingDate":1234}
-                        SQLiteDatabase db = new MessageDBHelper(getBaseContext()).getWritableDatabase();
+                        db = new MessageDBHelper(getBaseContext()).getWritableDatabase();
                         ContentValues values = new ContentValues();
                         try {
                             values.put(VClockContract.MessageInfo.COLUMN_NAME_GNAME, response.getString("gname"));
@@ -67,16 +70,16 @@ public class GetMessageService extends Service {
                             broadcastIntent.putExtra("gname", response.getString("gname"));
                             sendBroadcast(broadcastIntent);
                         } catch (JSONException e) {
-                            Log.e("TAG", e.getMessage());
+                            Log.e(TAG, e.getMessage());
                         }
                         db.insert(VClockContract.MessageInfo.TABLE_NAME, null, values);
 //                        Toast.makeText(getBaseContext(), "服务器返回" + response.toString(), Toast.LENGTH_SHORT).show();
-                        Log.d("TAG", "服务器返回" + response.toString());
+                        Log.d(TAG, "服务器返回" + response.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("TAG", "响应错误：服务器超时或没有嘉宾消息");
+                Log.d(TAG, "响应错误：服务器超时或没有嘉宾消息");
             }
         });
         new Thread(new Runnable() {
@@ -84,8 +87,8 @@ public class GetMessageService extends Service {
             public void run() {
 
                 while (true) {
-                    Log.d("TAG", "发送消息请求");
-//                    requestQueue.add(jsonObjectRequest);
+                    Log.d(TAG, "发送消息请求");
+                    requestQueue.add(jsonObjectRequest);
                     SystemClock.sleep(5*1000);
                 }
             }
@@ -97,7 +100,12 @@ public class GetMessageService extends Service {
 
     @Override
     public void onDestroy() {
-        requestQueue.stop();
+        if(requestQueue != null) {
+            requestQueue.stop();
+        }
+        if(db != null) {
+            db.close();
+        }
         super.onDestroy();
     }
 }

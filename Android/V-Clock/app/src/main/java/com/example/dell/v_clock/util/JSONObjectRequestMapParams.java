@@ -20,6 +20,8 @@ import java.util.Map;
 
 public class JSONObjectRequestMapParams extends Request<JSONObject> {
 
+    final String TAG = "JSONObject";
+
     private Response.Listener<JSONObject> listener;
     private Map<String, String> params;
 
@@ -54,7 +56,7 @@ public class JSONObjectRequestMapParams extends Request<JSONObject> {
             // log error
             return Response.error(new ParseError(e));
         } catch (OutOfMemoryError e) {
-            Log.e("ERROR", e.getMessage());
+            Log.e(TAG, e.getMessage());
             return Response.error(new ParseError(e));
         }
     }

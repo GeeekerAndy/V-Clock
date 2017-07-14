@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -43,6 +44,8 @@ import java.util.List;
  */
 public class MessageListFragment extends Fragment {
 
+    final String TAG = "MessageList";
+
     MessageDBHelper dbHelper;
     MessageListAdapter messageListAdapter;
     ContentValues messageValues;
@@ -50,6 +53,7 @@ public class MessageListFragment extends Fragment {
     View layoutView;
     List<GuestMessage> guestMessageList;
     SwipeRefreshLayout refreshLayout;
+    MessageBroadCastReceiver broadCastReceiver;
 
     public MessageListFragment() {
         // Required empty public constructor
@@ -66,7 +70,7 @@ public class MessageListFragment extends Fragment {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("MESSAGE_ARRIVE_BROADCAST");
-        MessageBroadCastReceiver broadCastReceiver = new MessageBroadCastReceiver();
+        broadCastReceiver = new MessageBroadCastReceiver();
         getContext().registerReceiver(broadCastReceiver, intentFilter);
 
         refreshLayout = layoutView.findViewById(R.id.srl_refresh_layout);
@@ -145,13 +149,14 @@ public class MessageListFragment extends Fragment {
         guestMessageView.setOnTouchListener(touchListener);
         guestMessageView.setAdapter(messageListAdapter);
         refreshLayout.setRefreshing(false);
-        Log.d("TAG", "onStart");
+        Log.d(TAG, "onStart");
         super.onStart();
     }
 
     @Override
     public void onDestroy() {
         dbHelper.close();
+        getContext().unregisterReceiver(broadCastReceiver);
         super.onDestroy();
     }
 
@@ -160,13 +165,13 @@ public class MessageListFragment extends Fragment {
         protected Void doInBackground(String... visitInfo) {
             db = dbHelper.getWritableDatabase();
             if (visitInfo.length < 1) {
-                Log.d("TAG", "数据库删除失败！嘉宾信息不完整");
+                Log.d(TAG, "数据库删除失败！嘉宾信息不完整");
             } else {
                 String selection = VClockContract.MessageInfo.COLUMN_NAME_GNAME + "=? and " +
                         VClockContract.MessageInfo.COLUMN_NAME_DATE + "=?";
                 String[] selectionArgs = {visitInfo[0], visitInfo[1]};
                 db.delete(VClockContract.MessageInfo.TABLE_NAME, selection, selectionArgs);
-                Log.d("TAG", "删除一条消息, 嘉宾姓名：" + visitInfo[0] + "，到访时间：" + visitInfo[1]);
+                Log.d(TAG, "删除一条消息, 嘉宾姓名：" + visitInfo[0] + "，到访时间：" + visitInfo[1]);
             }
             return null;
         }

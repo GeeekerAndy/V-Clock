@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -32,7 +32,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,6 +43,8 @@ import com.example.dell.v_clock.util.ImageUtil;
 
 public class SelectPhotoActivity extends AppCompatActivity {
 
+    final String TAG = "SelectPhotoActivity";
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int PICK_PHOTO_FOR_AVATAR = 2;
     static final int PHOTO_REQUEST_CODE = 3;
@@ -52,14 +53,11 @@ public class SelectPhotoActivity extends AppCompatActivity {
     final int MY_PERMISSION_REQUEST_READ = 6;
     final int MY_PERMISSION_REQUEST_CAMERA = 7;
 
-    final String TAG = "SelectPhotoActivity";
-
     String mCurrentPhotoPath;
     ImageView employeePicture;
     HashMap<String, String> employeeInfoMap = new HashMap<>();
     RequestQueue requestQueue;
     File photoFile;
-    Uri tempFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +72,6 @@ public class SelectPhotoActivity extends AppCompatActivity {
         Button completeRegister = (Button) findViewById(R.id.bt_complete_register);
         employeePicture = (ImageView) findViewById(R.id.iv_employee_register_picture);
         requestQueue = Volley.newRequestQueue(this);
-        tempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "temp.jpg");
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +101,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                                         toLoginIntent.putExtra("etel", employeeInfoMap.get("etel"));
                                         toLoginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(toLoginIntent);
-                                        Log.d("TAG", response);
+                                        Log.d(TAG, response);
                                     } else if (response.equals("1")) {
                                         Toast.makeText(SelectPhotoActivity.this, "工作人员已存在！", Toast.LENGTH_SHORT).show();
                                     } else if (response.equals("2")) {
@@ -135,23 +132,6 @@ public class SelectPhotoActivity extends AppCompatActivity {
     }
 
     public void dispatchTakePictureIntent() {
-        //权限申请RequestCode
-        //动态添加权限
-        //Android 6.0 以上需要添加运行时权限 才可以使用Camera
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//                == PackageManager.PERMISSION_DENIED) {
-//            //Camera权限未授予  申请Camera权限
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
-//            return;
-//        }
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//                == PackageManager.PERMISSION_DENIED) {
-//            //读取sdCard权限未授予  申请权限
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
-//            return;
-//        }
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -162,8 +142,8 @@ public class SelectPhotoActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
-//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.provider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -208,23 +188,40 @@ public class SelectPhotoActivity extends AppCompatActivity {
         startActivityForResult(intentFromGallery, PHOTO_REQUEST_CODE);
     }
 
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
+    private void startCropPhoto() {
+        Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.provider", photoFile);
+//grant uri with essential permission the first arg is the The packagename you would like to allow to access the Uri.
+        this.grantUriPermission("com.android.camera", photoURI,
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(photoURI, "image/*");
+
+//you must setup two line below
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 3);
+        intent.putExtra("aspectY", 4);
+        intent.putExtra("outputX", 480);
+        intent.putExtra("outputY", 640);
+        intent.putExtra("return-data", true);
+//you must setup this
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        startActivityForResult(intent, CROP_REQUEST_CODE_FROM_Camera);
     }
 
 
     //    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
-            employeePicture.setImageBitmap(imageBitmap);
-            employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
+//            employeePicture.setImageBitmap(imageBitmap);
+//            employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
+            startCropPhoto();
         }
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
             //返回相册选择的图片
@@ -234,6 +231,13 @@ public class SelectPhotoActivity extends AppCompatActivity {
             Bitmap bitmap = ImageUtil.getCropImage(this);
             employeePicture.setImageBitmap(bitmap);
             employeeInfoMap.put("ephoto", ImageUtil.convertImage(bitmap));
+        }
+        if (requestCode == CROP_REQUEST_CODE_FROM_Camera && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
+            employeePicture.setImageBitmap(imageBitmap);
+            employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
         }
     }
 
@@ -261,5 +265,4 @@ public class SelectPhotoActivity extends AppCompatActivity {
                 break;
         }
     }
-
 }

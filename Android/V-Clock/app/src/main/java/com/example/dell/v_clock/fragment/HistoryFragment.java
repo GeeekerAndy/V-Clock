@@ -41,6 +41,8 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class HistoryFragment extends Fragment {
 
+    final String TAG = "HistoryFragment";
+
     View view;
     ArrayList<GuestHistory> historyArrayList;
     MessageHistoryAdapter adapter;
@@ -61,10 +63,11 @@ public class HistoryFragment extends Fragment {
         page = 1;
         SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
         eid = sp.getString("eid", null);
-        Log.d("TAG", "eid = " + eid);
-        Toast.makeText(getContext(), "正在加载第一页历史记录...请稍候", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "eid = " + eid);
         historyArrayList = new ArrayList<>();
         historyList = view.findViewById(R.id.lv_history_list);
+        final SwipyRefreshLayout refreshHistoryFromBottom = view.findViewById(R.id.srl_refresh_history_from_bottom);
+
         requestQueue = Volley.newRequestQueue(getContext());
         JSONObjectRequestMapParams jsonObjectRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_VISITING_RECORD_URL, null,
                 new Response.Listener<JSONObject>() {
@@ -72,26 +75,27 @@ public class HistoryFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         //Get visiting history from JSONObject and add to arrayList here.
                         try {
+                            page++;
                             JSONArray jsonArray = response.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                                 GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
                                         jsonObject.getString("arrivingdate"),
                                         jsonObject.getString("gphoto"));
-                                Log.d("TAG", guestHistory.getGuestName() + guestHistory.getArriveTime());
+                                Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
                                 historyArrayList.add(guestHistory);
-                                Log.d("History", guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
+                                Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
                             }
                             adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
                             historyList.setAdapter(adapter);
                         } catch (JSONException e) {
-                            Log.e("ERROR", e.getMessage());
+                            Log.e(TAG, e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                Log.e("ERROR", error.getMessage());
+//                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -103,7 +107,6 @@ public class HistoryFragment extends Fragment {
             }
         };
 
-        final SwipyRefreshLayout refreshHistoryFromBottom = view.findViewById(R.id.srl_refresh_history_from_bottom);
         refreshHistoryFromBottom.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh(SwipyRefreshLayoutDirection direction) {
@@ -115,14 +118,15 @@ public class HistoryFragment extends Fragment {
                                 try {
                                     JSONArray jsonArray = response.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
                                     if (jsonArray.length() > 0) {
+                                        page++;
                                         for (int i = 0; i < jsonArray.length(); i++) {
                                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                                             GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
                                                     jsonObject.getString("arrivingdate"),
                                                     jsonObject.getString("gphoto"));
-                                            Log.d("TAG", guestHistory.getGuestName() + guestHistory.getArriveTime());
+                                            Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
                                             historyArrayList.add(guestHistory);
-                                            Log.d("History", guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
+                                            Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
                                         }
                                         if (historyList.getAdapter() == null) {
                                             adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
@@ -130,13 +134,12 @@ public class HistoryFragment extends Fragment {
                                         } else {
                                             adapter.notifyDataSetChanged();
                                         }
-                                        page++;
                                     } else if (jsonArray.length() == 0) {
                                         Toast.makeText(getContext(), "这是最后一页啦！", Toast.LENGTH_SHORT).show();
                                     }
                                     refreshHistoryFromBottom.setRefreshing(false);
                                 } catch (JSONException e) {
-                                    Log.e("ERROR", e.getMessage());
+                                    Log.e(TAG, e.getMessage());
                                 }
                             }
                         }, new Response.ErrorListener() {
@@ -144,7 +147,8 @@ public class HistoryFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         try {
                             Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
-                            Log.e("ERROR", error.getMessage());
+                            refreshHistoryFromBottom.setRefreshing(false);
+                            Log.e(TAG, error.getMessage());
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
@@ -163,7 +167,7 @@ public class HistoryFragment extends Fragment {
         });
 
         requestQueue.add(jsonObjectRequest);
-        Log.d("TAG", "onCreate in history fragment");
+        Log.d(TAG, "onCreate in history fragment");
         return view;
     }
 
@@ -172,7 +176,5 @@ public class HistoryFragment extends Fragment {
         super.onStop();
         requestQueue.stop();
     }
-
-
 }
 
