@@ -1,6 +1,9 @@
 package com.example.dell.v_clock.fragment;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,10 +11,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Layout;
 import android.util.Log;
@@ -198,7 +204,21 @@ public class MessageListFragment extends Fragment {
     public class MessageBroadCastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            messageListAdapter.notifyDataSetChanged();
+            String gname = intent.getStringExtra("gname");
+            Intent checkMessageIntent = new Intent(context, MainActivity.class);
+            checkMessageIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, checkMessageIntent, 0);
+            NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new NotificationCompat.Builder(getContext())
+                    .setContentTitle("一位嘉宾到访")
+                    .setContentText("嘉宾" + gname + "到达")
+                    .setAutoCancel(true)
+                    .setSmallIcon(R.drawable.ic_person_pin_circle_white_36dp)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.login_logo))
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setContentIntent(pendingIntent)
+                    .build();
+            manager.notify(1, notification);
         }
     }
 }

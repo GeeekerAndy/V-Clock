@@ -337,7 +337,12 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                                 if (b) {
                                     //自动对焦成功
                                     //获取实时帧  调用回调函数 处理实时帧数据
-                                    mCamera.setOneShotPreviewCallback(CameraActivity.this);
+                                    //TODO 此处在登录成功后可能造成空指针异常
+                                    try {
+                                        mCamera.setOneShotPreviewCallback(CameraActivity.this);
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    }
 //                                    Log.i("CameraData", "setOneShotPreviewCallback");
                                 }
                             }

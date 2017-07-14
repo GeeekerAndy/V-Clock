@@ -1,5 +1,7 @@
 package com.example.dell.v_clock.util;
 
+import android.util.Log;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -50,6 +52,9 @@ public class JSONObjectRequestMapParams extends Request<JSONObject> {
             return Response.error(new ParseError(e));
         } catch (JSONException e) {
             // log error
+            return Response.error(new ParseError(e));
+        } catch (OutOfMemoryError e) {
+            Log.e("ERROR", e.getMessage());
             return Response.error(new ParseError(e));
         }
     }

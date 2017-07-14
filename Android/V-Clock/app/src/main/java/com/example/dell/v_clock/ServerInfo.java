@@ -24,4 +24,6 @@ public class ServerInfo {
     public static String PUSH_MESSAGE_URL = SERVER_URL_2 + "/servlet/PushMessageServlet";
 
     public static String VISITING_RECORD_KEY = "VisitingRecord";
+
+
 }

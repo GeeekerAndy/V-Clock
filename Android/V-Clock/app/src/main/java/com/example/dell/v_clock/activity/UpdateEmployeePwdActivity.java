@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.ImageUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,8 @@ public class UpdateEmployeePwdActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int PICK_PHOTO_FOR_Update_PWD = 2;
+    final int CROP_REQUEST_CODE = 3;
+
     ImageView employeeUpdatePicture;
     HashMap<String, String> employeePwdMap;
 
@@ -78,7 +82,11 @@ public class UpdateEmployeePwdActivity extends AppCompatActivity {
                                     Log.d("TAG", "更改照片: 返回值：" + response + "ephoto is:" +employeePwdMap.get("ephoto"));
                                     if(response.length() > 0 && response.charAt(0) == '0') {
                                         Toast.makeText(UpdateEmployeePwdActivity.this, "更新密码成功！", Toast.LENGTH_SHORT).show();
-                                        onBackPressed();
+                                        try {
+                                            onBackPressed();
+                                        } catch (IllegalStateException e) {
+                                            e.printStackTrace();
+                                        }
                                         Log.d("TAG", response);
                                     } else if(response.length() > 0 && response.charAt(0) == '1') {
                                         Toast.makeText(UpdateEmployeePwdActivity.this, "密码相似度过低，不允许更改！", Toast.LENGTH_SHORT).show();
@@ -122,16 +130,22 @@ public class UpdateEmployeePwdActivity extends AppCompatActivity {
             if(data == null) {
                 Toast.makeText(UpdateEmployeePwdActivity.this, "Oops, 发生错误！", Toast.LENGTH_SHORT).show();
             } else {
-                try {
-                    Uri selectedImage = data.getData();
-                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                    imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
-                    employeeUpdatePicture.setImageBitmap(imageBitmap);
-                    employeePwdMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Uri selectedImage = data.getData();
+//                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+//                    imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
+//                    employeeUpdatePicture.setImageBitmap(imageBitmap);
+//                    employeePwdMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+                ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
             }
+        }
+        if (requestCode == CROP_REQUEST_CODE && resultCode == RESULT_OK) {
+            Bitmap bitmap = ImageUtil.getCropImage(this);
+            employeeUpdatePicture.setImageBitmap(bitmap);
+            employeePwdMap.put("ephoto", ImageUtil.convertImage(bitmap));
         }
     }
 }

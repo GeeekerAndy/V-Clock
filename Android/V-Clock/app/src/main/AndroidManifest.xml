@@ -4,7 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
@@ -24,8 +26,8 @@
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBarTheme" />
-
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
@@ -38,6 +40,7 @@
         </activity>
         <activity
             android:name=".activity.RegisterActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -50,15 +53,13 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.SelectPhotoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
 
-
-        <!-- Parent activity meta-data to support 4.0 and lower -->
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.example.dell.v_clock.activity.RegisterActivity" />
-
-
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.dell.v_clock.activity.RegisterActivity" />
+        </activity>
         <activity
             android:name=".activity.SearchActivity"
             android:theme="@style/NoActionBarTheme" />
@@ -69,19 +70,29 @@
             android:name=".activity.GuestInfoActivity"
             android:theme="@style/NoActionBarTheme" />
 
-
         <service
             android:name=".service.GetMessageService"
             android:enabled="true"
-
             android:exported="true" />
 
         <activity
             android:name=".activity.ModifyActivity"
             android:theme="@style/NoActionBarTheme" />
+        <activity android:name=".activity.UpdateEmployeePwdActivity">
 
+        </activity>
 
-        <activity android:name=".activity.UpdateEmployeePwdActivity"></activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+
+            </meta-data>
+        </provider>
 
     </application>
 

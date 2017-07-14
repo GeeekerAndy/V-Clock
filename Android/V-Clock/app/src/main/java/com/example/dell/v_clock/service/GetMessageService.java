@@ -53,7 +53,7 @@ public class GetMessageService extends Service {
         SharedPreferences sp = getBaseContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
         String session_id = sp.getString("eid", null);
 
-        final JSONObjectRequestWithSessionID jsonObjectRequest = new JSONObjectRequestWithSessionID(Request.Method.GET, ServerInfo.PUSH_MESSAGE_URL + "?eid="+session_id, null, session_id,
+        final JSONObjectRequestWithSessionID jsonObjectRequest = new JSONObjectRequestWithSessionID(Request.Method.GET, ServerInfo.PUSH_MESSAGE_URL + "?eid="+session_id, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -63,14 +63,14 @@ public class GetMessageService extends Service {
                         try {
                             values.put(VClockContract.MessageInfo.COLUMN_NAME_GNAME, response.getString("gname"));
                             values.put(VClockContract.MessageInfo.COLUMN_NAME_DATE, response.getString("arrivingDate"));
-
+                            Intent broadcastIntent = new Intent("MESSAGE_ARRIVE_BROADCAST");
+                            broadcastIntent.putExtra("gname", response.getString("gname"));
+                            sendBroadcast(broadcastIntent);
                         } catch (JSONException e) {
                             Log.e("TAG", e.getMessage());
                         }
                         db.insert(VClockContract.MessageInfo.TABLE_NAME, null, values);
-                        Intent broadcastIntent = new Intent("MESSAGE_ARRIVE_BROADCAST");
-                        sendBroadcast(broadcastIntent);
-                        Toast.makeText(getBaseContext(), "服务器返回" + response.toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getBaseContext(), "服务器返回" + response.toString(), Toast.LENGTH_SHORT).show();
                         Log.d("TAG", "服务器返回" + response.toString());
                     }
                 }, new Response.ErrorListener() {
@@ -84,8 +84,9 @@ public class GetMessageService extends Service {
             public void run() {
 
                 while (true) {
+                    Log.d("TAG", "发送消息请求");
 //                    requestQueue.add(jsonObjectRequest);
-                    SystemClock.sleep(1*1000);
+                    SystemClock.sleep(5*1000);
                 }
             }
         }).start();
@@ -96,7 +97,7 @@ public class GetMessageService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         requestQueue.stop();
+        super.onDestroy();
     }
 }

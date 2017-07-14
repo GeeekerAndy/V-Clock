@@ -27,13 +27,30 @@ public class MessageListAdapter extends ArrayAdapter<GuestMessage> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        ViewHolder viewHolder;
+        View view;
+
         GuestMessage guestMessage = getItem(position);
-        View view = LayoutInflater.from(getContext()).inflate(messageLayoutID, parent, false);
-        TextView guestName = view.findViewById(R.id.tv_guest_name_in_message);
-        TextView arriveTime = view.findViewById(R.id.tv_arrive_time_in_message);
-        guestName.setText(guestMessage.getGuestName() + "到达");
-        arriveTime.setText(guestMessage.getArriveTime());
+
+        if(convertView == null) {
+            view = LayoutInflater.from(getContext()).inflate(messageLayoutID, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.guestName = view.findViewById(R.id.tv_guest_name_in_message);
+            viewHolder.arriveTime = view.findViewById(R.id.tv_arrive_time_in_message);
+            view.setTag(viewHolder);
+        } else {
+            view = convertView;
+            viewHolder = (ViewHolder)view.getTag();
+        }
+        viewHolder.guestName.setText(guestMessage.getGuestName() + "到达");
+        viewHolder.arriveTime.setText(guestMessage.getArriveTime());
         return view;
+    }
+
+    private static class ViewHolder {
+        TextView guestName;
+        TextView arriveTime;
     }
 
 }

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,7 +56,7 @@ public class MeFragment extends Fragment {
 
     boolean isOnEdit = false;
     String eid;
-
+    RequestQueue requestQueue;
 
     public MeFragment() {
         // Required empty public constructor
@@ -68,7 +69,6 @@ public class MeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_me, container, false);
         final HashMap<String, String> emploeeInfo = new HashMap<>();
-        final RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         final SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
         final ImageView employeeAvatar = view.findViewById(R.id.iv_employee_avatar);
         final EditText employeeName = view.findViewById(R.id.tv_employee_name);
@@ -77,6 +77,8 @@ public class MeFragment extends Fragment {
         final EditText employeeTel = view.findViewById(R.id.tv_employee_tel);
         eid = sp.getString("eid", null);
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
+        requestQueue = Volley.newRequestQueue(getContext());
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
         signOut.setOnClickListener(new View.OnClickListener() {
@@ -160,8 +162,8 @@ public class MeFragment extends Fragment {
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
-                            }
+                                Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
+                        }
                         }) {
                             @Override
                             public Map<String, String> getParams() {
@@ -189,7 +191,7 @@ public class MeFragment extends Fragment {
                                 Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e("ERROE", e.getMessage());
+                            Log.e("ERROR", e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -211,9 +213,15 @@ public class MeFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onDestroy() {
-        super.onDestroy();
         isOnEdit = false;
+        requestQueue.stop();
+        super.onDestroy();
     }
 
 }
