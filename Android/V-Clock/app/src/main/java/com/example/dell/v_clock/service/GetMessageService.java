@@ -74,12 +74,12 @@ public class GetMessageService extends Service {
                         }
                         db.insert(VClockContract.MessageInfo.TABLE_NAME, null, values);
 //                        Toast.makeText(getBaseContext(), "服务器返回" + response.toString(), Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "服务器返回" + response.toString());
+//                        Log.d(TAG, "服务器返回" + response.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "响应错误：服务器超时或没有嘉宾消息");
+//                Log.d(TAG, "响应错误：服务器超时或没有嘉宾消息");
             }
         });
         new Thread(new Runnable() {
@@ -87,7 +87,7 @@ public class GetMessageService extends Service {
             public void run() {
 
                 while (true) {
-                    Log.d(TAG, "发送消息请求");
+//                    Log.d(TAG, "发送消息请求");
                     requestQueue.add(jsonObjectRequest);
                     SystemClock.sleep(5*1000);
                 }

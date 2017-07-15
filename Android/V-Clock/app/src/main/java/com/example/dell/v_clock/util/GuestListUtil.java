@@ -1,14 +1,12 @@
 package com.example.dell.v_clock.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.org.afinal.simplecache.ACache;
@@ -21,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by 王庆伟 on 2017/7/13.
@@ -37,12 +33,8 @@ public class GuestListUtil {
     public static final int MY_SAVE_TIME = 3600;
     //全部嘉宾缓存保存时间 单位 秒
     public static final int ALL_SAVE_TIME = 1800;
-    //广播相关
-//    public static final String BROADCAST_ACTION = "jason.broadcast.action";
-//    public static final String BROADCAST_KEY = "receiver";
-//    public static final String BROADCAST_VALUE = "GuestListFragment";
-//    public static final String MY_GUEST = "myGuest";
-//    public static final String ALL_GUEST = "allGuest";
+    //ChildList数据
+    public static List<List<Map<String, Object>>> guestChildList = new ArrayList<>();
 
     //我的嘉宾 请求tip
     private static final String MY_GUEST_SEARCH_TYPE = "0";
@@ -52,8 +44,6 @@ public class GuestListUtil {
     private static JSONArray myGuestJsonArray = null;
     //allGuestJson对象
     private static JSONArray allGuestJsonArray = null;
-    //ChildList数据
-    private static List<List<Map<String, Object>>> guestChildList = new ArrayList<>();
 
     private static final int MY_GUEST_IDENTITOR = 0;
     private static final int ALL_GUEST_IDENTITOR = 1;
@@ -70,7 +60,12 @@ public class GuestListUtil {
         allGuestJsonArray = new JSONArray();
     }
 
-    public static void requestMyGuestList(Context context, RequestQueue requestQueue, String eid) {
+    /**
+     * 向服务器请求我的嘉宾
+     * @param requestQueue requestQueue
+     * @param eid eid
+     */
+    public static void requestMyGuestList(RequestQueue requestQueue, String eid) {
         isMyFreshed = false;
         //向服务器发送请求  请求我的嘉宾
         Map<String, String> my_searchInfo = new HashMap<>();
@@ -83,19 +78,21 @@ public class GuestListUtil {
         requestQueue.add(myGuestRequest);
     }
 
-    public static void requestAllGuestList(Context context, RequestQueue requestQueue, String eid) {
+    /**
+     *
+     * @param requestQueue requestQueue
+     */
+    public static void requestAllGuestList(RequestQueue requestQueue) {
         isAllFreshed = false;
         //  请求全部嘉宾
         Map<String, String> all_searchInfo = new HashMap<>();
-        //TODO
-        all_searchInfo.put("gname", " ");
+        all_searchInfo.put("gname", "");
         all_searchInfo.put("tip", PARTIAL_NAME_SEARCH_TYPE);
-        all_searchInfo.put("eid", eid);
         JSONObjectRequestMapParams allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
                 new AllGuestListResponseListener(), new GuestListResponseErrorListener());
         //发出请求
         Log.i(TAG, "向服务器发出 全部嘉宾 请求");
-//        requestQueue.add(allGuestRequest);
+        requestQueue.add(allGuestRequest);
     }
 
     /**
@@ -194,23 +191,6 @@ public class GuestListUtil {
         removeCache(guest.getGuest_type(), context);
     }
 
-
-    /**
-     * 复制一个List 到 另一个List
-     *
-     * @param sourceList 源List
-     * @param toList     目的List
-     */
-    public static void setValueToList(List<Map<String, Object>> sourceList, List<Map<String, Object>> toList) {
-        if (toList.size() > 0) {
-            toList.clear();
-        }
-        for (Map<String, Object> temp : sourceList) {
-            toList.add(temp);
-        }
-    }
-
-
     /**
      * 获取 我的嘉宾 信息的 后台回复监听器
      */
@@ -277,7 +257,7 @@ public class GuestListUtil {
      * @param guestJsonArray 嘉宾信息
      * @param i              我的嘉宾：0 ； 全部嘉宾：1
      */
-    private static void loadChildListData(JSONArray guestJsonArray, int i) {
+    public static void loadChildListData(JSONArray guestJsonArray, int i) {
         if (guestJsonArray != null) {
             if (guestChildList.size() > i) {
                 guestChildList.get(i).clear();
@@ -372,19 +352,6 @@ public class GuestListUtil {
     }
 
     /**
-     * @param myGuestList myGuestList
-     */
-    public static void setMyGuestList(List<Map<String, Object>> myGuestList) {
-        if (guestChildList.size() < MY_GUEST_IDENTITOR) {
-            guestChildList.add(MY_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
-        }
-        setValueToList(myGuestList, guestChildList.get(MY_GUEST_IDENTITOR));
-//        for (Map<String, Object> temp : myGuestList) {
-//            guestChildList.get(MY_GUEST_IDENTITOR).add(temp);
-//        }
-    }
-
-    /**
      * @return 全部嘉宾列表数据
      */
     public static List<Map<String, Object>> getAllGuestList() {
@@ -392,19 +359,6 @@ public class GuestListUtil {
             guestChildList.add(ALL_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
         }
         return guestChildList.get(ALL_GUEST_IDENTITOR);
-    }
-
-    /**
-     * @param allGuestList
-     */
-    public static void setAllGuestList(List<Map<String, Object>> allGuestList) {
-        if (guestChildList.size() < ALL_GUEST_IDENTITOR) {
-            guestChildList.add(ALL_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
-        }
-        setValueToList(allGuestList, guestChildList.get(ALL_GUEST_IDENTITOR));
-//        for (Map<String, Object> temp : allGuestList) {
-//            guestChildList.get(ALL_GUEST_IDENTITOR).add(temp);
-//        }
     }
 
     /**

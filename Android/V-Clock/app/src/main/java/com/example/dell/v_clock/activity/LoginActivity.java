@@ -39,8 +39,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView tv_sign_up;
     //手机号输入框
     private EditText et_phone;
-    //顶部的LinearLayout
-    private LinearLayout linear_top;
     //底部的RelativeLayout
     private RelativeLayout relative_bottom;
     //圆形logo
@@ -51,6 +49,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private final int MY_PERMISSION_REQUEST = 1;
     //用户的手机号
     String phoneNum = "";
+    //询问权限次数
+    int permissionQuiryCount = 0;
+    //权限是否授予
+    boolean isGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +69,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         //初始化控件
         initComponents();
+        //申请权限 Camera Read
+        grantPermission();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //申请权限 Camera Read
-        grantPermission();
         //判断是不是从注册界面跳转过来 获取intent中的手机号信息
         try {
             Intent register_intent = this.getIntent();
@@ -92,7 +94,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         bt_next = (Button) findViewById(R.id.bt_next);
         tv_sign_up = (TextView) findViewById(R.id.tv_sign_up);
         et_phone = (EditText) findViewById(R.id.edit_text_phone);
-        linear_top = (LinearLayout) findViewById(R.id.linear_top);
         relative_bottom = (RelativeLayout) findViewById(R.id.relative_bottom);
         iv_logo = (ImageView) findViewById(R.id.iv_logo);
         iv_title = (ImageView) findViewById(R.id.iv_title);
@@ -128,9 +129,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             //权限未授予  申请权限
             ActivityCompat.requestPermissions(this, permissions, MY_PERMISSION_REQUEST);
+        } else {
+            isGranted = true;
         }
     }
 
@@ -144,13 +148,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             //点击“下一步”按钮后的操作
             case R.id.bt_next:
-                operateAfterNext();
+                if (isGranted) {
+                    operateAfterNext();
+                } else {
+                    Toast.makeText(this, "权限不足，请授予权限！", Toast.LENGTH_SHORT).show();
+                }
                 break;
             //点击“注册”文字后的操作
             case R.id.tv_sign_up:
-                //通过Intent对象跳转到注册界面
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
+                if (isGranted) {
+                    //通过Intent对象跳转到注册界面
+                    Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "权限不足，请授予权限！", Toast.LENGTH_SHORT).show();
+                }
                 break;
             //默认操作
             default:
@@ -169,7 +181,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         int lengthOfPhone = phoneNumber.length();
         if (lengthOfPhone < 11) {
             Toast.makeText(LoginActivity.this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
-            //方便测试 暂时注释掉下一行
+            //TODO  方便测试 暂时注释掉下一行
             return;
         }
         //TODO 向服务器查询输入手机号是否已注册
@@ -191,11 +203,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (grantResults.length > 0) {
                     for (int result : grantResults) {
                         if (result == PackageManager.PERMISSION_DENIED) {
-                            Toast.makeText(this, "权限不足，摄像头无法打开！", Toast.LENGTH_SHORT).show();
-                            startPermissionSetting();
-                            break;
+                            isGranted = false;
+                            if (permissionQuiryCount == 0) {
+                                Toast.makeText(this, "权限不足，请授予权限！", Toast.LENGTH_SHORT).show();
+                                startPermissionSetting();
+                                permissionQuiryCount++;
+                            }
+                            return;
                         }
                     }
+                    isGranted = true;
                 }
                 break;
         }
@@ -210,6 +227,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Uri packageURI = Uri.parse("package:" + context.getPackageName());
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
         startActivity(intent);
+        finish();
     }
 
 }

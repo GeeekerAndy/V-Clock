@@ -6,49 +6,51 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundOfLogin"
     android:orientation="vertical"
-    android:weightSum="10"
+    android:weightSum="12"
     tools:context="com.example.dell.v_clock.activity.LoginActivity">
 
     <RelativeLayout
+        android:id="@+id/relative_logo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="4">
+        android:layout_height="0dp"
+        android:layout_weight="5">
 
-        <LinearLayout
-            android:id="@+id/linear_top"
+        <ImageView
+            android:id="@+id/iv_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:orientation="vertical">
+            android:adjustViewBounds="true"
+            android:src="@drawable/login_logo" />
 
-            <ImageView
-                android:id="@+id/iv_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@drawable/login_logo" />
+    </RelativeLayout>
 
-            <ImageView
-                android:id="@+id/iv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/height_30"
-                android:adjustViewBounds="true"
-                android:src="@drawable/title" />
-        </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <ImageView
+            android:id="@+id/iv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:src="@drawable/title" />
     </RelativeLayout>
 
 
     <RelativeLayout
         android:id="@+id/relative_bottom"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="6"
+        android:layout_height="0dp"
+        android:layout_weight="3"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/edit_text_phone"
             android:layout_width="match_parent"
+            android:layout_centerInParent="true"
             android:layout_height="@dimen/height_30"
             android:layout_marginLeft="@dimen/margin_40"
             android:layout_marginRight="@dimen/margin_40"
@@ -59,13 +61,18 @@
             android:textSize="15sp" />
 
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
         <LinearLayout
             android:id="@+id/linear_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/margin_50"
-            android:layout_below="@+id/edit_text_phone"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:orientation="horizontal">
 
             <Button
@@ -86,7 +93,6 @@
                 android:textSize="20sp" />
 
         </LinearLayout>
-
     </RelativeLayout>
 
 

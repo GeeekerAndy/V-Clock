@@ -217,6 +217,10 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                 case 1:
                     //此嘉宾已存在
                     Toast.makeText(AddGuestActivity.this, "此嘉宾已存在！", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("gname",name);
+                    intent.putExtra("guest_type",1);
+                    startActivity(intent);
                     //清空输入信息
                     cleanGuestInfo();
                     break;

@@ -7,7 +7,7 @@ package com.example.dell.v_clock;
 public class ServerInfo {
 
 //    public static String SERVER_URL_1 = "http://121.250.222.39:8080/V-Clock";
-    public static String SERVER_URL_2 = "http://121.250.222.39:8080/V-Clock";
+    public static String SERVER_URL_2 = "http://121.250.222.47:8080/V-Clock";
 
 
     public static String LOGIN_URL = SERVER_URL_2 + "/servlet/ALoginServlet";

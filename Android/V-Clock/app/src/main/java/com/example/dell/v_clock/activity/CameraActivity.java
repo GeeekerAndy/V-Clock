@@ -18,7 +18,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -67,12 +69,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     //超时毫秒数
     private final int OVERTIME = 20000;
     //捕捉画面的时间间隔
-    private final int INTERVAL = 100;
+    private final int INTERVAL = 50;
     //捕捉画面的次数
     private int captureCount = 0;
 
     //测试使用的ImageView
     ImageView iv_test;
+
+    ImageButton img_bt_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +100,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         //初始化请求队列
         requestQueue = Volley.newRequestQueue(this);
 
+        img_bt_back = (ImageButton) findViewById(R.id.img_bt_camera_back);
+
         //测试
         iv_test = (ImageView) findViewById(R.id.iv_test);
+        iv_test.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -120,6 +127,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         super.onPause();
         releaseCamera();
         faceCheck.exitTask();
+        if (mFaceTask != null) {
+            mFaceTask.cancel(true);
+        }
     }
 
     /**
@@ -160,7 +170,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             //将预览相机内容的横屏转为竖屏
             //小米手机翻转270   三星、oneplus：90
             camera.setDisplayOrientation(90);
-//            camera.setPreviewCallback(this);
+            camera.setPreviewCallback(this);
             camera.startPreview();
 
         } catch (IOException e) {
@@ -209,7 +219,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     @Override
     public void onPreviewFrame(final byte[] bytes, Camera camera) {
-
         if (null != mFaceTask) {
             switch (mFaceTask.getStatus()) {
                 case RUNNING:
@@ -219,49 +228,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     break;
             }
         }
-//        new Thread(new Runnable() {
-//            byte[] mData = bytes;
-//            @Override
-//            public void run() {
-//                Camera.Size size = mCamera.getParameters().getPreviewSize();
-//                final int width = size.width;
-//                final int height = size.height;
-//                //用于预览
-//                final YuvImage image = new YuvImage(mData, ImageFormat.NV21, width, height, null);
-//                ByteArrayOutputStream os = new ByteArrayOutputStream(mData.length);
-//                //
-//                boolean isToJpeg = image.compressToJpeg(new Rect(0, 0, width, height), 100, os);
-//                if (!isToJpeg) {
-//                    //转换失败 直接返回
-//                    return;
-//                }
-//                byte[] temp = os.toByteArray();
-//                Bitmap bmp = BitmapFactory.decodeByteArray(temp, 0, temp.length);
-//                //旋转图像
-//                Matrix matrix = new Matrix();
-//                //小米手机翻转90   三星、oneplus：270
-//                matrix.postRotate(270);
-//                Bitmap bmp_rotated = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-//                //TODO　进行人脸识别等一系列操作
-//                //进行人脸检测
-//                FaceAttr faceAttr = faceCheck.detectFace(bmp_rotated, width, height, 1);
-//                //测试一下数据是否可以显示
-//                if (faceAttr.isIncludeFace()) {
-//                    Message msg = handler.obtainMessage();
-//                    msg.arg1 = 0;
-//                    msg.obj = bmp_rotated;
-//                    handler.sendMessage(msg);
-//                    //传输图片与用户手机号
-//                    if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
-//                        isWaited = true;
-//                        Log.i("Transger", "向服务器发送数据");
-//                        transferPhoneImg(bmp_rotated);
-//                    }
-//                }
-//            }
-//        }).start();
-
-        //todo
         mFaceTask = new FaceTask(bytes);
         mFaceTask.execute((Void) null);
     }
@@ -280,9 +246,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         protected Void doInBackground(Void... voids) {
-            //test
-            Log.i("CameraActivity","doInBackground");
-
             Camera.Size size = mCamera.getParameters().getPreviewSize();
             final int width = size.width;
             final int height = size.height;
@@ -290,7 +253,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             final YuvImage image = new YuvImage(mData, ImageFormat.NV21, width, height, null);
             ByteArrayOutputStream os = new ByteArrayOutputStream(mData.length);
             //
-            boolean isToJpeg = image.compressToJpeg(new Rect(0, 0, width, height), 100, os);
+            boolean isToJpeg = image.compressToJpeg(new Rect(0, 0, width, height), 80, os);
             if (!isToJpeg) {
                 //转换失败 直接返回
                 return null;
@@ -304,7 +267,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             Bitmap bmp_rotated = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
             //TODO　进行人脸识别等一系列操作
             //进行人脸检测
-            FaceAttr faceAttr = faceCheck.detectFace(bmp_rotated, width, height, 1);
+            FaceAttr faceAttr = faceCheck.detectFace(bmp_rotated, width, height);
             //测试一下数据是否可以显示
             if (faceAttr.isIncludeFace()) {
                 Message msg = handler.obtainMessage();
@@ -314,12 +277,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 //传输图片与用户手机号
                 if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
                     isWaited = true;
-                    Log.i("Transger", "向服务器发送数据");
+//                    Log.i("Transger", "向服务器发送数据");
                     transferPhoneImg(bmp_rotated);
                 }
             }
             return null;
         }
+
+
     }
 
 
@@ -339,25 +304,25 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                         handler.sendMessage(msg);
                         break;
                     }
-                    if (null != mCamera) {
-                        //获取人脸时 自动对焦 这样写是否有效？TODO  三星note3  不可以
-                        mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                            @Override
-                            public void onAutoFocus(boolean b, Camera camera) {
-                                if (b) {
-                                    //自动对焦成功
-                                    //获取实时帧  调用回调函数 处理实时帧数据
-                                    //TODO 此处在登录成功后可能造成空指针异常
-                                    try {
-                                        mCamera.setOneShotPreviewCallback(CameraActivity.this);
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    }
-//                                    Log.i("CameraData", "setOneShotPreviewCallback");
-                                }
-                            }
-                        });
-                    }
+//                    if (null != mCamera) {
+//                        //获取人脸时 自动对焦 这样写是否有效？TODO  三星note3  不可以
+//                        mCamera.autoFocus(new Camera.AutoFocusCallback() {
+//                            @Override
+//                            public void onAutoFocus(boolean b, Camera camera) {
+//                                if (b) {
+//                                    //自动对焦成功
+//                                    //获取实时帧  调用回调函数 处理实时帧数据
+//                                    //TODO 此处在登录成功后可能造成空指针异常
+//                                    try {
+////                                        mCamera.setOneShotPreviewCallback(CameraActivity.this);
+//                                    } catch (NullPointerException e) {
+//                                        e.printStackTrace();
+//                                    }
+////                                    Log.i("CameraData", "setOneShotPreviewCallback");
+//                                }
+//                            }
+//                        });
+//                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Thread.currentThread().interrupt();
@@ -376,6 +341,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 case 0:
                     //更新捕捉画面
                     iv_test.setImageBitmap((Bitmap) msg.obj);
+                    iv_test.setVisibility(View.VISIBLE);
                     break;
                 case 1:
                     //提示超时信息
@@ -400,9 +366,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String, String> map = new HashMap<>();
                 map.put("etel", phoneNum);
-                Log.i("CameraActivity", "phoneTo = " + phoneNum);
+//                Log.i("CameraActivity", "phoneTo = " + phoneNum);
                 String imgStr = ImageUtil.convertImage(bmp_rotated);
-                Log.i("CameraActivity", "length of img Str = " + imgStr.length());
+//                Log.i("CameraActivity", "length of img Str = " + imgStr.length());
                 map.put("ephoto", imgStr);
                 return map;
             }
@@ -420,8 +386,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 intOfResponse = Integer.parseInt(response);
             } catch (NumberFormatException e) {
                 //返回数据包含非数字信息
-                Log.i("Transfer", "收到服务器回复 数据错误");
-                Log.i("CameraActivity", "response 包含非数字信息");
+//                Log.i("Transfer", "收到服务器回复 数据错误");
+//                Log.i("CameraActivity", "response 包含非数字信息");
                 e.printStackTrace();
             }
             if (lengthOfResponse == 1) {
@@ -436,19 +402,19 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     case 2:
                         //数据错误
                         isMatch = false;
-                        Log.i("Transfer", "收到服务器回复 数据错误");
+//                        Log.i("Transfer", "收到服务器回复 数据错误");
                         break;
                     case 3:
                         //登录人脸不匹配
                         isMatch = false;
-                        Log.i("Transfer", "收到服务器回复 人脸不匹配");
+//                        Log.i("Transfer", "收到服务器回复 人脸不匹配");
                         break;
                 }
             } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
                 isMatch = true;
                 //TODO 有待测试  登录成功 setOneShotPreview() NullPointer
                 mFaceTask.cancel(true);
-                Log.i("Transfer", "收到服务器回复 登录成功");
+//                Log.i("Transfer", "收到服务器回复 登录成功");
                 //跳转到主界面 传入eid
                 //
                 //提示匹配成功信息
@@ -457,7 +423,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 saveLoginInfo(response);
                 Intent intent = new Intent(CameraActivity.this, MainActivity.class);
                 intent.putExtra("eid", response);
-                Log.i("CameraActivity", "eid = " + response);
+//                Log.i("CameraActivity", "eid = " + response);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
 //                CameraActivity.this.finish();
@@ -474,7 +440,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     private void saveLoginInfo(String response) {
         SharedPreferences sp = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
-        Log.i("SaveLoginInfo", response);
+//        Log.i("SaveLoginInfo", response);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("eid", response);
         editor.apply();
@@ -484,10 +450,14 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.i("Transfer", "收到服务器回复");
+//            Log.i("Transfer", "收到服务器错误回复");
             //提示网络连接失败
             isWaited = false;
             Toast.makeText(CameraActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void backToLogin(View view) {
+        this.finish();
     }
 }

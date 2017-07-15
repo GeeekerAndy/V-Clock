@@ -42,7 +42,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_modigy);
+        setContentView(R.layout.activity_modify);
         img_bt_back = (ImageButton) findViewById(R.id.img_bt_modify_back);
         tv_modify_title = (TextView) findViewById(R.id.tv_modify_info);
         tv_save = (TextView) findViewById(R.id.tv_save);
