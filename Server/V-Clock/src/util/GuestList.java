@@ -49,7 +49,7 @@ public class GuestList {
 		else if(type.equals("eid")){
 			Matcher m2=ifAllNumber.matcher(content);
 			boolean eidBool=m2.matches();
-			if(content.length()<5&&eidBool){
+			if(content.length()==4&&eidBool){
 				return true;
 			}
 			else

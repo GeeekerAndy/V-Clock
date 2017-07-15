@@ -1,4 +1,4 @@
-package controller;
+package webServiceServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,14 +15,15 @@ import javax.servlet.http.HttpSession;
 
 import util.Employee;
 import util.GuestList;
+import util.SessionListener;
 
-public class DeleteFromGuestListServlet extends HttpServlet {
+public class WDeleteFromGuestListServlet extends HttpServlet {
 
 
 	/**
 	 * Constructor of the object.
 	 */
-	public DeleteFromGuestListServlet() {
+	public WDeleteFromGuestListServlet() {
 		super();
 		//c = conn.con();
 	}
@@ -70,7 +71,9 @@ public class DeleteFromGuestListServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		HttpSession session=request.getSession();
+		HttpSession session = request.getSession(false);
+		boolean validate=SessionListener.getInstance().verifySession(request);
+		if(validate){
 		Employee emp=new Employee();
 //		String userTel=(String) session.getAttribute("etel");
 //		String userPhoto=(String) session.getAttribute("ephoto");
@@ -79,8 +82,8 @@ public class DeleteFromGuestListServlet extends HttpServlet {
 //				String loginBool=emp.checkuser(userTel, userPhoto);
 //				if(loginBool.equals("0")){
 					String gname=request.getParameter("gname");
-					String eid=request.getParameter("eid");
-//					String eid=(String) session.getAttribute("eid");
+					//String eid=request.getParameter("eid");
+					String eid=(String) session.getAttribute("eid");
 					System.out.println("(gname+eid):"+gname+"+"+eid);
 					GuestList guestList=new GuestList();
 					String tip=guestList.deleteFromGuestList(gname, eid);
@@ -89,7 +92,7 @@ public class DeleteFromGuestListServlet extends HttpServlet {
 					out.write(tip);
 					out.flush();
 					out.close();
-//				}
+				}
 //				else
 //					System.out.println("No Legitimate(2)");
 //			} catch (Exception e) {

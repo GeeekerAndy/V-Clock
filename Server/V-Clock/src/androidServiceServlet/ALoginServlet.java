@@ -1,26 +1,27 @@
-package controller;
+package androidServiceServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONArray;
+import util.Employee;
+import util.SessionListener;
+
 import net.sf.json.JSONObject;
 
-import util.Employee;
-import util.VisitingRecord;
-
-public class DisplayVisitingRecordServlet extends HttpServlet {
+public class ALoginServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public DisplayVisitingRecordServlet() {
+	public ALoginServlet() {
 		super();
 	}
 
@@ -61,45 +62,39 @@ public class DisplayVisitingRecordServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		HttpSession session=request.getSession();
-//		Employee emp=new Employee();
-//		String userTel=(String) session.getAttribute("etel");
-//		String userPhoto=(String) session.getAttribute("ephoto");
-//		if(userTel!=null&&userPhoto!=null){
-//			try {
-//				String loginBool=emp.checkuser(userTel, userPhoto);
-//				if(loginBool.equals("0")){
-					String eid=request.getParameter("eid");
-//					String eid=(String) session.getAttribute("eid");
-					String page=request.getParameter("page");
-					System.out.println("eid(visitingRecord):"+eid);
-					VisitingRecord visitingRecord=new VisitingRecord();
-					int allPageCount=visitingRecord.pageCount(eid);
-					JSONArray temp=visitingRecord.displayVisitingRecord(eid,page);
-					JSONObject json=new JSONObject();
-					if(temp==null)
-						json.put("tip", "2");
-					else{
-						json.put("tip", "0");
-						json.put("allPageCount", allPageCount);
-						json.put("VisitingRecord", temp);
-					}
-					response.setCharacterEncoding("UTF-8");
-					PrintWriter out = response.getWriter();		
-					//System.out.println(json.toString());
-					out.append(json.toString());
-					out.flush();
-					out.close();
-//				}
-//				else
-//					System.out.println("No Legitimate(2)");
-//			} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			}
-//		}
-//		else
-//			System.out.println("No Legitimate(1)");
+		String etel=request.getParameter("etel");
+		String ephoto=request.getParameter("ephoto");	
+		System.out.println("login:"+etel);
+		Employee emp=new Employee();
+		String eid;
+		try {
+			eid = emp.login(etel, ephoto);
+			response.setCharacterEncoding("UTF-8");
+			System.out.println("**********************");
+			PrintWriter out=null;
+			out=response.getWriter();
+			out.append(eid);
+			System.out.println("eid(login):"+eid);
+			
+			if(eid.length()==4){
+				HttpSession session=request.getSession();
+				if(session.isNew()){
+					session.setAttribute("eid", eid);
+					SessionListener.getInstance().addToDB(session);
+				}
+				//session.setAttribute("eid", eid);
+				
+				
+				//System.out.println(session.getId()+"--------");
+				//session.setAttribute("etel", etel);
+				//session.setAttribute("ephoto", ephoto);
+			}
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

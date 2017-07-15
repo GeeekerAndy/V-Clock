@@ -91,7 +91,7 @@ public class Employee implements objects.Employees{
 		if(type.equals("etel")){
 			Matcher m1=ifAllNumber.matcher(content);
 			boolean etelbool=m1.matches();
-			if(content.length()<12&&etelbool){
+			if(content.length()==11&&etelbool){
 				return true;
 			}
 			else
@@ -109,7 +109,7 @@ public class Employee implements objects.Employees{
 		else if(type.equals("eid")){
 			Matcher m3=ifAllNumber.matcher(content);
 			boolean eidBool=m3.matches();
-			if(content.length()<5&&eidBool){
+			if(content.length()==4&&eidBool){
 				return true;
 			}
 			else

@@ -1,19 +1,27 @@
-package controller;
+package webServiceServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-public class SearchOneGuestServlet extends HttpServlet {
+import util.Employee;
+import util.SessionListener;
+
+import net.sf.json.JSONObject;
+
+public class WLoginServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public SearchOneGuestServlet() {
+	public WLoginServlet() {
 		super();
 	}
 
@@ -37,20 +45,8 @@ public class SearchOneGuestServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the GET method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		doPost(request,response);
 	}
 
 	/**
@@ -65,20 +61,40 @@ public class SearchOneGuestServlet extends HttpServlet {
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		out.println("<HTML>");
-		out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-		out.println("  <BODY>");
-		out.print("    This is ");
-		out.print(this.getClass());
-		out.println(", using the POST method");
-		out.println("  </BODY>");
-		out.println("</HTML>");
-		out.flush();
-		out.close();
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		String etel=request.getParameter("etel");
+		String ephoto=request.getParameter("ephoto");	
+		System.out.println("login:"+etel);
+		Employee emp=new Employee();
+		String eid;
+		try {
+			eid = emp.login(etel, ephoto);
+			response.setCharacterEncoding("UTF-8");
+			System.out.println("**********************");
+			PrintWriter out=null;
+			out=response.getWriter();
+			out.append(eid);
+			System.out.println("eid(login):"+eid);
+			
+			if(eid.length()==4){
+				HttpSession session=request.getSession();
+				if(session.isNew()){
+					session.setAttribute("eid", eid);
+					SessionListener.getInstance().addToDB(session);
+				}
+				//session.setAttribute("eid", eid);
+				
+				
+				//System.out.println(session.getId()+"--------");
+				//session.setAttribute("etel", etel);
+				//session.setAttribute("ephoto", ephoto);
+			}
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

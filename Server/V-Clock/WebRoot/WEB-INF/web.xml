@@ -6,6 +6,12 @@
 	version="3.0"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	<display-name />
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	 <listener>      <listener-class>util.SessionListener</listener-class>   
+		</listener> 
+
 	<servlet>
 		<servlet-name>action</servlet-name>
 		<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
@@ -31,108 +37,203 @@
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 
+	<!-- web服务servlet -->
+	<servlet>
+		<servlet-name>wLogin</servlet-name>
+		<servlet-class>webServiceServlet.WLoginServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wRegister</servlet-name>
+		<servlet-class>webServiceServlet.WRegisterServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wModifyEmployeeInfo</servlet-name>
+		<servlet-class>webServiceServlet.WModifyEmployeeInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wCreateNewGuest</servlet-name>
+		<servlet-class>webServiceServlet.WCreateNewGuestServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wDisplayEmployeeInfo</servlet-name>
+		<servlet-class>webServiceServlet.WDisplayEmployeeInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wModifyGuestInfo</servlet-name>
+		<servlet-class>webServiceServlet.WModifyGuestInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wAddtoGuestList</servlet-name>
+		<servlet-class>webServiceServlet.WAddtoGuestListServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wDisplayVisitingRecord</servlet-name>
+		<servlet-class>webServiceServlet.WDisplayVisitingRecordServlet</servlet-class>
+	</servlet>
 
 	<servlet>
-		<servlet-name>Login</servlet-name>
-		<servlet-class>controller.LoginServlet</servlet-class>
+		<servlet-name>wSearchGuest</servlet-name>
+		<servlet-class>webServiceServlet.WSearchGuestServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>Register</servlet-name>
-		<servlet-class>controller.RegisterServlet</servlet-class>
+		<servlet-name>wDeleteFromGuestList</servlet-name>
+		<servlet-class>webServiceServlet.WDeleteFromGuestListServlet</servlet-class>
+	</servlet>
+	<!-- android 共用服务servlet -->
+	<servlet>
+		<servlet-name>aLogin</servlet-name>
+		<servlet-class>androidServiceServlet.ALoginServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>ModifyEmployeeInfo</servlet-name>
-		<servlet-class>controller.ModifyEmployeeInfoServlet</servlet-class>
+		<servlet-name>aRegister</servlet-name>
+		<servlet-class>androidServiceServlet.ARegisterServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>CreateNewGuest</servlet-name>
-		<servlet-class>controller.CreateNewGuestServlet</servlet-class>
+		<servlet-name>aModifyEmployeeInfo</servlet-name>
+		<servlet-class>androidServiceServlet.AModifyEmployeeInfoServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>DisplayEmployeeInfo</servlet-name>
-		<servlet-class>controller.DisplayEmployeeInfoServlet</servlet-class>
+		<servlet-name>aCreateNewGuest</servlet-name>
+		<servlet-class>androidServiceServlet.ACreateNewGuestServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>ModifyGuestInfo</servlet-name>
-		<servlet-class>controller.ModifyGuestInfoServlet</servlet-class>
+		<servlet-name>aDisplayEmployeeInfo</servlet-name>
+		<servlet-class>androidServiceServlet.ADisplayEmployeeInfoServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>AddtoGuestList</servlet-name>
-		<servlet-class>controller.AddtoGuestListServlet</servlet-class>
+		<servlet-name>aModifyGuestInfo</servlet-name>
+		<servlet-class>androidServiceServlet.AModifyGuestInfoServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>DisplayVisitingRecord</servlet-name>
-		<servlet-class>controller.DisplayVisitingRecordServlet</servlet-class>
+		<servlet-name>aAddtoGuestList</servlet-name>
+		<servlet-class>androidServiceServlet.AAddtoGuestListServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>aDisplayVisitingRecord</servlet-name>
+		<servlet-class>androidServiceServlet.ADisplayVisitingRecordServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>aSearchGuest</servlet-name>
+		<servlet-class>androidServiceServlet.ASearchGuestServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>aDeleteFromGuestList</servlet-name>
+		<servlet-class>androidServiceServlet.ADeleteFromGuestListServlet</servlet-class>
+	</servlet>
+	<!-- web/android 共用服务servlet -->
 	<servlet>
 		<servlet-name>PushMessage</servlet-name>
-		<servlet-class>controller.PushMessageServlet</servlet-class>
+		<servlet-class>commonServiceServlet.PushMessageServlet</servlet-class>
 		<asyncSupported>true</asyncSupported>
 	</servlet>
 	<servlet>
-
 		<servlet-name>PrepareForPushServlet</servlet-name>
-		<servlet-class>controller.PrepareForPushServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>SearchGuest</servlet-name>
-		<servlet-class>controller.SearchGuestServlet</servlet-class>
+		<servlet-class>commonServiceServlet.PrepareForPushServlet</servlet-class>
 	</servlet>
   <servlet>
-    <servlet-name>DeleteFromGuestList</servlet-name>
-    <servlet-class>controller.DeleteFromGuestListServlet</servlet-class>
+    <servlet-name>WLogoutServlet</servlet-name>
+    <servlet-class>webServiceServlet.WLogoutServlet</servlet-class>
   </servlet>
 
-  
-  
-  <servlet-mapping>
-    <servlet-name>Login</servlet-name>
-    <url-pattern>/servlet/LoginServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>Register</servlet-name>
-    <url-pattern>/servlet/RegisterServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>ModifyEmployeeInfo</servlet-name>
-    <url-pattern>/servlet/ModifyEmployeeInfoServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>CreateNewGuest</servlet-name>
-    <url-pattern>/servlet/CreateNewGuestServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DisplayEmployeeInfo</servlet-name>
-    <url-pattern>/servlet/DisplayEmployeeInfoServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>ModifyGuestInfo</servlet-name>
-    <url-pattern>/servlet/ModifyGuestInfoServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AddtoGuestList</servlet-name>
-    <url-pattern>/servlet/AddtoGuestListServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DisplayVisitingRecord</servlet-name>
-    <url-pattern>/servlet/DisplayVisitingRecordServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>PushMessage</servlet-name>
-    <url-pattern>/servlet/PushMessageServlet</url-pattern>
-  </servlet-mapping>
 
-  	<servlet-mapping>
+	<!-- web服务url -->
+	<servlet-mapping>
+		<servlet-name>wLogin</servlet-name>
+		<url-pattern>/servlet/WLoginServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wRegister</servlet-name>
+		<url-pattern>/servlet/WRegisterServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wModifyEmployeeInfo</servlet-name>
+		<url-pattern>/servlet/WModifyEmployeeInfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wCreateNewGuest</servlet-name>
+		<url-pattern>/servlet/WCreateNewGuestServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wDisplayEmployeeInfo</servlet-name>
+		<url-pattern>/servlet/WDisplayEmployeeInfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wModifyGuestInfo</servlet-name>
+		<url-pattern>/servlet/WModifyGuestInfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wAddtoGuestList</servlet-name>
+		<url-pattern>/servlet/WAddtoGuestListServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wDisplayVisitingRecord</servlet-name>
+		<url-pattern>/servlet/WDisplayVisitingRecordServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>wSearchGuest</servlet-name>
+		<url-pattern>/servlet/WSearchGuestServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wDeleteFromGuestList</servlet-name>
+		<url-pattern>/servlet/WDeleteFromGuestListServlet</url-pattern>
+	</servlet-mapping>
+	<!-- android 服务url -->
+		<servlet-mapping>
+		<servlet-name>aLogin</servlet-name>
+		<url-pattern>/servlet/ALoginServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aRegister</servlet-name>
+		<url-pattern>/servlet/ARegisterServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aModifyEmployeeInfo</servlet-name>
+		<url-pattern>/servlet/AModifyEmployeeInfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aCreateNewGuest</servlet-name>
+		<url-pattern>/servlet/ACreateNewGuestServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aDisplayEmployeeInfo</servlet-name>
+		<url-pattern>/servlet/ADisplayEmployeeInfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aModifyGuestInfo</servlet-name>
+		<url-pattern>/servlet/AModifyGuestInfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aAddtoGuestList</servlet-name>
+		<url-pattern>/servlet/AAddtoGuestListServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aDisplayVisitingRecord</servlet-name>
+		<url-pattern>/servlet/ADisplayVisitingRecordServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>aSearchGuest</servlet-name>
+		<url-pattern>/servlet/ASearchGuestServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>aDeleteFromGuestList</servlet-name>
+		<url-pattern>/servlet/ADeleteFromGuestListServlet</url-pattern>
+	</servlet-mapping>
+	<!-- web/android 共用服务url -->
+	<servlet-mapping>
+		<servlet-name>PushMessage</servlet-name>
+		<url-pattern>/servlet/PushMessageServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
 		<servlet-name>PrepareForPushServlet</servlet-name>
 		<url-pattern>/servlet/PrepareForPushServlet</url-pattern>
 	</servlet-mapping>
   <servlet-mapping>
-    <servlet-name>SearchGuest</servlet-name>
-    <url-pattern>/servlet/SearchGuestServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DeleteFromGuestList</servlet-name>
-    <url-pattern>/servlet/DeleteFromGuestListServlet</url-pattern>
+    <servlet-name>WLogoutServlet</servlet-name>
+    <url-pattern>/servlet/WLogoutServlet</url-pattern>
   </servlet-mapping>
 
 </web-app>

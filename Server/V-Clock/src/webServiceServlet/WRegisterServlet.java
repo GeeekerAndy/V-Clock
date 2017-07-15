@@ -1,25 +1,26 @@
-package controller;
+package webServiceServlet;
 
 import java.io.IOException;
+
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
+import objects.Employees;
 
 import util.Employee;
 
 import net.sf.json.JSONObject;
 
-public class LoginServlet extends HttpServlet {
+public class WRegisterServlet extends HttpServlet implements Employees{
 
 	/**
 	 * Constructor of the object.
 	 */
-	public LoginServlet() {
+	public WRegisterServlet() {
 		super();
 	}
 
@@ -60,26 +61,21 @@ public class LoginServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		String etel=request.getParameter("etel");
-		String ephoto=request.getParameter("ephoto");	
-		System.out.println("login:"+etel);
+		String[] elist=new String[emessage.length];
+		for(int i=1;i<elist.length;i++){
+			elist[i]=request.getParameter(emessage[i]);
+			System.out.println(elist[i]);
+		}
 		Employee emp=new Employee();
-		String eid;
+		String tip="";
 		try {
-			eid = emp.login(etel, ephoto);
+			tip = emp.register(elist[1], elist[2], elist[3], elist[4]);
+			System.out.println("tip:"+tip);
 			response.setCharacterEncoding("UTF-8");
-			System.out.println("**********************");
+			//response.setContentType("text/html; charset=utf-8");
 			PrintWriter out=null;
 			out=response.getWriter();
-			out.append(eid);
-			System.out.println("eid(login):"+eid);
-			if(eid.length()==4){
-				HttpSession session=request.getSession(true);
-				session.setAttribute("eid", eid);
-				//System.out.println(session.getId()+"--------");
-				//session.setAttribute("etel", etel);
-				//session.setAttribute("ephoto", ephoto);
-			}
+			out.write(tip);
 			out.flush();
 			out.close();
 		} catch (Exception e) {

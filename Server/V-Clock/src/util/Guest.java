@@ -51,22 +51,23 @@ public class Guest {
 	 */
 	public boolean codeLegitimate(String type,String content){
 		String allNumber="^[0-9_]+$";//纯数字正则表达式
-		String existNumber=".*\\d+.*";//包含数字正则表达式
+		String existNumber="^[\u4e00-\u9fa5a-zA-Z\\s·]+$";//包含数字正则表达式
 		Pattern ifAllNumber=Pattern.compile(allNumber);
-		Pattern ifExistNumber=Pattern.compile(existNumber);
+		Pattern validteName=Pattern.compile(existNumber);
 		if(type.equals("gtel")){
 			Matcher m1=ifAllNumber.matcher(content);
 			boolean etelbool=m1.matches();
-			if(content.length()<12&&etelbool){
+			if(content.length()==11&&etelbool){
 				return true;
 			}
 			else
 				return false;
 		}
 		else if(type.equals("gname")){
-			Matcher m2=ifExistNumber.matcher(content);
+			Matcher m2=validteName.matcher(content);
 			boolean enameBool=m2.matches();
-			if(content.length()<20&&!enameBool){
+			System.out.println("validate:"+enameBool);
+			if(content.length()<20&&enameBool){
 				return true;
 			}
 			else
@@ -75,7 +76,7 @@ public class Guest {
 		else if(type.equals("regid")){
 			Matcher m3=ifAllNumber.matcher(content);
 			boolean eidBool=m3.matches();
-			if(content.length()<5&&eidBool){
+			if(content.length()==4&&eidBool){
 				return true;
 			}
 			else
@@ -184,13 +185,12 @@ public class Guest {
 	 * 返回值：包含所需所有嘉宾的信息的jsonArray（检索成功）；null（数据错误）
 	 */
 	public JSONArray searchGuest(String gnamePart){
-		if(!codeLegitimate("gname",gnamePart))
-			return null;
 		String sql;
 		String gname,path,gphoto;
 		JSONArray jsonArray=new JSONArray();
 		//JSONObject jsons=new JSONObject();
-		sql="select gname,gphoto from Guest where gname regexp '^"+gnamePart+"'";
+		System.out.println("(s"+gnamePart+"e)");
+		sql="select gname,gphoto from Guest where gname regexp '^"+gnamePart+"' ORDER BY CONVERT(gname using gbk) ASC";
 		try {
 			pstmt=c.prepareStatement(sql);
 			conn.setRs(pstmt.executeQuery());
