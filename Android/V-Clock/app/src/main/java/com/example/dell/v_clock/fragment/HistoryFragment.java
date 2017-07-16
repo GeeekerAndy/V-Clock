@@ -9,6 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -50,6 +55,7 @@ public class HistoryFragment extends Fragment {
     RequestQueue requestQueue;
     String eid;
     ListView historyList;
+    ImageButton updateHistory;
 
     int page = 1;
 
@@ -68,6 +74,22 @@ public class HistoryFragment extends Fragment {
         historyArrayList = new ArrayList<>();
         historyList = view.findViewById(R.id.lv_history_list);
         final SwipyRefreshLayout refreshHistoryFromBottom = view.findViewById(R.id.srl_refresh_history_from_bottom);
+
+        final RotateAnimation rotate = new RotateAnimation(0,360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(1000);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setRepeatMode(Animation.INFINITE);
+        rotate.setInterpolator(new LinearInterpolator());
+        updateHistory = view.findViewById(R.id.ibt_update_history);
+        updateHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateHistory.startAnimation(rotate);
+                updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_refresh_white_24px));
+                new UpdateHistory().doInBackground();
+            }
+        });
 
         requestQueue = Volley.newRequestQueue(getContext());
         new RestoreHistory().doInBackground();
@@ -196,6 +218,44 @@ public class HistoryFragment extends Fragment {
         return view;
     }
 
+    private class UpdateHistory extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+//            RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+            JSONObjectRequestMapParams jsonObjectRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_VISITING_RECORD_URL, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            if(response != null) {
+                                SharedPreferences.Editor editor = getContext().getSharedPreferences("history", MODE_PRIVATE).edit();
+                                editor.putString("page", response.toString());
+                                editor.apply();
+                                updateHistory.clearAnimation();
+                                updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_done_white_24px));
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    updateHistory.clearAnimation();
+                    updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_off_white_24px));
+//                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    HashMap<String, String> eidMap = new HashMap<>();
+                    eidMap.put("page", "1");
+                    eidMap.put("eid", eid);
+                    return eidMap;
+                }
+            };
+            requestQueue.add(jsonObjectRequest);
+            return null;
+        }
+    }
+
     private class RestoreHistory extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -229,11 +289,6 @@ public class HistoryFragment extends Fragment {
                 Log.e(TAG, e.getMessage());
             }
             return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-
         }
     }
 

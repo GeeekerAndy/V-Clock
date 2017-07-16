@@ -86,7 +86,7 @@ public class MeFragment extends Fragment {
         eid = sp.getString("eid", null);
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
         requestQueue = Volley.newRequestQueue(getContext());
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
         signOut.setOnClickListener(new View.OnClickListener() {
