@@ -31,8 +31,8 @@
         <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBarTheme">
-
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -40,8 +40,8 @@
         </activity>
         <activity
             android:name=".activity.RegisterActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -50,6 +50,7 @@
         </activity>
         <activity
             android:name=".activity.CameraActivity"
+            android:theme="@style/NoActionBarTheme"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.SelectPhotoActivity"
@@ -72,8 +73,7 @@
         <activity
             android:name=".activity.ModifyActivity"
             android:theme="@style/NoActionBarTheme" />
-        <activity android:name=".activity.UpdatePwdActivity">
-        </activity>
+        <activity android:name=".activity.UpdatePwdActivity"></activity>
 
         <service
             android:name=".service.GetMessageService"
@@ -88,8 +88,7 @@
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-            </meta-data>
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
     </application>
 

@@ -92,7 +92,6 @@ public class MeFragment extends Fragment {
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 AlertDialog dialog = builder.setTitle("确定退出账号？")
                         .setMessage("这将删除所有账号相关数据")
@@ -100,6 +99,8 @@ public class MeFragment extends Fragment {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                //清空内存数据
+                                GuestListUtil.clearList();
                                 //删除本地缓存
                                 ACache aCache = ACache.get(getContext());
                                 aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);

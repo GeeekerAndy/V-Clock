@@ -41,29 +41,15 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/relative_search">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/relative_search"
-            android:fillViewport="true">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
                 <ExpandableListView
                     android:id="@+id/explv_my_guest_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
+                    android:listSelector="@color/gray_light"
                     android:indicatorEnd="50dp"
                     android:indicatorStart="0dp">
 
                 </ExpandableListView>
-
-            </RelativeLayout>
-
-        </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
 

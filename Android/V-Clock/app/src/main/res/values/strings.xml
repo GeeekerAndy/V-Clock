@@ -46,4 +46,7 @@
     <string name="save">保存</string>
     <string name="fragment_me_edit">编辑</string>
     <string name="update_password">更新密码</string>
+
+    <item type="id" name="myGuest">0</item>
+    <item type="id" name="allGuest">1</item>
 </resources>

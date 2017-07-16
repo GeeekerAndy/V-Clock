@@ -52,8 +52,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private GuestListAdapter guestListAdapter;
     //外侧列表的数据源
     private List<String> guestGroupList;
-    //内层列表的数据源
-    private List<List<Map<String, Object>>> guestChildList;
 
     //请求队列
     private RequestQueue requestQueue;
@@ -65,9 +63,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private JSONArray myGuestJsonArray = null;
     //allGuestJson对象
     private JSONArray allGuestJsonArray = null;
-
-    //是否可加载  请求服务器时 不可加载
-//    private boolean isLoadable = false;
 
     private final int MY_GUEST_IDENTITOR = 0;
     private final int ALL_GUEST_IDENTITOR = 1;
@@ -97,6 +92,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         guestList.setOnChildClickListener(this);
 
         swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setRefreshing(true);
 
         //初始化嘉宾列表
         initGuestList();
@@ -111,13 +107,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         //GroupList只包含两项
         guestGroupList = new ArrayList<>();
         guestGroupList.add(0, "我的嘉宾");
-        guestGroupList.add(1, "全部嘉宾");
+        guestGroupList.add(1, "其他嘉宾");
         //childList的信息来源于后台服务器
-        guestChildList = new ArrayList<>();
-        guestChildList.add(MY_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
-        guestChildList.add(ALL_GUEST_IDENTITOR, new ArrayList<Map<String, Object>>());
         //设置适配器
-        guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, guestChildList);
+        guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, GuestListUtil.guestChildList);
         guestList.setAdapter(guestListAdapter);
         //缓存对象
         mACache = ACache.get(getContext());
@@ -138,10 +131,8 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             public void run() {
                 //加载ChildList数据
                 if (GuestListUtil.getMyGuestList().size() > 0) {//内存中已有我的嘉宾数据
-                    Log.i(TAG, "内存中已有我的嘉宾数据,从内存加载");
-                    GuestListUtil.setValueToList(GuestListUtil.getMyGuestList(), guestChildList.get(MY_GUEST_IDENTITOR));
                     //数据更新 刷新UI
-                    guestListAdapter.notifyDataSetChanged();
+                    handler.sendEmptyMessage(FRESH_UI);
                 } else {
                     Log.i(TAG, "内存中没有我的嘉宾数据,加载缓存");
                     //判断是否有缓存数据  没有请求后台
@@ -150,10 +141,8 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                     cacheIsAvailable(myGuestJsonArray, MY_GUEST_IDENTITOR);
                 }
                 if (GuestListUtil.getAllGuestList().size() > 0) {
-                    Log.i(TAG, "内存中已有全部嘉宾数据,从内存加载");
-                    GuestListUtil.setValueToList(GuestListUtil.getAllGuestList(), guestChildList.get(ALL_GUEST_IDENTITOR));
                     //数据更新 刷新UI
-                    guestListAdapter.notifyDataSetChanged();
+                    handler.sendEmptyMessage(FRESH_UI);
                 } else {
                     Log.i(TAG, "内存中没有全部嘉宾数据,加载缓存");
                     //判断是否有缓存数据
@@ -179,26 +168,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MY_GUEST_IDENTITOR:
-                    //我的嘉宾 数据加载完成
-                    Log.i(TAG, "我的嘉宾 数据加载完成");
-                    if (GuestListUtil.getMyGuestList().size() == 0) {
-                        Log.i(TAG, "GuestUtil 我的嘉宾 无数据 给其赋值 ");
-                        GuestListUtil.setMyGuestList(guestChildList.get(MY_GUEST_IDENTITOR));
-                    }
-                    //刷新UI
-                    guestListAdapter.notifyDataSetChanged();
-                    break;
-                case ALL_GUEST_IDENTITOR:
-                    //全部嘉宾 数据加载完成
-                    Log.i(TAG, "全部嘉宾 数据加载完成");
-                    if (GuestListUtil.getAllGuestList().size() == 0) {
-                        Log.i(TAG, "GuestUtil 全部嘉宾 无数据 给其赋值 ");
-                        GuestListUtil.setAllGuestList(guestChildList.get(ALL_GUEST_IDENTITOR));
-                    }
-                    //刷新UI
-                    guestListAdapter.notifyDataSetChanged();
-                    break;
                 case FRESH_UI:
                     //数据更新 刷新UI
                     guestListAdapter.notifyDataSetChanged();
@@ -218,78 +187,24 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                     //请求服务器
                     if (identitor == 0) {
                         Log.i(TAG, "我的嘉宾缓存为空，请求服务器");
-                        GuestListUtil.requestMyGuestList(getContext(), requestQueue, eid);
+                        GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
                     } else if (identitor == 1) {
                         Log.i(TAG, "全部嘉宾缓存为空，请求服务器");
-                        GuestListUtil.requestAllGuestList(getContext(), requestQueue, eid);
+                        GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
                     }
                 } else {
                     Log.i(TAG, "加载嘉宾缓存——" + identitor);
-                    loadChildListData(guestJsonArray, identitor);
+                    GuestListUtil.loadChildListData(guestJsonArray, identitor);
                 }
             }
         }).start();
-
-        //启动线程  检测是否需要写缓存
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        Thread.sleep(500);
-                        JSONArray temp;
-                        if (identitor == MY_GUEST_IDENTITOR) {
-                            temp = GuestListUtil.getMyGuestJsonArray();
-                            if (temp.length() > 0 && myGuestJsonArray == null) {
-                                //写缓存
-                                Log.i(TAG, "我的嘉宾 写缓存");
-                                mACache.put(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE, temp, GuestListUtil.MY_SAVE_TIME);
-                                break;
-                            }
-                        } else if (identitor == ALL_GUEST_IDENTITOR) {
-                            temp = GuestListUtil.getAllGuestJsonArray();
-                            if (temp.length() > 0 && allGuestJsonArray == null) {
-                                //写缓存
-                                Log.i(TAG, "全部嘉宾 写缓存");
-                                mACache.put(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE, temp, GuestListUtil.ALL_SAVE_TIME);
-                                break;
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }).start();
-    }
-
-    /**
-     * 加载ChildList信息
-     *
-     * @param guestJsonArray 嘉宾信息
-     * @param i              我的嘉宾：0 ； 全部嘉宾：1
-     */
-    private void loadChildListData(JSONArray guestJsonArray, int i) {
-        if (guestJsonArray != null) {
-            synchronized (this) {
-                if (guestChildList.size() > i) {
-                    Log.i(TAG, "嘉宾列表——" + i + " 有数据，清空");
-                    guestChildList.get(i).clear();
-                }
-                Log.i(TAG, "将从缓存中读取的JSon对象转为List——" + i);
-                List<Map<String, Object>> tempList = GuestListUtil.jsonToList(guestJsonArray);
-                guestChildList.add(i, tempList);
-                handler.sendEmptyMessage(i);
-            }
-        }
     }
 
     //下拉刷新 重新请求数据库
     @Override
     public void onRefresh() {
-        GuestListUtil.requestMyGuestList(getContext(), requestQueue, eid);
-        GuestListUtil.requestAllGuestList(getContext(), requestQueue, eid);
+        GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
+        GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
     }
 
     /**
@@ -304,14 +219,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                     while (true) {
                         Thread.sleep(1000);
                         if (GuestListUtil.isMyFreshed()) {
-                            Log.i(TAG, "isMyFreshed = true,工具类给Fragment赋值");
-                            GuestListUtil.setValueToList(GuestListUtil.getMyGuestList(), guestChildList.get(MY_GUEST_IDENTITOR));
                             handler.sendEmptyMessage(FRESH_UI);
                             GuestListUtil.setIsMyFreshed(false);
                         }
                         if (GuestListUtil.isAllFreshed()) {
-                            Log.i(TAG, "isAllFreshed = true,工具类给Fragment赋值");
-                            GuestListUtil.setValueToList(GuestListUtil.getAllGuestList(), guestChildList.get(ALL_GUEST_IDENTITOR));
                             handler.sendEmptyMessage(FRESH_UI);
                             GuestListUtil.setIsAllFreshed(false);
                         }
@@ -359,30 +270,11 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     public boolean onChildClick(ExpandableListView expandableListView, View view,
                                 int groupPosition, int childPosition, long id) {
         //T判断点击的是哪一项
-        String name = (String) guestChildList.get(groupPosition).get(childPosition).get("name");
-        Bitmap photo = (Bitmap) guestChildList.get(groupPosition).get(childPosition).get("avatar");
+        String name = (String) GuestListUtil.guestChildList.get(groupPosition).get(childPosition).get("name");
         Intent guestInfoIntent = new Intent(getContext(), GuestInfoActivity.class);
-        int guest_type = groupPosition;
-        if (groupPosition == ALL_GUEST_IDENTITOR) {
-            //判断是不是我的嘉宾
-            for (int i = 0; i < guestChildList.get(0).size(); i++) {
-                if (guestChildList.get(0).get(i).get("name").equals(name)) {
-                    guest_type = MY_GUEST_IDENTITOR;
-                    break;
-                }
-            }
-        }
-        guestInfoIntent.putExtra("guest_type", guest_type);
+        guestInfoIntent.putExtra("guest_type", groupPosition);
         guestInfoIntent.putExtra("gname", name);
-//        Bundle bd_photo = new Bundle();
-//        bd_photo.putParcelable("gphoto",photo);
         //todo  传照片
-//        guestInfoIntent.putExtra("photoBundle", bd_photo);
-//        if (photo == null) {
-//            Log.i("GuestActivity","guest_photo = null");
-//        }else {
-//            Log.i("GuestActivity","guest_photo != null");
-//        }
         startActivity(guestInfoIntent);
         return false;
     }
