@@ -2,12 +2,14 @@ package com.example.dell.v_clock.fragment;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,22 +92,43 @@ public class MeFragment extends Fragment {
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //清空内存数据
-                GuestListUtil.clearList();
-                //删除本地缓存
-                ACache aCache = ACache.get(getContext());
-                aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
-                aCache.remove(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog dialog = builder.setTitle("确定退出账号？")
+                        .setMessage("这将删除所有账号相关数据")
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //清空内存数据
+                                GuestListUtil.clearList();
+                                //删除本地缓存
+                                ACache aCache = ACache.get(getContext());
+                                aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
+                                aCache.remove(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
 
-                SharedPreferences.Editor editor = sp.edit();
-                editor.remove("eid");
-                editor.apply();
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.execSQL("DELETE FROM " + VClockContract.MessageInfo.TABLE_NAME);
-                dbHelper.close();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                                //删除本地存储eid和历史记录，未读消息的数据库
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.remove("eid");
+                                editor.apply();
+                                SharedPreferences.Editor editor1 = getContext().getSharedPreferences("history", MODE_PRIVATE).edit();
+                                editor1.remove("page");
+                                editor1.apply();
+                                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                                db.execSQL("DELETE FROM " + VClockContract.MessageInfo.TABLE_NAME);
+                                dbHelper.close();
+                                Intent intent = new Intent(getContext(), LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Do nothing.
+                            }
+                        })
+                        .create();
+                dialog.show();
             }
         });
         ImageButton changePwd = view.findViewById(R.id.imb_change_pwd);
@@ -117,9 +140,9 @@ public class MeFragment extends Fragment {
             }
         });
         final Button editEmployeeInfo = view.findViewById(R.id.bt_edit_employee_info);
-        if(!isOnEdit) {
+        if (!isOnEdit) {
             editEmployeeInfo.setText("编辑");
-        } else if(isOnEdit) {
+        } else if (isOnEdit) {
             editEmployeeInfo.setText("完成");
         }
         editEmployeeInfo.setOnClickListener(new View.OnClickListener() {
@@ -161,12 +184,12 @@ public class MeFragment extends Fragment {
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        if(response.length() > 0 && response.charAt(0) == '0') {
+                                        if (response.length() > 0 && response.charAt(0) == '0') {
                                             Toast.makeText(getContext(), "更新信息成功！", Toast.LENGTH_SHORT).show();
                                             Log.d("TAG", response);
-                                        } else if(response.length() > 0 && response.charAt(0) == '1') {
+                                        } else if (response.length() > 0 && response.charAt(0) == '1') {
                                             Toast.makeText(getContext(), "不允许更改！", Toast.LENGTH_SHORT).show();
-                                        } else if(response.length() > 0 && response.charAt(0) == '2') {
+                                        } else if (response.length() > 0 && response.charAt(0) == '2') {
                                             Toast.makeText(getContext(), "数据错误！", Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(getContext(), "发生未知错误！", Toast.LENGTH_SHORT).show();
@@ -176,7 +199,7 @@ public class MeFragment extends Fragment {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
-                        }
+                            }
                         }) {
                             @Override
                             public Map<String, String> getParams() {
