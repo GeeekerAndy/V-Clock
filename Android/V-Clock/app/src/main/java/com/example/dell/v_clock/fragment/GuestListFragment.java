@@ -107,7 +107,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         //GroupList只包含两项
         guestGroupList = new ArrayList<>();
         guestGroupList.add(0, "我的嘉宾");
-        guestGroupList.add(1, "全部嘉宾");
+        guestGroupList.add(1, "其他嘉宾");
         //childList的信息来源于后台服务器
         //设置适配器
         guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, GuestListUtil.guestChildList);
@@ -187,10 +187,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                     //请求服务器
                     if (identitor == 0) {
                         Log.i(TAG, "我的嘉宾缓存为空，请求服务器");
-                        GuestListUtil.requestMyGuestList(requestQueue, eid);
+                        GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
                     } else if (identitor == 1) {
                         Log.i(TAG, "全部嘉宾缓存为空，请求服务器");
-                        GuestListUtil.requestAllGuestList(requestQueue);
+                        GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
                     }
                 } else {
                     Log.i(TAG, "加载嘉宾缓存——" + identitor);
@@ -198,66 +198,13 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                 }
             }
         }).start();
-
-        //启动线程  检测是否需要写缓存
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        Thread.sleep(500);
-                        JSONArray temp;
-                        if (identitor == MY_GUEST_IDENTITOR) {
-                            temp = GuestListUtil.getMyGuestJsonArray();
-                            if (temp.length() > 0 && myGuestJsonArray == null) {
-                                //写缓存
-                                Log.i(TAG, "我的嘉宾 写缓存");
-                                mACache.put(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE, temp, GuestListUtil.MY_SAVE_TIME);
-                                break;
-                            }
-                        } else if (identitor == ALL_GUEST_IDENTITOR) {
-                            temp = GuestListUtil.getAllGuestJsonArray();
-                            if (temp.length() > 0 && allGuestJsonArray == null) {
-                                //写缓存
-                                Log.i(TAG, "全部嘉宾 写缓存");
-                                mACache.put(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE, temp, GuestListUtil.ALL_SAVE_TIME);
-                                break;
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
-
-//    /**
-//     * 加载ChildList信息
-//     *
-//     * @param guestJsonArray 嘉宾信息
-//     * @param i              我的嘉宾：0 ； 全部嘉宾：1
-//     */
-//    private void loadChildListData(JSONArray guestJsonArray, int i) {
-//        if (guestJsonArray != null) {
-//            synchronized (this) {
-//                if (GuestListUtil.guestChildList.size() > i) {
-//                    Log.i(TAG, "嘉宾列表——" + i + " 有数据，清空");
-//                    GuestListUtil.guestChildList.get(i).clear();
-//                }
-//                Log.i(TAG, "将从缓存中读取的JSon对象转为List——" + i);
-//                List<Map<String, Object>> tempList = GuestListUtil.jsonToList(guestJsonArray);
-//                GuestListUtil.guestChildList.add(i, tempList);
-//                handler.sendEmptyMessage(FRESH_UI);
-//            }
-//        }
-//    }
 
     //下拉刷新 重新请求数据库
     @Override
     public void onRefresh() {
-        GuestListUtil.requestMyGuestList(requestQueue, eid);
-        GuestListUtil.requestAllGuestList(requestQueue);
+        GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
+        GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
     }
 
     /**
@@ -324,29 +271,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                                 int groupPosition, int childPosition, long id) {
         //T判断点击的是哪一项
         String name = (String) GuestListUtil.guestChildList.get(groupPosition).get(childPosition).get("name");
-//        Bitmap photo = (Bitmap) GuestListUtil.guestChildList.get(groupPosition).get(childPosition).get("avatar");
         Intent guestInfoIntent = new Intent(getContext(), GuestInfoActivity.class);
-        int guest_type = groupPosition;
-        if (groupPosition == ALL_GUEST_IDENTITOR) {
-            //判断是不是我的嘉宾 todo
-            for (int i = 0; i < GuestListUtil.guestChildList.get(0).size(); i++) {
-                if (GuestListUtil.guestChildList.get(0).get(i).get("name").equals(name)) {
-                    guest_type = MY_GUEST_IDENTITOR;
-                    break;
-                }
-            }
-        }
-        guestInfoIntent.putExtra("guest_type", guest_type);
+        guestInfoIntent.putExtra("guest_type", groupPosition);
         guestInfoIntent.putExtra("gname", name);
-//        Bundle bd_photo = new Bundle();
-//        bd_photo.putParcelable("gphoto",photo);
         //todo  传照片
-//        guestInfoIntent.putExtra("photoBundle", bd_photo);
-//        if (photo == null) {
-//            Log.i("GuestActivity","guest_photo = null");
-//        }else {
-//            Log.i("GuestActivity","guest_photo != null");
-//        }
         startActivity(guestInfoIntent);
         return false;
     }

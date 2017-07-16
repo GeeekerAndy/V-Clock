@@ -90,6 +90,8 @@ public class MeFragment extends Fragment {
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //清空内存数据
+                GuestListUtil.clearList();
                 //删除本地缓存
                 ACache aCache = ACache.get(getContext());
                 aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);

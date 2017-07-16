@@ -45,6 +45,14 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
     private List<List<Map<String, Object>>> childList;
     //上下文对象
     private Context context;
+    //
+    private int child_type = -1;
+
+    private int[] childLayoutIDs = {R.layout.item_children_my_guest, R.layout.item_children_all_guest};
+    private int[] guestNameTvIDs = {R.id.tv_my_guest_name, R.id.tv_all_guest_name};
+    private int[] guestAvatarIvIDs = {R.id.iv_my_guest_avatar, R.id.iv_all_guest_avatar};
+    private int[] operateIvIDs = {R.id.img_bt_cross_gray, R.id.img_bt_plus_gray};
+//    private int[] tagIDs = {R.id.myGuest, R.id.allGuest};
 
     //请求队列
     private RequestQueue requestQueue;
@@ -108,23 +116,27 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup viewGroup) {
-
-        convertView = View.inflate(context, R.layout.item_group, null);
-        //分组名称
-        TextView groupName = convertView.findViewById(R.id.tv_group_name);
-        //子元素个数
-        TextView groupNum = convertView.findViewById(R.id.tv_guest_num);
+        groupViewHolder holder;
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.item_group, null);
+            holder = new groupViewHolder();
+            holder.tv_group_name = convertView.findViewById(R.id.tv_group_name);
+            holder.tv_group_count = convertView.findViewById(R.id.tv_guest_num);
+            convertView.setTag(holder);
+        } else {
+            holder = (groupViewHolder) convertView.getTag();
+        }
         //避免越界
         if (childList.size() <= groupPosition) {
             return convertView;
         }
-        groupName.setText(groupList.get(groupPosition));
+        holder.tv_group_name.setText(groupList.get(groupPosition));
 //        Log.i("GuestListAdapter", "groupPosition = " + groupPosition + " childList.size = " + childList.size());
         if (childList.size() > groupPosition) {
             String num = childList.get(groupPosition).size() + "";
-            groupNum.setText(num);
+            holder.tv_group_count.setText(num);
         } else {
-            groupNum.setText("0");
+            holder.tv_group_count.setText("0");
         }
         return convertView;
     }
@@ -135,29 +147,20 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         ImageView iv_avatar;
         TextView tv_name;
         ImageButton img_bt_move;
-        if (groupPosition == 0) {
-            //“我的嘉宾”列表
-            view = View.inflate(context, R.layout.item_children_my_guest, null);
-            iv_avatar = view.findViewById(R.id.iv_my_guest_avatar);
-            tv_name = view.findViewById(R.id.tv_my_guest_name);
-            img_bt_move = view.findViewById(R.id.img_bt_cross_gray);
-        } else {
-            //“全部嘉宾”列表
-            view = View.inflate(context, R.layout.item_children_all_guest, null);
-            iv_avatar = view.findViewById(R.id.iv_all_guest_avatar);
-            tv_name = view.findViewById(R.id.tv_all_guest_name);
-            img_bt_move = view.findViewById(R.id.img_bt_plus_gray);
+
+        view = View.inflate(context, childLayoutIDs[groupPosition], null);
+        iv_avatar = view.findViewById(guestAvatarIvIDs[groupPosition]);
+        tv_name = view.findViewById(guestNameTvIDs[groupPosition]);
+        img_bt_move = view.findViewById(operateIvIDs[groupPosition]);
+
+        if (childList.size() <= groupPosition) {
+            return view;
+        } else if (childList.get(groupPosition).size() <= childPosition) {
+            return view;
         }
-        synchronized (this) {
-            //避免越界
-            if (childList.size() <= groupPosition) {
-                return view;
-            } else if (childList.get(groupPosition).size() <= childPosition) {
-                return view;
-            }
-            iv_avatar.setImageBitmap((Bitmap) childList.get(groupPosition).get(childPosition).get("avatar"));
-            tv_name.setText(childList.get(groupPosition).get(childPosition).get("name").toString());
-        }
+        iv_avatar.setImageBitmap((Bitmap) childList.get(groupPosition).get(childPosition).get("avatar"));
+        tv_name.setText(childList.get(groupPosition).get(childPosition).get("name").toString());
+
         img_bt_move.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,7 +177,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
                         case R.id.img_bt_cross_gray:
                             Log.i("GuestAdapter", "点击了叉号");
                             //从我的嘉宾删除
-                            deleteFromMyGuest(eid, guest_name);
+                            deleteFromMyGuest(eid, guest_name,guest_photo);
                             break;
                         case R.id.img_bt_plus_gray:
                             Log.i("GuestAdapter", "点击了加号");
@@ -194,7 +197,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
      * @param eid        工作人员工号
      * @param guest_name 嘉宾姓名
      */
-    private void deleteFromMyGuest(final String eid, final String guest_name) {
+    private void deleteFromMyGuest(final String eid, final String guest_name, final Bitmap guest_photo) {
         //从“我的嘉宾”中移除
         StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.DELETE_FROM_GUEST_LIST_URL,
                 new deleteMyGuestResponseListener(), new AlterGuestResponseErrorListener()) {
@@ -208,7 +211,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         };
         requestQueue.add(addRequest);
         //更新内存
-        GuestInfo guestInfo = new GuestInfo(guest_name);
+        GuestInfo guestInfo = new GuestInfo(guest_name, guest_photo);
         GuestListUtil.deleteFromMyGuest(guestInfo, context);
     }
 
@@ -308,6 +311,17 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
             //提示网络连接失败
             Toast.makeText(context, "服务器连接失败", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static class childViewHolder {
+        TextView tv_guest_name;
+        ImageView iv_photo;
+        ImageButton ibt_alter;
+    }
+
+    private static class groupViewHolder {
+        TextView tv_group_name;
+        TextView tv_group_count;
     }
 
     @Override

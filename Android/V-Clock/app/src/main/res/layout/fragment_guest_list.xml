@@ -45,7 +45,7 @@
                     android:id="@+id/explv_my_guest_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
+                    android:listSelector="@color/gray_light"
                     android:indicatorEnd="50dp"
                     android:indicatorStart="0dp">
 
