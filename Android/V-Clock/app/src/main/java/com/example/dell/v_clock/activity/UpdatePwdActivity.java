@@ -146,7 +146,7 @@ public class UpdatePwdActivity extends AppCompatActivity {
         intent.putExtra("outputY", 640);
 //        intent.putExtra("return-data", true);
 //you must setup this
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, CROP_REQUEST_CODE_FROM_Camera);
     }
 
