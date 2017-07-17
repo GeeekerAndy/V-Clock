@@ -1,7 +1,8 @@
-package controller;
+package webServiceServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -11,15 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import util.Employee;
+import util.SessionListener;
 
 import net.sf.json.JSONObject;
 
-public class LoginServlet extends HttpServlet {
+public class WLoginServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public LoginServlet() {
+	public WLoginServlet() {
 		super();
 	}
 
@@ -73,9 +75,16 @@ public class LoginServlet extends HttpServlet {
 			out=response.getWriter();
 			out.append(eid);
 			System.out.println("eid(login):"+eid);
+			
 			if(eid.length()==4){
-				HttpSession session=request.getSession(true);
-				session.setAttribute("eid", eid);
+				HttpSession session=request.getSession();
+				if(session.isNew()){
+					session.setAttribute("eid", eid);
+					SessionListener.getInstance().addToDB(session);
+				}
+				//session.setAttribute("eid", eid);
+				
+				
 				//System.out.println(session.getId()+"--------");
 				//session.setAttribute("etel", etel);
 				//session.setAttribute("ephoto", ephoto);
