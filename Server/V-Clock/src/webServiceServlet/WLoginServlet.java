@@ -1,24 +1,27 @@
-package controller;
+package webServiceServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import util.Employee;
+import util.SessionListener;
+
 import net.sf.json.JSONObject;
 
-import util.Employee;
-
-public class DisplayEmployeeInfoServlet extends HttpServlet {
+public class WLoginServlet extends HttpServlet {
 
 	/**
 	 * Constructor of the object.
 	 */
-	public DisplayEmployeeInfoServlet() {
+	public WLoginServlet() {
 		super();
 	}
 
@@ -59,42 +62,39 @@ public class DisplayEmployeeInfoServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		String userAgent=request.getHeader("user-agent");
-		//int androidBool=userAgent.indexOf("Android");
-		//boolean appBool=userAgent.matches(".*V-Clock.*");
-		response.setCharacterEncoding("UTF-8");
-		HttpSession session=request.getSession();
-//		String sessionId=session.getId();
+		String etel=request.getParameter("etel");
+		String ephoto=request.getParameter("ephoto");	
+		System.out.println("login:"+etel);
 		Employee emp=new Employee();
-//		if(session.isNew()){
-//			System.out.println("新建一个sessionid");
-//		}else{
-//		String userTel=(String) session.getAttribute("etel");
-//		String userPhoto=(String) session.getAttribute("ephoto");
-//		if((userTel!=null&&userPhoto!=null)||appBool){
-//			try {6F795C5C7072B8A6CEEFF361ABCB72F6
-//				String loginBool=emp.checkuser(userTel, userPhoto);
-//				if(loginBool.equals("0")||appBool){
-					String eid=request.getParameter("eid");
-//					String eid=(String) session.getAttribute("eid");
-					System.out.println("输入eid:"+eid);
-					JSONObject json=emp.displayEmployeeInfo(eid);
-					PrintWriter out = response.getWriter();
-					out.append(json.toString());
-					//System.out.println(json.toString());
-					out.flush();
-					out.close();
-//				}
-//				else
-//					System.out.println("No Legitimate(2)");
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		else
-//			System.out.println("No Legitimate(1)");
-//		}
+		String eid;
+		try {
+			eid = emp.login(etel, ephoto);
+			response.setCharacterEncoding("UTF-8");
+			System.out.println("**********************");
+			PrintWriter out=null;
+			out=response.getWriter();
+			out.append(eid);
+			System.out.println("eid(login):"+eid);
+			
+			if(eid.length()==4){
+				HttpSession session=request.getSession();
+				if(session.isNew()){
+					session.setAttribute("eid", eid);
+					SessionListener.getInstance().addToDB(session);
+				}
+				//session.setAttribute("eid", eid);
+				
+				
+				//System.out.println(session.getId()+"--------");
+				//session.setAttribute("etel", etel);
+				//session.setAttribute("ephoto", ephoto);
+			}
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

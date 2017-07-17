@@ -1,23 +1,26 @@
-package controller;
+package webServiceServlet;
 
 import java.io.IOException;
+
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
+import objects.Employees;
 
 import util.Employee;
-import util.GuestList;
 
-public class DeleteFromGuestListServlet extends HttpServlet {
+import net.sf.json.JSONObject;
+
+public class WRegisterServlet extends HttpServlet implements Employees{
 
 	/**
 	 * Constructor of the object.
 	 */
-	public DeleteFromGuestListServlet() {
+	public WRegisterServlet() {
 		super();
 	}
 
@@ -58,35 +61,27 @@ public class DeleteFromGuestListServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		HttpSession session=request.getSession();
+		String[] elist=new String[emessage.length];
+		for(int i=1;i<elist.length;i++){
+			elist[i]=request.getParameter(emessage[i]);
+			System.out.println(elist[i]);
+		}
 		Employee emp=new Employee();
-//		String userTel=(String) session.getAttribute("etel");
-//		String userPhoto=(String) session.getAttribute("ephoto");
-//		if(userTel!=null&&userPhoto!=null){
-//			try {
-//				String loginBool=emp.checkuser(userTel, userPhoto);
-//				if(loginBool.equals("0")){
-					String gname=request.getParameter("gname");
-					String eid=request.getParameter("eid");
-//					String eid=(String) session.getAttribute("eid");
-					System.out.println("(gname+eid):"+gname+"+"+eid);
-					GuestList guestList=new GuestList();
-					String tip=guestList.deleteFromGuestList(gname, eid);
-					response.setCharacterEncoding("UTF-8");
-					PrintWriter out = response.getWriter();
-					out.write(tip);
-					out.flush();
-					out.close();
-//				}
-//				else
-//					System.out.println("No Legitimate(2)");
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		else
-//			System.out.println("No Legitimate(1)");
+		String tip="";
+		try {
+			tip = emp.register(elist[1], elist[2], elist[3], elist[4]);
+			System.out.println("tip:"+tip);
+			response.setCharacterEncoding("UTF-8");
+			//response.setContentType("text/html; charset=utf-8");
+			PrintWriter out=null;
+			out=response.getWriter();
+			out.write(tip);
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
