@@ -222,17 +222,23 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     @Override
     public void onPreviewFrame(final byte[] bytes, Camera camera) {
-        if (null != mFaceTask) {
-            switch (mFaceTask.getStatus()) {
-                case RUNNING:
-                    return;
-                case PENDING:
-                    mFaceTask.cancel(false);
-                    break;
+
+        try {
+            if (null != mFaceTask) {
+                switch (mFaceTask.getStatus()) {
+                    case RUNNING:
+                        return;
+                    case PENDING:
+                        mFaceTask.cancel(false);
+                        break;
+                }
             }
+
+            mFaceTask = new FaceTask(bytes);
+            mFaceTask.execute((Void) null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        mFaceTask = new FaceTask(bytes);
-        mFaceTask.execute((Void) null);
     }
 
     /**
@@ -433,7 +439,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 //                Log.i("CameraActivity", "eid = " + response);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-//                CameraActivity.this.finish();
+                CameraActivity.this.finish();
             }
             //收到服务器回复 不再等待回复
             isWaited = false;

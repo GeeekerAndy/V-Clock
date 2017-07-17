@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * Created by 王庆伟 on 2017/7/13.
+ *
  */
 
 public class GuestListUtil {
@@ -31,13 +32,13 @@ public class GuestListUtil {
     public static final String MY_GUEST_JSON_ARRAY_CACHE = "myGuestJsonArray";
     //全部嘉宾 缓存 键名
     public static final String ALL_GUEST_JSON_ARRAY_CACHE = "allGuestJsonArray";
-    //我的嘉宾缓存保存时间 单位 秒
-    public static final int MY_SAVE_TIME = 3600;
-    //全部嘉宾缓存保存时间 单位 秒
-    public static final int ALL_SAVE_TIME = 1800;
     //ChildList数据
-    public static List<List<Map<String, Object>>> guestChildList = new ArrayList<>();
+    public static List<List<Map<String, Object>>> guestChildList;
 
+    //我的嘉宾缓存保存时间 单位 秒
+    private static final int MY_SAVE_TIME = 36000;
+    //全部嘉宾缓存保存时间 单位 秒
+    private static final int ALL_SAVE_TIME = 3600;
     //我的嘉宾 请求tip
     private static final String MY_GUEST_SEARCH_TYPE = "0";
     //全部嘉宾（gname="") 异步搜索 请求tip
@@ -58,10 +59,9 @@ public class GuestListUtil {
     private static ACache mACache = null;
 
     static {
+        guestChildList = new ArrayList<>();
         guestChildList.add(new ArrayList<Map<String, Object>>());
         guestChildList.add(new ArrayList<Map<String, Object>>());
-//        myGuestJsonArray = new JSONArray();
-//        allGuestJsonArray = new JSONArray();
     }
 
     /**
@@ -325,12 +325,8 @@ public class GuestListUtil {
      * 清空内存数据
      */
     public static void clearList() {
-        if (guestChildList.size() > 0) {
-            guestChildList.get(MY_GUEST_IDENTITOR).clear();
-        }
-        if (guestChildList.size() > 1) {
-            guestChildList.get(ALL_GUEST_IDENTITOR).clear();
-        }
+        guestChildList.clear();
+        guestChildList = null;
     }
 
     /**

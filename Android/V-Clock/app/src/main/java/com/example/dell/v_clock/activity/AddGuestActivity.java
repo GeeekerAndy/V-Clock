@@ -3,9 +3,13 @@ package com.example.dell.v_clock.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,10 +30,16 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.adapter.GuestListAdapter;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
+import com.example.dell.v_clock.util.MyStringRequest;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -214,20 +224,17 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
             switch (intOfResponse) {
                 case 0:
-                    //添加成功
-                    Toast.makeText(AddGuestActivity.this, "添加成功", Toast.LENGTH_LONG).show();
-                    //更改GuestUtil静态信息  更改本地缓存
-                    GuestInfo guestInfo = new GuestInfo(name,bmp_photo);
-                    GuestListUtil.addGuest(guestInfo,AddGuestActivity.this);
+                    //添加至我的嘉宾
+                    addToMyGuest(regid,name,bmp_photo);
                     //清空输入信息
                     cleanGuestInfo();
                     break;
                 case 1:
                     //此嘉宾已存在
                     Toast.makeText(AddGuestActivity.this, "此嘉宾已存在！", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("gname",name);
-                    intent.putExtra("guest_type",1);
+                    Intent intent = new Intent(AddGuestActivity.this,GuestInfoActivity.class);
+                    intent.putExtra("gname", name);
+                    intent.putExtra("guest_type", 1);
                     startActivity(intent);
                     //清空输入信息
                     cleanGuestInfo();
@@ -245,6 +252,18 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 等一段时间 后清空输入框信息
      */
     private void cleanGuestInfo() {
+        //添加至“我的嘉宾”
+//        MyStringRequest addRequest = new MyStringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
+//                new AddMyGuestResponseListener(), new AddGuestResponseErrorListener()) {
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                Map<String, String> myGuestInfoMap = new HashMap<>();
+//                myGuestInfoMap.put("gname", name);
+//                myGuestInfoMap.put("eid", regid);
+//                return myGuestInfoMap;
+//            }
+//        };
+//        requestQueue.add(addRequest);
         //等待
         new Thread(new Runnable() {
             @Override
@@ -254,7 +273,56 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
         }).start();
     }
+    private void addToMyGuest(final String eid, final String guest_name, final Bitmap guest_photo) {
+        //添加至“我的嘉宾”
+        StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
+                new AddMyGuestResponseListener(), new AddGuestResponseErrorListener()) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> myGuestInfoMap = new HashMap<>();
+                myGuestInfoMap.put("gname", guest_name);
+                myGuestInfoMap.put("eid", eid);
+                return myGuestInfoMap;
+            }
+        };
+        requestQueue.add(addRequest);
+    }
+    /**
+     *
+     */
+    private class AddMyGuestResponseListener implements Response.Listener<String> {
 
+        @Override
+        public void onResponse(String response) {
+            Log.i("Transfer", "收到服务器回复");
+            int intOfResponse = -1;
+            try {
+                intOfResponse = Integer.parseInt(response);
+            } catch (NumberFormatException e) {
+                //返回数据包含非数字信息
+                Log.i("GuestInfoTransfer", "收到服务器回复 数据错误");
+                Log.i("AddGuest", "response 包含非数字信息");
+                e.printStackTrace();
+            }
+            switch (intOfResponse) {
+                case 0:
+                    //添加成功
+                    Toast.makeText(AddGuestActivity.this, "添加成功！", Toast.LENGTH_LONG).show();
+                    //更新内存
+                    GuestInfo guestInfo = new GuestInfo(name, bmp_photo);
+                    GuestListUtil.addToMyGuest(guestInfo, AddGuestActivity.this);
+                    break;
+                case 1:
+                    //此嘉宾已存在
+                    Toast.makeText(AddGuestActivity.this, "此嘉宾已在我的嘉宾中！", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2:
+                    //数据错误
+                    Toast.makeText(AddGuestActivity.this, "数据传输错误，没有添加至我的嘉宾中！", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
     /**
      *
      */
@@ -280,19 +348,17 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(AddGuestActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
         }
     }
-
     /**
      * 从相册中选择照片
      */
     public void pickImage() {
         Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickImageIntent.setType("image/*");
-//        pickImageIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+        pickImageIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
         startActivityForResult(pickImageIntent, PICK_PHOTO_FOR_AVATAR);
     }
 
     /**
-     *
      * @param requestCode
      * @param resultCode
      * @param data

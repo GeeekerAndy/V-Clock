@@ -2,7 +2,6 @@ package com.example.dell.v_clock.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,7 +21,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.activity.AddGuestActivity;
 import com.example.dell.v_clock.activity.GuestInfoActivity;
-import com.example.dell.v_clock.activity.MainActivity;
 import com.example.dell.v_clock.activity.SearchActivity;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
 import com.example.dell.v_clock.util.GuestListUtil;
@@ -69,7 +67,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private final int ALL_GUEST_IDENTITOR = 1;
     private final int FRESH_UI = 4;
 
-    private final int FRESHE_INTERVAL = 500;
+    private final int FRESH_INTERVAL = 500;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -110,10 +108,15 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private void initGuestList() {
         //GroupList只包含两项
         guestGroupList = new ArrayList<>();
-        guestGroupList.add(0, "我的嘉宾");
-        guestGroupList.add(1, "其他嘉宾");
+        guestGroupList.add(MY_GUEST_IDENTITOR, "我的嘉宾");
+        guestGroupList.add(ALL_GUEST_IDENTITOR, "其他嘉宾");
         //childList的信息来源于后台服务器
         //设置适配器
+        if (GuestListUtil.guestChildList == null) {
+            GuestListUtil.guestChildList = new ArrayList<>();
+            GuestListUtil.guestChildList.add(new ArrayList<Map<String, Object>>());
+            GuestListUtil.guestChildList.add(new ArrayList<Map<String, Object>>());
+        }
         guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, GuestListUtil.guestChildList);
         guestList.setAdapter(guestListAdapter);
         //缓存对象
@@ -225,7 +228,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             public void run() {
                 try {
                     while (true) {
-                        Thread.sleep(FRESHE_INTERVAL);
+                        Thread.sleep(FRESH_INTERVAL);
                         if (GuestListUtil.isMyFreshed()) {
                             handler.sendEmptyMessage(FRESH_UI);
                             GuestListUtil.setIsMyFreshed(false);
