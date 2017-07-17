@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,7 +23,7 @@ import java.io.FileNotFoundException;
 
 public class ImageUtil {
 
-    final String TAG = "ImageUtil";
+    static final String TAG = "ImageUtil";
 
     public static Bitmap convertImage(String base64Str) throws IllegalArgumentException {
         byte[] decodeBytes = Base64.decode(
@@ -82,6 +83,7 @@ public class ImageUtil {
 //        Log.i("GuestInfoActiviyu", "tempFile: " + tempFile);
         intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, tempFile);
         intentCrop.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        Log.i(TAG,"准备剪裁");
         context.startActivityForResult(intentCrop, requestCode);
         return;
     }

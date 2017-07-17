@@ -89,6 +89,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用,只能进行本地搜索！", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * 捕捉消息 更新UI
      */
@@ -243,7 +251,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
 
     /**
-     * TODO 点击条目，进入嘉宾详细信息
+     * 点击条目，进入嘉宾详细信息
      *
      * @param adapterView
      * @param view
