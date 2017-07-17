@@ -233,6 +233,7 @@ public class HistoryFragment extends Fragment {
                                 editor.apply();
                                 updateHistory.clearAnimation();
                                 updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_done_white_24px));
+                                adapter.notifyDataSetChanged();
                             }
                         }
                     }, new Response.ErrorListener() {

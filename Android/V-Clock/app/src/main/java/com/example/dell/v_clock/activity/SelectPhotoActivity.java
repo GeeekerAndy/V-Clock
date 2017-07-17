@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -32,6 +34,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,6 +55,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
     final int CROP_REQUEST_CODE_FROM_Camera = 5;
     final int MY_PERMISSION_REQUEST_READ = 6;
     final int MY_PERMISSION_REQUEST_CAMERA = 7;
+    Uri photoURI;
 
     String mCurrentPhotoPath;
     ImageView employeePicture;
@@ -142,7 +146,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.provider", photoFile);
+                photoURI = FileProvider.getUriForFile(this, "com.example.android.provider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -206,9 +210,9 @@ public class SelectPhotoActivity extends AppCompatActivity {
         intent.putExtra("aspectY", 4);
         intent.putExtra("outputX", 480);
         intent.putExtra("outputY", 640);
-        intent.putExtra("return-data", true);
+//        intent.putExtra("return-data", true);
 //you must setup this
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, CROP_REQUEST_CODE_FROM_Camera);
     }
 
@@ -233,11 +237,18 @@ public class SelectPhotoActivity extends AppCompatActivity {
             employeeInfoMap.put("ephoto", ImageUtil.convertImage(bitmap));
         }
         if (requestCode == CROP_REQUEST_CODE_FROM_Camera && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
-            employeePicture.setImageBitmap(imageBitmap);
-            employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//            imageBitmap = ImageUtil.getResizedBitmap(imageBitmap, 480, 640);
+//            employeePicture.setImageBitmap(imageBitmap);
+//            employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
+            try {
+                Bitmap imageBitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(photoURI));
+                employeePicture.setImageBitmap(imageBitmap);
+                employeeInfoMap.put("ephoto", ImageUtil.convertImage(imageBitmap));
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, e.getMessage());
+            }
         }
     }
 
