@@ -129,6 +129,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         readCache();
     }
 
+
     /**
      * 启动线程读取缓存数据
      */
