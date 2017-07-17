@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -68,6 +69,8 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private final int ALL_GUEST_IDENTITOR = 1;
     private final int FRESH_UI = 4;
 
+    private final int FRESHE_INTERVAL = 500;
+
     SwipeRefreshLayout swipeRefreshLayout;
 
     String TAG = "StartGuestList";
@@ -90,6 +93,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         bt_search.setOnClickListener(this);
 
         guestList.setOnChildClickListener(this);
+
 
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setRefreshing(true);
@@ -157,6 +161,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onResume() {
         super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(getContext())) {
+            Toast.makeText(getContext(), "当前网络不可用!", Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
+        }
         //启动线程 若向数据库请求数据 检测是否完成
         refreshChildList();
     }
@@ -217,7 +225,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             public void run() {
                 try {
                     while (true) {
-                        Thread.sleep(1000);
+                        Thread.sleep(FRESHE_INTERVAL);
                         if (GuestListUtil.isMyFreshed()) {
                             handler.sendEmptyMessage(FRESH_UI);
                             GuestListUtil.setIsMyFreshed(false);

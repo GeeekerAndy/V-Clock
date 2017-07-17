@@ -102,6 +102,14 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.img_bt_info_back:

@@ -83,6 +83,7 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     final int CROP_REQUEST_CODE = 4;
     //申请read权限
 //    final int MY_PERMISSION_REQUEST_READ = 0;
+    private final String TAG = "GuestInfoActivity";
 
     //修改性别选择框
     AlertDialog.Builder sexDialog;
@@ -148,6 +149,14 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         requestQueue = Volley.newRequestQueue(this);
         //刷新数据
         refreshData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -400,11 +409,12 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     break;
                 case PHOTO_REQUEST_CODE://返回相册选择的图片
                     //剪裁图片
-//                    startPhotoZoom(data.getData());
+                    Log.i(TAG,"返回了选择的图片");
                     ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
                     break;
                 case CROP_REQUEST_CODE://返回剪裁后的图片
                     //更改显示、上传图片
+                    Log.i(TAG,"返回了剪裁的图片");
                     transferPhoto();
                     break;
             }

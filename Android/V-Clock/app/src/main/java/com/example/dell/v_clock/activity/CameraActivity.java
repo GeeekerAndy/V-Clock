@@ -34,6 +34,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.FaceCheck;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.smartshino.face.FaceAttr;
 
@@ -110,6 +111,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用!", Toast.LENGTH_SHORT).show();
+        }
+
         if (mCamera == null) {
             mCamera = getCamera();
             if (mCamera != null && mSurfaceHolder != null) {
@@ -127,9 +133,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         super.onPause();
         releaseCamera();
         faceCheck.exitTask();
-        if (mFaceTask != null) {
-            mFaceTask.cancel(true);
-        }
     }
 
     /**
@@ -413,7 +416,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
                 isMatch = true;
                 //TODO 有待测试  登录成功 setOneShotPreview() NullPointer
-                mFaceTask.cancel(true);
+                try {
+                    mFaceTask.cancel(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 //                Log.i("Transfer", "收到服务器回复 登录成功");
                 //跳转到主界面 传入eid
                 //
