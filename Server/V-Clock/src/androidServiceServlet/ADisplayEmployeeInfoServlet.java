@@ -74,29 +74,29 @@ public class ADisplayEmployeeInfoServlet extends HttpServlet {
 		// boolean appBool=userAgent.matches(".*V-Clock.*");
 		response.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession(false);
-		boolean validate = SessionListener.getInstance().verifySession(request);
-		if (validate) {
-			// String sessionId=session.getId();
-			Employee emp = new Employee();
-			// if(session.isNew()){
-			// System.out.println("新建一个sessionid");
-			// }else{
-			// String userTel=(String) session.getAttribute("etel");
-			// String userPhoto=(String) session.getAttribute("ephoto");
-			// if((userTel!=null&&userPhoto!=null)||appBool){
-			// try {6F795C5C7072B8A6CEEFF361ABCB72F6
-			// String loginBool=emp.checkuser(userTel, userPhoto);
-			// if(loginBool.equals("0")||appBool){
-			//String eid = request.getParameter("eid");
-			String eid=(String) session.getAttribute("eid");
-			System.out.println("输入eid:" + eid);
-			JSONObject json = emp.displayEmployeeInfo(eid);
-			PrintWriter out = response.getWriter();
-			out.append(json.toString());
-			// System.out.println(json.toString());
-			out.flush();
-			out.close();
-		}
+
+		// String sessionId=session.getId();
+		Employee emp = new Employee();
+		// if(session.isNew()){
+		// System.out.println("新建一个sessionid");
+		// }else{
+		// String userTel=(String) session.getAttribute("etel");
+		// String userPhoto=(String) session.getAttribute("ephoto");
+		// if((userTel!=null&&userPhoto!=null)||appBool){
+		// try {6F795C5C7072B8A6CEEFF361ABCB72F6
+		// String loginBool=emp.checkuser(userTel, userPhoto);
+		// if(loginBool.equals("0")||appBool){
+		String eid = request.getParameter("eid");
+		// String eid=(String) session.getAttribute("eid");
+		System.out.println("输入eid:" + eid);
+		JSONObject json = emp.displayEmployeeInfo(eid);
+		PrintWriter out = response.getWriter();
+		out.append(json.toString());
+		// System.out.println(json.toString());
+		out.flush();
+		out.close();
+		// }
+
 		// else
 		// System.out.println("No Legitimate(2)");
 		// } catch (Exception e) {

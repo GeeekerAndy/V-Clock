@@ -2,19 +2,19 @@ package com.example.dell.v_clock.fragment;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,9 +35,11 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.VClockContract;
 import com.example.dell.v_clock.activity.LoginActivity;
-import com.example.dell.v_clock.activity.UpdateEmployeePwdActivity;
+import com.example.dell.v_clock.activity.UpdatePwdActivity;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,7 +57,14 @@ public class MeFragment extends Fragment {
 
     boolean isOnEdit = false;
     String eid;
-
+    RequestQueue requestQueue;
+    HashMap<String, String> emploeeInfo;
+    SharedPreferences sp;
+    ImageView employeeAvatar;
+    EditText employeeName;
+    EditText employeeGender;
+    TextView employeeID;
+    EditText employeeTel;
 
     public MeFragment() {
         // Required empty public constructor
@@ -67,44 +76,74 @@ public class MeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_me, container, false);
-        final HashMap<String, String> emploeeInfo = new HashMap<>();
-        final RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        final SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
-        final ImageView employeeAvatar = view.findViewById(R.id.iv_employee_avatar);
-        final EditText employeeName = view.findViewById(R.id.tv_employee_name);
-        final EditText employeeGender = view.findViewById(R.id.tv_employee_gender);
-        final TextView employeeID = view.findViewById(R.id.tv_employee_id);
-        final EditText employeeTel = view.findViewById(R.id.tv_employee_tel);
+        emploeeInfo = new HashMap<>();
+        sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
+        employeeAvatar = view.findViewById(R.id.iv_employee_avatar);
+        employeeName = view.findViewById(R.id.tv_employee_name);
+        employeeGender = view.findViewById(R.id.tv_employee_gender);
+        employeeID = view.findViewById(R.id.tv_employee_id);
+        employeeTel = view.findViewById(R.id.tv_employee_tel);
         eid = sp.getString("eid", null);
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
+        requestQueue = Volley.newRequestQueue(getContext());
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        final Button cancelEdit = view.findViewById(R.id.bt_cancel_edit_employee_info);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = sp.edit();
-                editor.remove("eid");
-                editor.apply();
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                db.execSQL("DELETE FROM " + VClockContract.MessageInfo.TABLE_NAME);
-                dbHelper.close();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog dialog = builder.setTitle("确定退出账号？")
+                        .setMessage("这将删除所有账号相关数据")
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //清空内存数据
+                                GuestListUtil.clearList();
+                                //删除本地缓存
+                                ACache aCache = ACache.get(getContext());
+                                aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
+                                aCache.remove(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+
+                                //删除本地存储eid和历史记录，未读消息的数据库
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.remove("eid");
+                                editor.apply();
+                                SharedPreferences.Editor editor1 = getContext().getSharedPreferences("history", MODE_PRIVATE).edit();
+                                editor1.remove("page");
+                                editor1.apply();
+                                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                                db.execSQL("DELETE FROM " + VClockContract.MessageInfo.TABLE_NAME);
+                                dbHelper.close();
+                                Intent intent = new Intent(getContext(), LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Do nothing.
+                            }
+                        })
+                        .create();
+                dialog.show();
             }
         });
         ImageButton changePwd = view.findViewById(R.id.imb_change_pwd);
         changePwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), UpdateEmployeePwdActivity.class);
+                Intent intent = new Intent(getContext(), UpdatePwdActivity.class);
                 startActivity(intent);
             }
         });
         final Button editEmployeeInfo = view.findViewById(R.id.bt_edit_employee_info);
-        if(!isOnEdit) {
+        if (!isOnEdit) {
             editEmployeeInfo.setText("编辑");
-        } else if(isOnEdit) {
+        } else if (isOnEdit) {
             editEmployeeInfo.setText("完成");
         }
         editEmployeeInfo.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +157,8 @@ public class MeFragment extends Fragment {
                     imm.showSoftInput(employeeName, InputMethodManager.SHOW_IMPLICIT);
                     employeeGender.setEnabled(true);
                     employeeTel.setEnabled(true);
+                    cancelEdit.setEnabled(true);
+                    cancelEdit.setText("取消");
                     isOnEdit = true;
                 } else if (isOnEdit) {
                     if (employeeName.getText().length() < 1) {
@@ -135,6 +176,8 @@ public class MeFragment extends Fragment {
                         employeeName.setEnabled(false);
                         employeeGender.setEnabled(false);
                         employeeTel.setEnabled(false);
+                        cancelEdit.setEnabled(false);
+                        cancelEdit.setText("");
                         emploeeInfo.put("tip", "ename;esex;etel");
                         emploeeInfo.put("ename", employeeName.getText().toString());
                         emploeeInfo.put("esex", employeeGender.getText().toString());
@@ -146,12 +189,12 @@ public class MeFragment extends Fragment {
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        if(response.length() > 0 && response.charAt(0) == '0') {
+                                        if (response.length() > 0 && response.charAt(0) == '0') {
                                             Toast.makeText(getContext(), "更新信息成功！", Toast.LENGTH_SHORT).show();
                                             Log.d("TAG", response);
-                                        } else if(response.length() > 0 && response.charAt(0) == '1') {
+                                        } else if (response.length() > 0 && response.charAt(0) == '1') {
                                             Toast.makeText(getContext(), "不允许更改！", Toast.LENGTH_SHORT).show();
-                                        } else if(response.length() > 0 && response.charAt(0) == '2') {
+                                        } else if (response.length() > 0 && response.charAt(0) == '2') {
                                             Toast.makeText(getContext(), "数据错误！", Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(getContext(), "发生未知错误！", Toast.LENGTH_SHORT).show();
@@ -160,7 +203,7 @@ public class MeFragment extends Fragment {
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
+                                Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
                             }
                         }) {
                             @Override
@@ -173,6 +216,27 @@ public class MeFragment extends Fragment {
                 }
             }
         });
+
+        cancelEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editEmployeeInfo.setText("编辑");
+                employeeName.setEnabled(false);
+                employeeGender.setEnabled(false);
+                employeeTel.setEnabled(false);
+                isOnEdit = false;
+                cancelEdit.setEnabled(false);
+                cancelEdit.setText("");
+                onStart();
+            }
+        });
+
+        return view;
+    }
+
+
+    @Override
+    public void onStart() {
         JSONObjectRequestMapParams getEmployeeInfo = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_EMPLOYEE_INFO_URL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -189,7 +253,7 @@ public class MeFragment extends Fragment {
                                 Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Log.e("ERROE", e.getMessage());
+                            Log.e("ERROR", e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -207,13 +271,14 @@ public class MeFragment extends Fragment {
         };
         requestQueue.add(getEmployeeInfo);
 
-        return view;
+        super.onStart();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         isOnEdit = false;
+        requestQueue.stop();
+        super.onDestroy();
     }
 
 }

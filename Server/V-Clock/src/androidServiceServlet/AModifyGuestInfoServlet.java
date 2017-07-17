@@ -78,53 +78,56 @@ public class AModifyGuestInfoServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String result = "", loginBool = "";
 		HttpSession session = request.getSession(false);
-		boolean validate = SessionListener.getInstance().verifySession(request);
-		if (validate) {
-			Employee emp = new Employee();
-			// String userTel=(String) session.getAttribute("etel");
-			// String userPhoto=(String) session.getAttribute("ephoto");
-			// if(userTel!=null&&userPhoto!=null){
-			// try {
-			// loginBool=emp.checkuser(userTel, userPhoto);
-			// } catch (Exception e2) {
-			// // TODO Auto-generated catch block
-			// e2.printStackTrace();
+
+		Employee emp = new Employee();
+		// String userTel=(String) session.getAttribute("etel");
+		// String userPhoto=(String) session.getAttribute("ephoto");
+		// if(userTel!=null&&userPhoto!=null){
+		// try {
+		// loginBool=emp.checkuser(userTel, userPhoto);
+		// } catch (Exception e2) {
+		// // TODO Auto-generated catch block
+		// e2.printStackTrace();
+		// }
+		// if(loginBool.equals("0")){
+		try {
+			String informationType = request.getParameter("tip");
+			System.out.println("informationType:" + informationType);
+			String[] infoList = informationType.split(";");
+			// String[] temp = informationType.split(";");
+			// String[] infoList=new String[temp.length];
+			// infoList[0]=(String) session.getAttribute("eid");
+			// for(int i=1;i<infoList.length;i++){
+			// infoList[i]=temp[i-1];
 			// }
-			// if(loginBool.equals("0")){
-			try {
-				String informationType = request.getParameter("tip");
-				System.out.println("informationType:" + informationType);
-				//String[] infoList = informationType.split(";");
-				 String[] temp = informationType.split(";");
-				 String[] infoList=new String[temp.length];
-				 infoList[0]=(String) session.getAttribute("eid");
-				 for(int i=1;i<infoList.length;i++){
-				 infoList[i]=temp[i-1];
-				 }
-				String gname = request.getParameter("gname");
-				System.out.println("gname:" + gname);
-				guest.getC().setAutoCommit(false);
-				for (int i = 0; i < infoList.length; i++) {
-					String info = request.getParameter(infoList[i]);
-					result += guest.modifyInfo(gname, info, infoList[i]);
-				}
-				guest.getC().commit();
-				out.append(result);
-				// guest.getC().setAutoCommit(false);
-			} catch (Exception e) {
-				try {
-					guest.getC().rollback();
-					out.append(result);
-					// guest.getC().setAutoCommit(true);
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-					out.append(result);
-				}
+			String gname = request.getParameter("gname");
+			System.out.println("gname(ModifyGuestInfo):" + gname);
+			guest.getC().setAutoCommit(false);
+			for (int i = 0; i < infoList.length; i++) {
+				String info = request.getParameter(infoList[i]);
+				result += guest.modifyInfo(gname, info, infoList[i]);
 			}
-			System.out.println(result);
-			out.flush();
-			out.close();
+			int res=Integer.parseInt(result);
+			if(res>0)
+				guest.getC().rollback();
+			guest.getC().commit();
+			out.append(result);
+			// guest.getC().setAutoCommit(false);
+		} catch (Exception e) {
+			try {
+				guest.getC().rollback();
+				out.append(result);
+				// guest.getC().setAutoCommit(true);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				out.append(result);
+			}
 		}
+		System.out.println(result);
+		out.flush();
+		out.close();
+		// }
+
 		// else
 		// System.out.println("No Legitimate(2)");
 		// }

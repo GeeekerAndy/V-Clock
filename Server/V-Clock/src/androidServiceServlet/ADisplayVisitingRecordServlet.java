@@ -72,37 +72,35 @@ public class ADisplayVisitingRecordServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
-		boolean validate = SessionListener.getInstance().verifySession(request);
-		if (validate) {
-			// Employee emp=new Employee();
-			// String userTel=(String) session.getAttribute("etel");
-			// String userPhoto=(String) session.getAttribute("ephoto");
-			// if(userTel!=null&&userPhoto!=null){
-			// try {
-			// String loginBool=emp.checkuser(userTel, userPhoto);
-			// if(loginBool.equals("0")){
-			//String eid = request.getParameter("eid");
-			String eid=(String) session.getAttribute("eid");
-			String page = request.getParameter("page");
-			System.out.println("eid(visitingRecord):" + eid);
-			VisitingRecord visitingRecord = new VisitingRecord();
-			int allPageCount = visitingRecord.pageCount(eid);
-			JSONArray temp = visitingRecord.displayVisitingRecord(eid, page);
-			JSONObject json = new JSONObject();
-			if (temp == null)
-				json.put("tip", "2");
-			else {
-				json.put("tip", "0");
-				json.put("allPageCount", allPageCount);
-				json.put("VisitingRecord", temp);
-			}
-			response.setCharacterEncoding("UTF-8");
-			PrintWriter out = response.getWriter();
-			// System.out.println(json.toString());
-			out.append(json.toString());
-			out.flush();
-			out.close();
+		// Employee emp=new Employee();
+		// String userTel=(String) session.getAttribute("etel");
+		// String userPhoto=(String) session.getAttribute("ephoto");
+		// if(userTel!=null&&userPhoto!=null){
+		// try {
+		// String loginBool=emp.checkuser(userTel, userPhoto);
+		// if(loginBool.equals("0")){
+		String eid = request.getParameter("eid");
+		// String eid=(String) session.getAttribute("eid");
+		String page = request.getParameter("page");
+		System.out.println("eid(visitingRecord):" + eid);
+		VisitingRecord visitingRecord = new VisitingRecord();
+		int allPageCount = visitingRecord.pageCount(eid);
+		JSONArray temp = visitingRecord.displayVisitingRecord(eid, page);
+		JSONObject json = new JSONObject();
+		if (temp == null)
+			json.put("tip", "2");
+		else {
+			json.put("tip", "0");
+			json.put("allPageCount", allPageCount);
+			json.put("VisitingRecord", temp);
 		}
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter out = response.getWriter();
+		// System.out.println(json.toString());
+		out.append(json.toString());
+		out.flush();
+		out.close();
+		// }
 		// else
 		// System.out.println("No Legitimate(2)");
 		// } catch (Exception e) {

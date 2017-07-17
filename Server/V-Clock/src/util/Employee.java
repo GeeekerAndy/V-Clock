@@ -85,7 +85,7 @@ public class Employee implements objects.Employees{
 		if(content==null)
 			return false;
 		String allNumber="^[0-9_]+$";//纯数字正则表达式
-		String existNumber=".*\\d+.*";//包含数字正则表达式
+		String existNumber="^[\u4e00-\u9fa5a-zA-Z·]+$";//姓名正则表达式
 		Pattern ifAllNumber=Pattern.compile(allNumber);
 		Pattern ifExistNumber=Pattern.compile(existNumber);
 		if(type.equals("etel")){
@@ -100,7 +100,7 @@ public class Employee implements objects.Employees{
 		else if(type.equals("ename")){
 			Matcher m2=ifExistNumber.matcher(content);
 			boolean enameBool=m2.matches();
-			if(content.length()<20&&!enameBool){
+			if(content.length()<20&&enameBool){
 				return true;
 			}
 			else

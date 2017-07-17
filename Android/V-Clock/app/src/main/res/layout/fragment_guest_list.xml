@@ -35,30 +35,22 @@
             android:background="@drawable/plus_selector" />
     </RelativeLayout>
 
-    <ScrollView
-
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_guest_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         android:layout_below="@+id/relative_search">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                <ExpandableListView
+                    android:id="@+id/explv_my_guest_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:listSelector="@color/gray_light"
+                    android:indicatorEnd="50dp"
+                    android:indicatorStart="0dp">
 
-            <ExpandableListView
-                android:id="@+id/explv_my_guest_list"
-                android:indicatorStart="0dp"
-                android:indicatorEnd="50dp"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </ExpandableListView>
-
-        </RelativeLayout>
-
-    </ScrollView>
+                </ExpandableListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 </RelativeLayout>

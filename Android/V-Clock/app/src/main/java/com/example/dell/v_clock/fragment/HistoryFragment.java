@@ -2,12 +2,18 @@ package com.example.dell.v_clock.fragment;
 
 
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,12 +47,15 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class HistoryFragment extends Fragment {
 
+    final String TAG = "HistoryFragment";
+
     View view;
     ArrayList<GuestHistory> historyArrayList;
     MessageHistoryAdapter adapter;
     RequestQueue requestQueue;
     String eid;
     ListView historyList;
+    ImageButton updateHistory;
 
     int page = 1;
 
@@ -58,52 +67,95 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_history, container, false);
-        page = 1;
+        page = 2;
         SharedPreferences sp = getContext().getSharedPreferences("loginInfo", MODE_PRIVATE);
         eid = sp.getString("eid", null);
-        Log.d("TAG", "eid = " + eid);
-
+        Log.d(TAG, "eid = " + eid);
         historyArrayList = new ArrayList<>();
-        requestQueue = Volley.newRequestQueue(getContext());
-        JSONObjectRequestMapParams jsonObjectRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_VISITING_RECORD_URL, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        //Get visiting history from JSONObject and add to arrayList here.
-                        try {
-                            JSONArray jsonArray = response.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
-                            for(int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
-                                        jsonObject.getString("arrivingdate"),
-                                        jsonObject.getString("gphoto"));
-                                Log.d("TAG", guestHistory.getGuestName() + guestHistory.getArriveTime());
-                                historyArrayList.add(guestHistory);
-                                Log.d("History", guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
-                            }
-                            adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
-                            historyList = view.findViewById(R.id.lv_history_list);
-                            historyList.setAdapter(adapter);
-                        } catch (JSONException e) {
-                            Log.e("ERROR", e.getMessage());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-//                Log.e("ERROR", error.getMessage());
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String, String> eidMap= new HashMap<>();
-                eidMap.put("page", page + "");
-                eidMap.put("eid", eid);
-                return eidMap;
-            }
-        };
-
+        historyList = view.findViewById(R.id.lv_history_list);
         final SwipyRefreshLayout refreshHistoryFromBottom = view.findViewById(R.id.srl_refresh_history_from_bottom);
+
+        final RotateAnimation rotate = new RotateAnimation(0,360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(1000);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setRepeatMode(Animation.INFINITE);
+        rotate.setInterpolator(new LinearInterpolator());
+        updateHistory = view.findViewById(R.id.ibt_update_history);
+        updateHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateHistory.startAnimation(rotate);
+                updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_refresh_white_24px));
+                new UpdateHistory().doInBackground();
+            }
+        });
+
+        requestQueue = Volley.newRequestQueue(getContext());
+        new RestoreHistory().doInBackground();
+//        JSONObjectRequestMapParams jsonObjectRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_VISITING_RECORD_URL, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        //Get visiting history from JSONObject and add to arrayList here.
+//                        try {
+//                            page++;
+//                            JSONArray jsonArray = response.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
+//                            for (int i = 0; i < jsonArray.length(); i++) {
+//                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                                GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
+//                                        jsonObject.getString("arrivingdate"),
+//                                        jsonObject.getString("gphoto"));
+//                                Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
+//                                historyArrayList.add(guestHistory);
+//                                Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
+//                            }
+//                            adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
+//                            historyList.setAdapter(adapter);
+//                        } catch (JSONException e) {
+//                            Log.e(TAG, e.getMessage());
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+////                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+//            }
+//        }) {
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                HashMap<String, String> eidMap = new HashMap<>();
+//                eidMap.put("page", page + "");
+//                eidMap.put("eid", eid);
+//                return eidMap;
+//            }
+//        };
+//        requestQueue.add(jsonObjectRequest);
+
+//        SharedPreferences historyPreferences = getContext().getSharedPreferences("history", MODE_PRIVATE);
+//        String historyString = historyPreferences.getString("page", null);
+//        try {
+//            if(historyString == null) {
+//
+//            } else {
+//                JSONObject JSONHistory = new JSONObject(historyString);
+//                JSONArray jsonArray = JSONHistory.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                    GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
+//                            jsonObject.getString("arrivingdate"),
+//                            jsonObject.getString("gphoto"));
+//                    Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
+//                    historyArrayList.add(guestHistory);
+//                    Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
+//                }
+//                adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
+//                historyList.setAdapter(adapter);
+//            }
+//        } catch (JSONException e) {
+//            Log.e(TAG, e.getMessage());
+//        }
+
         refreshHistoryFromBottom.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh(SwipyRefreshLayoutDirection direction) {
@@ -114,40 +166,46 @@ public class HistoryFragment extends Fragment {
                                 //Get visiting history from JSONObject and add to arrayList here.
                                 try {
                                     JSONArray jsonArray = response.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
-                                    if(jsonArray.length() > 0) {
-                                        for(int i = 0; i < jsonArray.length(); i++) {
+                                    if (jsonArray.length() > 0) {
+                                        page++;
+                                        for (int i = 0; i < jsonArray.length(); i++) {
                                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                                             GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
                                                     jsonObject.getString("arrivingdate"),
                                                     jsonObject.getString("gphoto"));
-                                            Log.d("TAG", guestHistory.getGuestName() + guestHistory.getArriveTime());
+                                            Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
                                             historyArrayList.add(guestHistory);
-                                            Log.d("History", guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
+                                            Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
                                         }
-                                        if(historyList.getAdapter() == null) {
+                                        if (historyList.getAdapter() == null) {
                                             adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
                                             historyList = view.findViewById(R.id.lv_history_list);
                                         } else {
                                             adapter.notifyDataSetChanged();
                                         }
-                                        page++;
-                                    } else if(jsonArray.length() == 0) {
+                                    } else if (jsonArray.length() == 0) {
                                         Toast.makeText(getContext(), "这是最后一页啦！", Toast.LENGTH_SHORT).show();
                                     }
                                     refreshHistoryFromBottom.setRefreshing(false);
                                 } catch (JSONException e) {
-                                    Log.e("ERROR", e.getMessage());
+                                    Log.e(TAG, e.getMessage());
                                 }
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-//                Log.e("ERROR", error.getMessage());
+                        try {
+                            Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
+                            refreshHistoryFromBottom.setRefreshing(false);
+                            Log.e(TAG, error.getMessage());
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }) {
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
-                        HashMap<String, String> eidMap= new HashMap<>();
+                        HashMap<String, String> eidMap = new HashMap<>();
                         eidMap.put("page", page + "");
                         eidMap.put("eid", eid);
                         return eidMap;
@@ -156,10 +214,83 @@ public class HistoryFragment extends Fragment {
                 requestQueue.add(jsonObjectRequestOnRefresh);
             }
         });
+        Log.d(TAG, "onCreate in history fragment");
+        return view;
+    }
 
-        requestQueue.add(jsonObjectRequest);
-        Log.d("TAG", "onCreate in history fragment");
-        return view ;
+    private class UpdateHistory extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+//            RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+            JSONObjectRequestMapParams jsonObjectRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.DISPLAY_VISITING_RECORD_URL, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            if(response != null) {
+                                SharedPreferences.Editor editor = getContext().getSharedPreferences("history", MODE_PRIVATE).edit();
+                                editor.putString("page", response.toString());
+                                editor.apply();
+                                updateHistory.clearAnimation();
+                                updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_done_white_24px));
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    updateHistory.clearAnimation();
+                    updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_off_white_24px));
+//                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    HashMap<String, String> eidMap = new HashMap<>();
+                    eidMap.put("page", "1");
+                    eidMap.put("eid", eid);
+                    return eidMap;
+                }
+            };
+            requestQueue.add(jsonObjectRequest);
+            return null;
+        }
+    }
+
+    private class RestoreHistory extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        public Void doInBackground(Void... params) {
+            SharedPreferences historyPreferences = getContext().getSharedPreferences("history", MODE_PRIVATE);
+            String historyString = historyPreferences.getString("page", null);
+            try {
+                if (historyString == null) {
+
+                } else {
+                    JSONObject JSONHistory = new JSONObject(historyString);
+                    JSONArray jsonArray = JSONHistory.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
+                                jsonObject.getString("arrivingdate"),
+                                jsonObject.getString("gphoto"));
+                        Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
+                        historyArrayList.add(guestHistory);
+                        Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
+                    }
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
+                        historyList.setAdapter(adapter);
+                    }
+                });
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage());
+            }
+            return null;
+        }
     }
 
     @Override
@@ -167,7 +298,5 @@ public class HistoryFragment extends Fragment {
         super.onStop();
         requestQueue.stop();
     }
-
-
 }
 

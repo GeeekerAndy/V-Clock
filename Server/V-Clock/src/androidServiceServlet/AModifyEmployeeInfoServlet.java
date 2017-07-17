@@ -70,57 +70,58 @@ public class AModifyEmployeeInfoServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
-		boolean validate = SessionListener.getInstance().verifySession(request);
-		if (validate) {
-			Employee emp = new Employee();
-			// String userTel=(String) session.getAttribute("etel");
-			// String userPhoto=(String) session.getAttribute("ephoto");
-			// if(userTel!=null&&userPhoto!=null){
-			try {
-				// String loginBool=emp.checkuser(userTel, userPhoto);
-				// if(loginBool.equals("0")){
-				String temp = request.getParameter("tip");
-				System.out.println("tip:" + temp);
-				if (temp != null) {
-					String[] modifyTypeList = temp.split(";");
-					String[] modifyContentList = new String[modifyTypeList.length];
-					String tip = "";
-					//String eid = request.getParameter("eid");
-					String eid=(String) session.getAttribute("eid");
-					emp.getC().setAutoCommit(false);
-					int i = 0;
-					for (i = 0; i < modifyTypeList.length; i++) {
-						modifyContentList[i] = request
-								.getParameter(modifyTypeList[i]);
-						// System.out.println(modifyTypeList[i]+":"+modifyContentList[i]);
-						tip = emp.modifyEmployeeInfo(eid, modifyTypeList[i],
-								modifyContentList[i]);
-						if (!tip.equals("0")) {
-							tip += "" + (i + 1);
-							emp.getC().rollback();
-							break;
-						}
+
+
+		Employee emp = new Employee();
+		// String userTel=(String) session.getAttribute("etel");
+		// String userPhoto=(String) session.getAttribute("ephoto");
+		// if(userTel!=null&&userPhoto!=null){
+		try {
+			// String loginBool=emp.checkuser(userTel, userPhoto);
+			// if(loginBool.equals("0")){
+			String temp = request.getParameter("tip");
+			System.out.println("tip(ModifyEmployeeInfo):" + temp);
+			if (temp != null) {
+				String[] modifyTypeList = temp.split(";");
+				String[] modifyContentList = new String[modifyTypeList.length];
+				String tip = "";
+				String eid = request.getParameter("eid");
+				// String eid=(String) session.getAttribute("eid");
+				emp.getC().setAutoCommit(false);
+				int i = 0;
+				for (i = 0; i < modifyTypeList.length; i++) {
+					modifyContentList[i] = request
+							.getParameter(modifyTypeList[i]);
+					// System.out.println(modifyTypeList[i]+":"+modifyContentList[i]);
+					tip = emp.modifyEmployeeInfo(eid, modifyTypeList[i],
+							modifyContentList[i]);
+					if (!tip.equals("0")) {
+						tip += "" + (i + 1);
+						emp.getC().rollback();
+						break;
 					}
-					if (tip.equals("0") && i == modifyTypeList.length)
-						emp.getC().commit();
-					response.setCharacterEncoding("UTF-8");
-					response.setContentType("text/html; charset=utf-8");
-					PrintWriter out = null;
-					out = response.getWriter();
-					out.append(tip);
-					System.out.println("tip(modifyEmployeeInfo):" + tip);
-					emp.getC().setAutoCommit(true);
-					out.flush();
-					out.close();
 				}
-				// }
-				// else
-				// System.out.println("No Legitimate(2)");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				if (tip.equals("0") && i == modifyTypeList.length)
+					emp.getC().commit();
+				response.setCharacterEncoding("UTF-8");
+				response.setContentType("text/html; charset=utf-8");
+				PrintWriter out = null;
+				out = response.getWriter();
+				out.append(tip);
+				System.out.println("tip(modifyEmployeeInfo):" + tip);
+				emp.getC().setAutoCommit(true);
+				out.flush();
+				out.close();
 			}
+			// }
+			// else
+			// System.out.println("No Legitimate(2)");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		// }
+
 		// else
 		// System.out.println("No Legitimate(1)");
 	}

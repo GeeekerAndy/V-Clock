@@ -3,11 +3,9 @@ package com.example.dell.v_clock.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -28,9 +26,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,12 +49,16 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     RadioButton rbt_woman;
     RadioButton rbt_man;
     Button bt_add;
-
+    //READ权限请求码
+//    final int MY_PERMISSION_REQUEST_READ = 0;
+    //剪裁图片的请求码
+    final int CROP_REQUEST_CODE = 2;
     //访问服务器请求队列
     RequestQueue requestQueue;
     //工作人员ID
     String regid;
     String name;
+    Bitmap bmp_photo;
 
     Map<String, String> guestInfoMap = new HashMap<>();
 
@@ -69,8 +72,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initComponents() {
-        //TODO iv_photo 的尺寸适配问题  图片的压缩
-
+        //的尺寸适配问题  图片的压缩
         ibt_back = (ImageButton) findViewById(R.id.img_bt_info_back);
         ibt_plus = (ImageButton) findViewById(R.id.img_bt_add_guest_photo);
         iv_photo = (ImageView) findViewById(R.id.iv_guest_photo);
@@ -91,13 +93,20 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     bt_add.setTextColor(AddGuestActivity.this.getResources().getColor(R.color.colorBlack));
-                }else if(motionEvent.getAction()==MotionEvent.ACTION_UP)
-                {
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     bt_add.setTextColor(AddGuestActivity.this.getResources().getColor(R.color.white));
                 }
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -110,6 +119,14 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             case R.id.img_bt_add_guest_photo:
             case R.id.iv_guest_photo:
                 //调用系统相册
+                //运行时权限 todo
+//                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                        == PackageManager.PERMISSION_DENIED) {
+//                    //读取sdCard权限未授予  申请权限
+//                    ActivityCompat.requestPermissions(this,
+//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST_READ);
+//                    return;
+//                }
                 pickImage();
                 break;
             case R.id.bt_add:
@@ -124,7 +141,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 检查各项信息是否填写及符合要求
      */
     private void checkPerInfo() {
-        Log.i("AddGuestActivity","点击了添加");
+        Log.i("AddGuestActivity", "点击了添加");
         name = et_name.getText().toString();
         String company = et_company.getText().toString();
         String phone = et_phone.getText().toString();
@@ -157,16 +174,8 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         guestInfoMap.put("gsex", sex);
         guestInfoMap.put("regid", regid);
 
-        //传输信息  暂时注释掉 方便测试
+        //传输信息
         transferGuestInfo();
-
-        //测试
-//        Log.i("AddGuest", "name = " + name);
-//        Log.i("AddGuest", "phone = " + phone);
-//        Log.i("AddGuest", "company = " + company);
-//        Log.i("AddGuest", "sex = " + sex);
-//        Log.i("AddGuest", "regid = " + regid);
-//        Log.i("AddGuest", "photo " + guestInfoMap.get("gphoto"));
     }
 
     /**
@@ -207,12 +216,19 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                 case 0:
                     //添加成功
                     Toast.makeText(AddGuestActivity.this, "添加成功", Toast.LENGTH_LONG).show();
+                    //更改GuestUtil静态信息  更改本地缓存
+                    GuestInfo guestInfo = new GuestInfo(name,bmp_photo);
+                    GuestListUtil.addGuest(guestInfo,AddGuestActivity.this);
                     //清空输入信息
                     cleanGuestInfo();
                     break;
                 case 1:
                     //此嘉宾已存在
                     Toast.makeText(AddGuestActivity.this, "此嘉宾已存在！", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("gname",name);
+                    intent.putExtra("guest_type",1);
+                    startActivity(intent);
                     //清空输入信息
                     cleanGuestInfo();
                     break;
@@ -229,18 +245,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 等一段时间 后清空输入框信息
      */
     private void cleanGuestInfo() {
-        //添加至“我的嘉宾”
-        StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
-                new AddMyGuestResponseListener(), new AddGuestResponseErrorListener()) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> myGuestInfoMap = new HashMap<>();
-                myGuestInfoMap.put("gname", name);
-                myGuestInfoMap.put("eid", regid);
-                return myGuestInfoMap;
-            }
-        };
-        requestQueue.add(addRequest);
         //等待
         new Thread(new Runnable() {
             @Override
@@ -249,40 +253,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                 handler.sendEmptyMessage(0);
             }
         }).start();
-    }
-    /**
-     *
-     */
-    private class AddMyGuestResponseListener implements Response.Listener<String> {
-
-        @Override
-        public void onResponse(String response) {
-            Log.i("Transfer", "收到服务器回复");
-            int intOfResponse = -1;
-            try {
-                intOfResponse = Integer.parseInt(response);
-            } catch (NumberFormatException e) {
-                //返回数据包含非数字信息
-                Log.i("GuestInfoTransfer", "收到服务器回复 数据错误");
-                Log.i("AddGuest", "response 包含非数字信息");
-                e.printStackTrace();
-            }
-            switch (intOfResponse) {
-                case 0:
-                    //添加成功
-                    Toast.makeText(AddGuestActivity.this, "已添加至我的嘉宾", Toast.LENGTH_LONG).show();
-                    break;
-                case 1:
-                    //此嘉宾已存在
-                    Toast.makeText(AddGuestActivity.this, "此嘉宾已在我的嘉宾中！", Toast.LENGTH_SHORT).show();
-                    break;
-                case 2:
-                    //数据错误
-                    Toast.makeText(AddGuestActivity.this, "数据传输错误，没有添加至我的嘉宾中！", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-
-        }
     }
 
     /**
@@ -317,29 +287,38 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
     public void pickImage() {
         Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickImageIntent.setType("image/*");
-        pickImageIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+//        pickImageIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
         startActivityForResult(pickImageIntent, PICK_PHOTO_FOR_AVATAR);
-
     }
 
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == RESULT_OK) {
-            if (data == null) {
-                Toast.makeText(AddGuestActivity.this, "Oops, 发生错误！", Toast.LENGTH_SHORT).show();
-            } else {
-                try {
-                    Uri selectedImage = data.getData();
-                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                    iv_photo.setImageBitmap(imageBitmap);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PICK_PHOTO_FOR_AVATAR:
+                    //剪裁图片
+                    ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
+                    break;
+                case CROP_REQUEST_CODE://返回剪裁后的图片
+                    bmp_photo = ImageUtil.getCropImage(this);
+                    if (bmp_photo == null) {
+                        return;
+                    }
+                    iv_photo.setImageBitmap(bmp_photo);
                     ibt_plus.setVisibility(View.INVISIBLE);
                     iv_photo.setBackgroundResource(R.color.gray_group_bar);
-                    guestInfoMap.put("gphoto", ImageUtil.convertImage(imageBitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    String str_photo = ImageUtil.convertImage(bmp_photo);
+                    guestInfoMap.put("gphoto", str_photo);
+                    break;
             }
         }
     }
+
 }

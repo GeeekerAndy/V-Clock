@@ -50,18 +50,12 @@ public class FaceCheck {
 
     /**
      * 初始化算法库 并对传入图片进行人脸检测
-     * <p>
-     * //     * @param hyuv420sp 传入的YUV420SP图像
      *
      * @param width  图像宽度
      * @param height 图像高度
-     * @param rotate 旋转方向 旋转90度，顺1逆-1，0=不转
      * @return 图像中人脸的属性
      */
-//    public FaceAttr detectFace(byte[] hyuv420sp, int width, int height, int rotate) {
-    public FaceAttr detectFace(Bitmap bitmap, int width, int height, int rotate) {
-        //是否继续追踪
-        int bContinue = isFirst ? 0 : 1;
+    public FaceAttr detectFace(Bitmap bitmap, int width, int height) {
         //第一次传入 或者 图像宽高发生变化时 要初始化算法库
         if (isFirst || width != mSsDuck.getWidth() || height != mSsDuck.getHeight()) {
             //设置算法处理图像宽高
@@ -80,32 +74,21 @@ public class FaceCheck {
         FaceAttr faceAttr = new FaceAttr();
         byte[] hRgb24 = getRgbValuesFromBitmap(bitmap);
         //压入图像
-        int faceCount = SsDuck.SsMobiFrame(hRgb24, 0, bContinue, SsDuck.ENV_SET);
-//        Log.i(TAG, "faceCount = " + faceCount);
-//        Log.i("Face", "压入图像完成");
+        int faceCount = SsDuck.SsMobiFrame(hRgb24, 0, 0, SsDuck.ENV_SET);
         if (faceCount > 0) {
-            Log.i(TAG, "检测到人脸");
+//            Log.i(TAG, "检测到人脸");
             faceAttr.setIncludeFace(true);
-            //TODO  人脸的其他属性
-            //检测人脸置信度
-//            int[] mScor = {0};
-//            int scoreResult = SsDuck.SsMobiIsoGo(SsDuck.TD_SCOR, mScor, 1, 0, SsDuck.ENV_SET);
-//            Log.i(TAG, "scoreResult = " + scoreResult);
-//            faceAttr.setmScor(mScor);
-//            //人脸姿态
-//            int[] mHeadPosition = new int[3];
-//            int poseResult = SsDuck.SsMobiIsoGo(SsDuck.TD_POSE, mHeadPosition, 1, 0, SsDuck.ENV_SET);
-//            Log.i(TAG, "poseResult = " + poseResult);
-//            faceAttr.setmHeadPosition(mHeadPosition);
-//            //矩阵位置
-            int[] mFaceRect = new int[4];
-            int rectResult = SsDuck.SsMobiIsoGo(SsDuck.TD_RECT, faceAttr.getFaceRect(), 1, 0, SsDuck.ENV_SET);
-            Log.i(TAG, "rectResult = " + rectResult);
-            faceAttr.setmFaceRect(mFaceRect);
-//            Log.i(TAG, "score:" + mScor[0]);
-//            Log.i(TAG, "pose:" + mHeadPosition[0] + " " + mHeadPosition[1] + " " + mHeadPosition[2]);
-            Log.i(TAG, "rect:" + faceAttr.getFaceRect()[0] + " " + faceAttr.getFaceRect()[1] + " " + faceAttr.getFaceRect()[2] + " " + faceAttr.getFaceRect()[3]);
         }
+        //TODO  人脸的其他属性
+//            //矩阵位置
+        int[] mFaceRect = faceAttr.getFaceRect();
+        if (SsDuck.SsMobiIsoGo(SsDuck.TD_RECT, mFaceRect, 0, 0, SsDuck.ENV_SET) >= 0) {
+            faceAttr.setmFaceRect(mFaceRect);
+            Log.i(TAG, "rect:" + faceAttr.getFaceRect()[0] + " " + faceAttr.getFaceRect()[1] + " "
+                    + faceAttr.getFaceRect()[2] + " " + faceAttr.getFaceRect()[3]);
+        }
+
+
         return faceAttr;
     }
 

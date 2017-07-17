@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance http://www.springmodules.org/schema/cache/springmodules-cache.xsd http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd 
@@ -9,8 +10,10 @@
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
+
 	 <listener>      <listener-class>util.SessionListener</listener-class>   
 		</listener> 
+
 
 	<servlet>
 		<servlet-name>action</servlet-name>
@@ -79,7 +82,9 @@
 		<servlet-name>wDeleteFromGuestList</servlet-name>
 		<servlet-class>webServiceServlet.WDeleteFromGuestListServlet</servlet-class>
 	</servlet>
-	<!-- android 共用服务servlet -->
+
+	<!-- android 服务servlet -->
+
 	<servlet>
 		<servlet-name>aLogin</servlet-name>
 		<servlet-class>androidServiceServlet.ALoginServlet</servlet-class>
@@ -231,10 +236,12 @@
 		<servlet-name>PrepareForPushServlet</servlet-name>
 		<url-pattern>/servlet/PrepareForPushServlet</url-pattern>
 	</servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>WLogoutServlet</servlet-name>
     <url-pattern>/servlet/WLogoutServlet</url-pattern>
   </servlet-mapping>
+
 
 </web-app>
 

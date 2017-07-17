@@ -33,6 +33,8 @@ import java.util.Map;
  */
 public class RegisterActivity extends AppCompatActivity {
 
+    final String TAG = "RegisterActivity";
+
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
 
     @Override
@@ -40,7 +42,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //异步检测保留
+//        Save async checking phone number
+//        异步检测手机号保留
 //        final RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         final EditText employeeName = (EditText) findViewById(R.id.et_employee_name);
@@ -55,8 +58,6 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
-
-
                 if (employeeName.getText().toString().equals("")) {
                     Toast.makeText(RegisterActivity.this, "姓名为空!", Toast.LENGTH_SHORT).show();
                 } else if(employeeName.getText().toString().length() >= 20) {
@@ -80,9 +81,8 @@ public class RegisterActivity extends AppCompatActivity {
 //                    });
 //                    requestQueue.add(registerStat);
 
-
                     //employee tel is not registered.
-
+                    //员工手机号未注册
                     HashMap<String, String> employeeInfoMap = new HashMap<>();
                     employeeInfoMap.put("ename", employeeName.getText().toString());
                     if (sexMan.isChecked()) {
@@ -91,12 +91,12 @@ public class RegisterActivity extends AppCompatActivity {
                         employeeInfoMap.put("esex", "女");
                     }
                     employeeInfoMap.put("etel", employeePhone.getText().toString());
+
                     //Go to select photos activity.
                     //跳转到选择用头像的活动
                     Intent intent = new Intent(RegisterActivity.this, SelectPhotoActivity.class);
                     intent.putExtra("employeeInfoHashMap", employeeInfoMap);
                     startActivity(intent);
-
                 }
             }
         });

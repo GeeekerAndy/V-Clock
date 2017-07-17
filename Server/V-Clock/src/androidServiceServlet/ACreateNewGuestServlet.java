@@ -76,54 +76,46 @@ public class ACreateNewGuestServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
-		boolean validate = SessionListener.getInstance().verifySession(request);
-		if (validate) {
-			Employee emp = new Employee();
-			// String userTel=(String) session.getAttribute("etel");
-			// String userPhoto=(String) session.getAttribute("ephoto");
-			// if(userTel!=null&&userPhoto!=null){
-			try {
-				// String loginBool=emp.checkuser(userTel, userPhoto);
-				// if(loginBool.equals("0")){
-				String imgIsValid = "";
-				String glist[] = new String[guests.gmessage.length];
-				//for (int i = 0; i < guests.gmessage.length; i++) {
-					for (int i = 0; i < guests.gmessage.length-1; i++) {
-					glist[i] = request.getParameter(guests.gmessage[i]);
-					if (i != guests.gmessage.length - 2)
-						System.out.println(guests.gmessage[i] + ":" + glist[i]);
-				}
-				glist[guests.gmessage.length-1]=(String)
-				session.getAttribute("eid");
-				imgIsValid = rf.computeFaceID(glist[4]);
-				PrintWriter out = response.getWriter();
-				if (imgIsValid != null) {
-					Guest guest = new Guest();
-					GuestList guestList = new GuestList();
-					String tip = "";
-					tip = guest.createNewGuest(glist[0], glist[1], glist[2],
-							glist[3], glist[4], glist[5]);
-					out.append(tip);
-					System.out.println("tip(create guest):" + tip);
-					// if(tip.equals("0")){
-					// tip=guestList.addToGuestList(glist[0], glist[5]);
-					// out.append("a"+tip);
-					// }
-					// else
-					// out.append("c"+tip);
-				} else {
-					out.append("2");
-				}
-				out.flush();
-				out.close();
-				// }
-				// else
-				// System.out.println("No Legitimate(2)");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		Employee emp = new Employee();
+		// String userTel=(String) session.getAttribute("etel");
+		// String userPhoto=(String) session.getAttribute("ephoto");
+		// if(userTel!=null&&userPhoto!=null){
+		try {
+			// String loginBool=emp.checkuser(userTel, userPhoto);
+			// if(loginBool.equals("0")){
+			String imgIsValid = "";
+			String glist[] = new String[guests.gmessage.length];
+			for (int i = 0; i < guests.gmessage.length; i++) {
+				// for (int i = 0; i < guests.gmessage.length - 1; i++) {
+				glist[i] = request.getParameter(guests.gmessage[i]);
+				if (i != guests.gmessage.length - 2)
+					System.out.println(guests.gmessage[i] + ":" + glist[i]);
 			}
+			// glist[guests.gmessage.length - 1] = (String) session
+			// .getAttribute("eid");
+			imgIsValid = rf.computeFaceID(glist[4]);
+			PrintWriter out = response.getWriter();
+			if (imgIsValid != null) {
+				Guest guest = new Guest();
+				GuestList guestList = new GuestList();
+				String tip = "";
+				tip = guest.createNewGuest(glist[0], glist[1], glist[2],
+						glist[3], glist[4], glist[5]);
+				out.append(tip);
+				System.out.println("tip(create guest):" + tip);
+			} else {
+				out.append("2");
+			}
+			out.flush();
+			out.close();
+			// }
+			// else
+			// System.out.println("No Legitimate(2)");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		// }
 		// else
 		// System.out.println("No Legitimate(1)");
 	}

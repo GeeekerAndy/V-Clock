@@ -2,6 +2,8 @@ package com.example.dell.v_clock.object;
 
 import android.graphics.Bitmap;
 
+import com.example.dell.v_clock.util.GuestListUtil;
+
 /**
  * Created by 王庆伟 on 2017/7/10.
  */
@@ -12,8 +14,11 @@ public class GuestInfo {
     private String guestSex = null;
     private String guestCompany = null;
     private String guestPhone = null;
-//    private String guestBasePhoto = null;
+    //    private String guestBasePhoto = null;
     private Bitmap guestBitmapPhoto = null;
+
+    private int guest_type = 1;
+
 
     public GuestInfo(String guestName) {
         this.guestName = guestName;
@@ -67,6 +72,14 @@ public class GuestInfo {
 
     public Bitmap getGuestBitmapPhoto() {
         return guestBitmapPhoto;
+    }
+
+    public int getGuest_type() {
+        return guest_type;
+    }
+
+    public void setGuest_type(int guest_type) {
+        this.guest_type = guest_type;
     }
 
     public void setGuestSex(String guestSex) {

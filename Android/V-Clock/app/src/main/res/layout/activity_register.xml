@@ -1,43 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.example.dell.v_clock.activity.RegisterActivity">
 
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="9">
+        android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:layout_marginTop="@dimen/margin_40"
+                android:layout_marginBottom="@dimen/margin_20"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
+
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/register_account"/>
+                    android:src="@drawable/register_account" />
+
                 <ImageView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -47,109 +51,121 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="50dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorBlack"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textSize="23sp"
-                        android:text="@string/register_name"/>
+                        android:text="@string/register_name"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="23sp" />
+
                     <EditText
                         android:id="@+id/et_employee_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textColorHint="@color/colorPrimary"
-                        android:maxLines="1"
                         android:inputType="text"
-                        android:textColor="@color/colorBlack"/>
+                        android:maxLines="1"
+                        android:textColor="@color/colorBlack"
+                        android:textColorHint="@color/colorPrimary" />
                 </LinearLayout>
+
                 <RadioGroup
                     android:id="@+id/rg_sex_group"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="50dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorBlack"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textSize="23sp"
-                        android:text="@string/register_sex"/>
+                        android:text="@string/register_sex"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="23sp" />
+
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1" />
+
                     <RadioButton
                         android:id="@+id/rb_sex_man"
                         android:layout_width="0dp"
-                        android:layout_weight="3"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
+                        android:layout_weight="3"
                         android:gravity="center"
                         android:text="@string/register_male"
-                        android:textSize="20sp"
-                        android:textColor="@color/colorBlack" />
+                        android:textColor="@color/colorBlack"
+                        android:textSize="20sp" />
+
                     <RadioButton
                         android:id="@+id/rb_sex_woman"
                         android:layout_width="0dp"
-                        android:layout_weight="3"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
+                        android:layout_weight="3"
                         android:gravity="center"
-                        android:textSize="20sp"
                         android:text="@string/register_female"
-                        android:textColor="@color/colorBlack" />
+                        android:textColor="@color/colorBlack"
+                        android:textSize="20sp" />
                 </RadioGroup>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="50dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textSize="23sp"
+                        android:text="@string/register_phone"
                         android:textColor="@color/colorBlack"
-                        android:text="@string/register_phone"/>
+                        android:textSize="23sp" />
+
                     <EditText
                         android:id="@+id/et_employee_phone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textColorHint="@color/colorPrimary"
-                        android:maxLines="1"
                         android:inputType="number"
                         android:maxLength="11"
-                        android:textColor="@color/colorBlack"/>
+                        android:maxLines="1"
+                        android:textColor="@color/colorBlack"
+                        android:textColorHint="@color/colorPrimary" />
                 </LinearLayout>
             </LinearLayout>
+            <Button
+                android:id="@+id/bt_go_to_select_register_photo"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_button_bar"
+                android:layout_marginTop="@dimen/margin_40"
+                android:layout_marginStart="@dimen/margin_80"
+                android:layout_marginEnd="@dimen/margin_80"
+                android:background="@drawable/rounded_rectangle_blue"
+                android:text="@string/register_next">
+            </Button>
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
-    <Button
-        android:id="@+id/bt_go_to_select_register_photo"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:elevation="@dimen/elevation"
-        android:background="@color/colorPrimary"
-        android:text="@string/register_next">
-    </Button>
 
-</LinearLayout>
+
+</RelativeLayout>

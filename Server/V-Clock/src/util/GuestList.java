@@ -34,13 +34,13 @@ public class GuestList {
 	 */
 	public boolean codeLegitimate(String type,String content){
 		String allNumber="^[0-9_]+$";//纯数字正则表达式
-		String existNumber=".*\\d+.*";//包含数字正则表达式
+		String existNumber="^[\u4e00-\u9fa5a-zA-Z·]+$";//姓名正则表达式
 		Pattern ifAllNumber=Pattern.compile(allNumber);
 		Pattern ifExistNumber=Pattern.compile(existNumber);
 		if(type.equals("gname")){
 			Matcher m1=ifExistNumber.matcher(content);
-			boolean enameBool=m1.matches();
-			if(content.length()<20&&!enameBool){
+			boolean gnameBool=m1.matches();
+			if(content.length()<20&&gnameBool){
 				return true;
 			}
 			else

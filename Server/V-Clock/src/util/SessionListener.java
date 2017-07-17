@@ -29,6 +29,7 @@ public class SessionListener implements HttpSessionListener{
 	}
 	public boolean verifySession(HttpServletRequest req) {
 		// 判断该会话是否在服务器已注册
+
 		HttpSession session = req.getSession();
 		System.out.println("sessionID:"+session.getId());
 		if (session.isNew()) {
@@ -39,6 +40,7 @@ public class SessionListener implements HttpSessionListener{
 			String eid = (String) session.getAttribute("eid");
 			String sql = "select * from session where sessionid=? and clientid=?";
             System.out.println("eid in session:"+eid);
+
 			try {
 				pstmt = c.prepareStatement(sql);
 				pstmt.setString(1, sessionID);
@@ -80,7 +82,9 @@ public class SessionListener implements HttpSessionListener{
 		 * 1.执行session.invalidate()方法
 		 * 2.客户端较长时间没有访问服务器 限定为30分钟
 		 */
+
 		System.out.println("delete session!");
+
         String sessionID=event.getSession().getId();
         String sql = "delete from session where sessionid=? ";
 
