@@ -154,6 +154,8 @@ public class RecognizeFace {
 		JSONObject object = JSONObject.fromObject(result);
 		if(object.getString("res_code").equals("1067")){
 			return null;
+		}else if(object.getString("face")==null){
+			return null;
 		}else{
 			String faceContent = object.getString("face");
 			JSONArray faceArray = JSONArray.fromObject(faceContent);
@@ -161,21 +163,19 @@ public class RecognizeFace {
 			return face0.getString("face_id");
 		}
 	}
-
 	// 提取similarity
 	public float getSimilarityBetweenTwoImages(String result)  {
 		float similarity = 0;
 		//System.out.println(result);
 		JSONObject object = JSONObject.fromObject(result);
 		similarity = Float.parseFloat(object.getString("similarity"));
-
 		System.out.println(similarity);
-
 		return similarity;
 	}
     
 	//提取最相似的person信息
 	public JSONObject getTheMostSimilar(String result) {
+		
 		JSONObject object1 = JSONObject.fromObject(result);
 		String faceContent = object1.getString("face");
 		JSONArray array1 = JSONArray.fromObject(faceContent);
@@ -202,23 +202,23 @@ public class RecognizeFace {
 	private String crowdName2= "wuhuabaren_employee";
 
 
-	public static void main(String[] args) throws Exception {
-	String imgFilePath1 = "D:\\1.jpg";
-	RecognizeFace rf = new RecognizeFace();
-//		//System.out.println(rf.createCrowd());
-//		// System.out.println(rf.computeFaceID(imgFilePath1));
-//		 CheckingPhoto cp=new CheckingPhoto();
-    ImageCoding ic=new ImageCoding();
-    String s=ic.GetImageStr(imgFilePath1);
-//	     System.out.println(rf.computeFaceID(s));
-		String imgFilePath2 = "D:\\2.jpg";
-	System.out.println(rf.compareOnewithAnother(s, imgFilePath2));
-//		// String fid = rf.getFaceID(imgFilePath1);
-//		// System.out.println(rf.createOnePeople(fid, "w3"));
-//		// System.out.println(rf.identifyPeopleInCrowd(fid));
-//		// System.out.println(rf.createOneCrowd());
-//
-}
+//	public static void main(String[] args) throws Exception {
+//	String imgFilePath1 = "D:\\1.jpg";
+//	RecognizeFace rf = new RecognizeFace();
+////		//System.out.println(rf.createCrowd());
+////		// System.out.println(rf.computeFaceID(imgFilePath1));
+////		 CheckingPhoto cp=new CheckingPhoto();
+//    ImageCoding ic=new ImageCoding();
+//    String s=ic.GetImageStr(imgFilePath1);
+////	     System.out.println(rf.computeFaceID(s));
+//		String imgFilePath2 = "D:\\2.jpg";
+//	System.out.println(rf.compareOnewithAnother(s, imgFilePath2));
+////		// String fid = rf.getFaceID(imgFilePath1);
+////		// System.out.println(rf.createOnePeople(fid, "w3"));
+////		// System.out.println(rf.identifyPeopleInCrowd(fid));
+////		// System.out.println(rf.createOneCrowd());
+////
+//}
 
 
 }

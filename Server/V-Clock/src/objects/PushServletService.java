@@ -54,9 +54,15 @@ public class PushServletService {
 		User user = new User();
 		// user.setEid((String)req.getSession().getAttribute("eid"));
 		// System.out.println((String)req.getSession().getAttribute("eid"));
-		user.setEid(req.getParameter("eid"));
+		boolean isMobile=GetHttpMessage.check(req.getHeader("USER-AGENT"));
+		if(isMobile){
+			user.setEid(req.getParameter("eid"));
+		}else{
+			user.setEid((String)req.getSession().getAttribute("eid"));
+		}
+		
 		// user.setEid("0000");
-		user.setMobile(GetHttpMessage.check(req.getHeader("USER-AGENT")));
+		user.setMobile(isMobile);
 		// System.out.println(user.getEid()+"............");
 		// System.out.println(ASYNC_CONTEXT_MAP.size()+"---------");
 		//boolean isAdd = true;
@@ -88,10 +94,13 @@ public class PushServletService {
 
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
-		//user.setEid((String)req.getSession().getAttribute("eid"));
-		//user.setEid(req.getParameter("eid"));
-		 user.setEid(req.getParameter("eid"));
-		user.setMobile(GetHttpMessage.check(req.getHeader("USER-AGENT")));
+		boolean isMobile=GetHttpMessage.check(req.getHeader("USER-AGENT"));
+		if(isMobile){
+			user.setEid(req.getParameter("eid"));
+		}else{
+			user.setEid((String)req.getSession().getAttribute("eid"));
+		}
+		user.setMobile(isMobile);
 		if (null != user) {
 			System.out.println("与客户端交互结束！");
 			ASYNC_CONTEXT_MAP.remove(user);

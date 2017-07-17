@@ -24,7 +24,7 @@ public class HttpGetandPost {
 
 			// 从BufferedReader读取url的响应流
 			in = new BufferedReader(
-					new InputStreamReader(conn.getInputStream()));
+					new InputStreamReader(conn.getInputStream(),"utf-8"));
 			String line;
 			while ((line = in.readLine()) != null) {
 				line = new String(line.getBytes(), "utf-8");
@@ -67,7 +67,7 @@ public class HttpGetandPost {
 			out.close();
 			// 从BufferedReader读取url的响应流
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
+					conn.getInputStream(),"utf-8"));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = new String(line.getBytes(), "utf-8");
