@@ -87,6 +87,7 @@ public class MeFragment extends Fragment {
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
         requestQueue = Volley.newRequestQueue(getContext());
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        final Button cancelEdit = view.findViewById(R.id.bt_cancel_edit_employee_info);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
         signOut.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +157,8 @@ public class MeFragment extends Fragment {
                     imm.showSoftInput(employeeName, InputMethodManager.SHOW_IMPLICIT);
                     employeeGender.setEnabled(true);
                     employeeTel.setEnabled(true);
+                    cancelEdit.setEnabled(true);
+                    cancelEdit.setText("取消");
                     isOnEdit = true;
                 } else if (isOnEdit) {
                     if (employeeName.getText().length() < 1) {
@@ -173,6 +176,8 @@ public class MeFragment extends Fragment {
                         employeeName.setEnabled(false);
                         employeeGender.setEnabled(false);
                         employeeTel.setEnabled(false);
+                        cancelEdit.setEnabled(false);
+                        cancelEdit.setText("");
                         emploeeInfo.put("tip", "ename;esex;etel");
                         emploeeInfo.put("ename", employeeName.getText().toString());
                         emploeeInfo.put("esex", employeeGender.getText().toString());
@@ -211,8 +216,24 @@ public class MeFragment extends Fragment {
                 }
             }
         });
+
+        cancelEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editEmployeeInfo.setText("编辑");
+                employeeName.setEnabled(false);
+                employeeGender.setEnabled(false);
+                employeeTel.setEnabled(false);
+                isOnEdit = false;
+                cancelEdit.setEnabled(false);
+                cancelEdit.setText("");
+                onStart();
+            }
+        });
+
         return view;
     }
+
 
     @Override
     public void onStart() {
