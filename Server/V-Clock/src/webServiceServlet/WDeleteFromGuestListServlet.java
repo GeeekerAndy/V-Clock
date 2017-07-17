@@ -20,6 +20,7 @@ import util.SessionListener;
 public class WDeleteFromGuestListServlet extends HttpServlet {
 
 
+
 	/**
 	 * Constructor of the object.
 	 */

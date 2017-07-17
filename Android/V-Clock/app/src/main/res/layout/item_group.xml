@@ -22,7 +22,6 @@
         android:textSize="@dimen/guest_size"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:text="@string/guest_num_10"
         android:textColor="@color/gray_dark"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/margin_50" />

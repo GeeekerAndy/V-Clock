@@ -34,25 +34,25 @@ public class JSONObjectRequestWithSessionID extends JsonObjectRequest {
         this.session_id = session_id;
     }
 
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        Map<String, String> headers = super.getHeaders();
-        Log.d("TAG", "getHeaders() session_id = " + session_id);
-        if (headers == null
-                || headers.equals(Collections.emptyMap())) {
-            headers = new HashMap<>();
-        }
-        if (this.session_id.length() > 0) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(SESSION_COOKIE);
-            builder.append("=");
-            builder.append(this.session_id);
-            if (headers.containsKey(COOKIE_KEY)) {
-                builder.append("; ");
-                builder.append(headers.get(COOKIE_KEY));
-            }
-            headers.put(COOKIE_KEY, builder.toString());
-        }
-        return headers;
-    }
+//    @Override
+//    public Map<String, String> getHeaders() throws AuthFailureError {
+//        Map<String, String> headers = super.getHeaders();
+//        Log.d("TAG", "getHeaders() session_id = " + session_id);
+//        if (headers == null
+//                || headers.equals(Collections.emptyMap())) {
+//            headers = new HashMap<>();
+//        }
+//        if (this.session_id.length() > 0) {
+//            StringBuilder builder = new StringBuilder();
+//            builder.append(SESSION_COOKIE);
+//            builder.append("=");
+//            builder.append(this.session_id);
+//            if (headers.containsKey(COOKIE_KEY)) {
+//                builder.append("; ");
+//                builder.append(headers.get(COOKIE_KEY));
+//            }
+//            headers.put(COOKIE_KEY, builder.toString());
+//        }
+//        return headers;
+//    }
 }

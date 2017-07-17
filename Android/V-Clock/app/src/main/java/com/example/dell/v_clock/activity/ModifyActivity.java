@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.util.GuestListUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_modigy);
+        setContentView(R.layout.activity_modify);
         img_bt_back = (ImageButton) findViewById(R.id.img_bt_modify_back);
         tv_modify_title = (TextView) findViewById(R.id.tv_modify_info);
         tv_save = (TextView) findViewById(R.id.tv_save);
@@ -64,8 +65,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
             //设置Input
             et_modify_content.setInputType(InputType.TYPE_CLASS_NUMBER);
             et_modify_content.setFilters(new InputFilter[]{new InputFilter.LengthFilter(11)});
-        }else if (modify_type.equals("gcompany"))
-        {
+        }else if (modify_type.equals("gcompany")) {
             et_modify_content.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
         }
         modify_content = getIntent().getStringExtra("modify_content");
@@ -87,6 +87,14 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

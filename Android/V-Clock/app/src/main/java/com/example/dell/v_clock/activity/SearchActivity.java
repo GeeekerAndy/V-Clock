@@ -1,5 +1,6 @@
 package com.example.dell.v_clock.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -25,9 +26,12 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.adapter.SearchAdapter;
 import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
+import com.org.afinal.simplecache.ACache;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -83,6 +87,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         lv_search_result.setOnItemClickListener(this);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!GuestListUtil.isNetworkAvailable(this)) {
+            Toast.makeText(this, "当前网络不可用,只能进行本地搜索！", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -218,12 +230,28 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(SearchActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
+            //本地搜索
+            ACache aCache = ACache.get(SearchActivity.this);
+            JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
+            if (myGuest != null) {
+                List<Map<String, Object>> allGuestList = GuestListUtil.jsonToList(myGuest);
+                String name = et_search.getText().toString();
+                Bitmap photo = null;
+                for (Map<String, Object> guest : allGuestList) {
+                    if (guest.get("name").equals(name)) {
+                        photo = (Bitmap) guest.get("avatar");
+                        break;
+                    }
+                }
+                guestInfo = new GuestInfo(name, photo);
+                handler.sendEmptyMessage(0);
+            }
         }
     }
 
 
     /**
-     * TODO 点击条目，进入嘉宾详细信息
+     * 点击条目，进入嘉宾详细信息
      *
      * @param adapterView
      * @param view
@@ -232,6 +260,34 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+        if (guestInfo != null) {
+            String guestName = guestInfo.getGuestName();
+            Bitmap guestPhoto = guestInfo.getGuestBitmapPhoto();
+            int guest_type = 1;
+            ACache aCache = ACache.get(this);
+            JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+            if (myGuest != null) {
+                List<Map<String, Object>> myGuestList = GuestListUtil.jsonToList(myGuest);
+                for (Map<String, Object> guest : myGuestList) {
+                    if (guest.get("name").equals(guestName)) {
+                        guest_type = 0;
+                        break;
+                    }
+                }
+            }
+            Intent guestInfoIntent = new Intent(this, GuestInfoActivity.class);
+            guestInfoIntent.putExtra("guest_type", guest_type);
+            guestInfoIntent.putExtra("gname", guestName);
+            //todo  传照片
+//            Bundle bd_photo = new Bundle();
+//            bd_photo.putParcelable("gphoto", guestPhoto);
+//            guestInfoIntent.putExtra("photoBundle", bd_photo);
+//            if (guestPhoto == null) {
+//                Log.i("SearchActivity","guest_photo = null");
+//            }else {
+//                Log.i("GuestActivity","guest_photo != null");
+//            }
+            startActivity(guestInfoIntent);
+        }
     }
 }

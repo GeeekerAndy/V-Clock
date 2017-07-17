@@ -6,14 +6,30 @@
     android:orientation="vertical"
     tools:context="com.example.dell.v_clock.fragment.HistoryFragment">
 
-    <TextView
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_size"
-        android:text="@string/fragment_history_title"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorPrimary"
-        android:gravity="center"
-        android:textSize="20sp"/>
+        android:background="@color/colorPrimary">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/action_bar_size"
+            android:text="@string/fragment_history_title"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:textSize="20sp"/>
+        <ImageButton
+            android:id="@+id/ibt_update_history"
+            android:layout_width="@dimen/action_bar_size"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_10"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:src="@drawable/ic_refresh_white_24px"
+            android:background="@null"/>
+
+    </RelativeLayout>
 
     <com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout
         android:id="@+id/srl_refresh_history_from_bottom"

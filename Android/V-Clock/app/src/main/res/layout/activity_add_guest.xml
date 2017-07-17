@@ -7,16 +7,19 @@
     android:background="@color/gray_group_bar"
     tools:context="com.example.dell.v_clock.activity.AddGuestActivity">
 
+
     <RelativeLayout
         android:id="@+id/relative_guest_info_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_size"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <ImageButton
             android:id="@+id/img_bt_info_back"
-            android:layout_width="@dimen/margin_20"
-            android:layout_height="@dimen/margin_20"
+            android:layout_width="@dimen/width_24"
+            android:layout_height="@dimen/width_24"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/margin_20"
             android:background="@drawable/back_selector" />
@@ -30,9 +33,10 @@
             android:textSize="@dimen/act_bar_text_size" />
     </RelativeLayout>
 
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/relative_guest_info_bar"
@@ -97,7 +101,8 @@
                             android:layout_width="@dimen/height_200"
                             android:layout_height="@dimen/height_30"
                             android:background="@drawable/rounded_rectangle_white"
-                            android:lines="1"
+                            android:maxLines="1"
+                            android:inputType="text"
                             android:maxLength="20"
                             android:paddingEnd="@dimen/margin_20"
                             android:paddingStart="@dimen/margin_20"
@@ -168,7 +173,8 @@
                             android:layout_width="@dimen/height_200"
                             android:layout_height="@dimen/height_30"
                             android:background="@drawable/rounded_rectangle_white"
-                            android:lines="1"
+                            android:maxLines="1"
+                            android:inputType="text"
                             android:maxLength="20"
                             android:paddingEnd="@dimen/margin_20"
                             android:paddingStart="@dimen/margin_20"
@@ -194,7 +200,7 @@
                             android:layout_height="@dimen/height_30"
                             android:background="@drawable/rounded_rectangle_white"
                             android:inputType="number"
-                            android:lines="1"
+                            android:maxLines="1"
                             android:maxLength="11"
                             android:paddingEnd="@dimen/margin_20"
                             android:paddingStart="@dimen/margin_20"
@@ -219,10 +225,6 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/act_bar_text_size" />
             </RelativeLayout>
-
         </LinearLayout>
-
     </LinearLayout>
-
-
 </RelativeLayout>
