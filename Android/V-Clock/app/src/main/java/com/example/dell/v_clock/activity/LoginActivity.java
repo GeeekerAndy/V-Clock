@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dell.v_clock.R;
+import com.example.dell.v_clock.util.CheckLegality;
 
 /**
  * This activity is the interface for the stuff to login which can jump to RegisterActivity.
@@ -181,7 +182,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         int lengthOfPhone = phoneNumber.length();
         if (lengthOfPhone < 11) {
             Toast.makeText(LoginActivity.this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
-            //TODO  方便测试 暂时注释掉下一行
+            return;
+        }if (!CheckLegality.isPhoneValid(phoneNumber)) {
+            Toast.makeText(this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
             return;
         }
         //TODO 向服务器查询输入手机号是否已注册

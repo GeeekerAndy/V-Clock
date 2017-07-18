@@ -7,6 +7,6 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/colorWhite</item>
         <item name="android:colorBackground">@color/colorWhite</item>
-        <item name="android:colorControlNormal">@color/gray_light</item>
+        <item name="android:colorControlNormal">@color/gray_group_bar</item>
     </style>
 </resources>
