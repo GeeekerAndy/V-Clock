@@ -73,7 +73,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private final int INTERVAL = 50;
     //捕捉画面的次数
     private int captureCount = 0;
-
     //测试使用的ImageView
     ImageView iv_test;
 
@@ -124,7 +123,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         }
         //初始化人脸识别算法
         faceCheck.initAlgorithm(this);
-        //开启扫描线程 识别含有人脸的帧
+        //超时线程
         new Thread(new ScanThread()).start();
     }
 

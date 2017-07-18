@@ -230,11 +230,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(SearchActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
-            //本地搜索
+            //本地搜索 todo 全部嘉宾变为了其他嘉宾  需修改
             ACache aCache = ACache.get(SearchActivity.this);
             JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
-            if (myGuest != null) {
-                List<Map<String, Object>> allGuestList = GuestListUtil.jsonToList(myGuest);
+            JSONArray otherGuest = aCache.getAsJSONArray(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
+            if (otherGuest != null) {
+                List<Map<String, Object>> allGuestList = GuestListUtil.jsonToList(otherGuest);
+                if (myGuest != null) {
+                    List<Map<String, Object>> myGuestList = GuestListUtil.jsonToList(myGuest);
+                    for (Map<String, Object> guest : myGuestList) {
+                        allGuestList.add(guest);
+                    }
+                }
                 String name = et_search.getText().toString();
                 Bitmap photo = null;
                 for (Map<String, Object> guest : allGuestList) {

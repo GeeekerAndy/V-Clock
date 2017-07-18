@@ -51,9 +51,14 @@ public class GuestListUtil {
     private static final int MY_GUEST_IDENTITOR = 0;
     private static final int ALL_GUEST_IDENTITOR = 1;
 
+    //我的嘉宾是否刷新完成
     private static boolean isMyFreshed = false;
+    //其他嘉宾是否刷新完成
     private static boolean isAllFreshed = false;
-
+    //我的嘉宾是否可以刷新
+    private static boolean isMYFreshedable = true;
+    //我的嘉宾是否可以刷新
+    private static boolean isAllFreshedable = true;
     private static String TAG = "GuestListUtil";
 
     private static ACache mACache = null;
@@ -72,6 +77,7 @@ public class GuestListUtil {
      */
     public static void requestMyGuestList(RequestQueue requestQueue, String eid, Context context) {
         isMyFreshed = false;
+        isMYFreshedable = false;
         if (mACache == null) {
             mACache = ACache.get(context);
         }
@@ -80,7 +86,7 @@ public class GuestListUtil {
         my_searchInfo.put("tip", MY_GUEST_SEARCH_TYPE);
         my_searchInfo.put("eid", eid);
         JSONObjectRequestMapParams myGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, my_searchInfo,
-                new MyGuestListResponseListener(), new GuestListResponseErrorListener());
+                new MyGuestListResponseListener(), new MyGuestListResponseErrorListener());
         //发出请求
         Log.i(TAG, "向服务器发出 我的嘉宾 请求");
         requestQueue.add(myGuestRequest);
@@ -91,6 +97,7 @@ public class GuestListUtil {
      */
     public static void requestAllGuestList(RequestQueue requestQueue, String eid, Context context) {
         isAllFreshed = false;
+        isAllFreshedable = false;
         if (mACache == null) {
             mACache = ACache.get(context);
         }
@@ -100,7 +107,7 @@ public class GuestListUtil {
         all_searchInfo.put("eid", eid);
         all_searchInfo.put("tip", PARTIAL_NAME_SEARCH_TYPE);
         JSONObjectRequestMapParams allGuestRequest = new JSONObjectRequestMapParams(Request.Method.POST, ServerInfo.SEARCH_GUEST_URL, all_searchInfo,
-                new AllGuestListResponseListener(), new GuestListResponseErrorListener());
+                new AllGuestListResponseListener(), new AllGuestListResponseErrorListener());
         //发出请求
         Log.i(TAG, "向服务器发出 全部嘉宾 请求");
         requestQueue.add(allGuestRequest);
@@ -314,9 +321,11 @@ public class GuestListUtil {
                 guestChildList.add(ALL_GUEST_IDENTITOR, temp);
 //                Log.i(TAG, "我的嘉宾 数据转换完成 guestChildList.get(0).size() = " + guestChildList.get(i).size());
                 isMyFreshed = true;
+                isMYFreshedable = true;
             } else if (i == ALL_GUEST_IDENTITOR) {
 //                Log.i(TAG, "全部嘉宾 数据转换完成 guestChildList.get(1).size() = " + guestChildList.get(i).size());
                 isAllFreshed = true;
+                isAllFreshedable = true;
             }
         }
     }
@@ -357,15 +366,27 @@ public class GuestListUtil {
     /**
      *
      */
-    private static class GuestListResponseErrorListener implements Response.ErrorListener {
+    private static class MyGuestListResponseErrorListener implements Response.ErrorListener {
         @Override
         public void onErrorResponse(VolleyError error) {
+            isMYFreshedable = true;
             Log.i("Transfer", "收到服务器回复");
-            //提示网络连接失败 todo
-//            Toast.makeText(getContext(), "服务器连接失败", Toast.LENGTH_SHORT).show();
-            //todo  隔一段时间再请求
-//            refreshChildList();
         }
+    }
+    private static class AllGuestListResponseErrorListener implements Response.ErrorListener {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            isAllFreshedable = true;
+            Log.i("Transfer", "收到服务器回复");
+        }
+    }
+
+    public static boolean isMYFreshedable() {
+        return isMYFreshedable;
+    }
+
+    public static boolean isAllFreshedable() {
+        return isAllFreshedable;
     }
 
     /**
