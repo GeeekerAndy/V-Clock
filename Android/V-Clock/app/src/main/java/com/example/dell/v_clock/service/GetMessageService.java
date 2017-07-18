@@ -18,8 +18,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.ListView;
-import android.widget.Toast;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -116,7 +115,7 @@ public class GetMessageService extends Service {
                 while (true) {
 //                    Log.d(TAG, "发送消息请求");
                     requestQueue.add(jsonObjectRequest);
-                    SystemClock.sleep(5 * 1000);
+                    SystemClock.sleep(7 * 1000);
                 }
             }
         }).start();

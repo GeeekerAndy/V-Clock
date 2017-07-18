@@ -1,6 +1,7 @@
 package com.example.dell.v_clock.fragment;
 
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,6 +37,8 @@ import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.VClockContract;
 import com.example.dell.v_clock.activity.LoginActivity;
 import com.example.dell.v_clock.activity.UpdatePwdActivity;
+import com.example.dell.v_clock.service.GetMessageService;
+import com.example.dell.v_clock.util.CheckLegality;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
@@ -54,6 +57,8 @@ import static android.content.Context.MODE_PRIVATE;
  * 这个碎片展示了一位工作人员的详细信息
  */
 public class MeFragment extends Fragment {
+
+    static String TAG = "MeFragment";
 
     boolean isOnEdit = false;
     String eid;
@@ -87,6 +92,7 @@ public class MeFragment extends Fragment {
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
         requestQueue = Volley.newRequestQueue(getContext());
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        final Button cancelEdit = view.findViewById(R.id.bt_cancel_edit_employee_info);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
         signOut.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +122,11 @@ public class MeFragment extends Fragment {
                                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                                 db.execSQL("DELETE FROM " + VClockContract.MessageInfo.TABLE_NAME);
                                 dbHelper.close();
+                                Intent messageService = new Intent(getContext(), GetMessageService.class);
+                                getContext().stopService(messageService);
+                                NotificationManager manager = (NotificationManager)getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.cancelAll();
+
                                 Intent intent = new Intent(getContext(), LoginActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
@@ -156,10 +167,12 @@ public class MeFragment extends Fragment {
                     imm.showSoftInput(employeeName, InputMethodManager.SHOW_IMPLICIT);
                     employeeGender.setEnabled(true);
                     employeeTel.setEnabled(true);
+                    cancelEdit.setEnabled(true);
+                    cancelEdit.setText("取消");
                     isOnEdit = true;
                 } else if (isOnEdit) {
-                    if (employeeName.getText().length() < 1) {
-                        Toast.makeText(getContext(), "姓名为空！", Toast.LENGTH_SHORT).show();
+                    if (!CheckLegality.isNameContainSpace(employeeName.getText().toString())) {
+                        Toast.makeText(getContext(), "姓名为空或包含空格！", Toast.LENGTH_SHORT).show();
                         employeeName.setEnabled(true);
                         employeeName.requestFocus();
                         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -173,6 +186,8 @@ public class MeFragment extends Fragment {
                         employeeName.setEnabled(false);
                         employeeGender.setEnabled(false);
                         employeeTel.setEnabled(false);
+                        cancelEdit.setEnabled(false);
+                        cancelEdit.setText("");
                         emploeeInfo.put("tip", "ename;esex;etel");
                         emploeeInfo.put("ename", employeeName.getText().toString());
                         emploeeInfo.put("esex", employeeGender.getText().toString());
@@ -198,7 +213,11 @@ public class MeFragment extends Fragment {
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
+                                try {
+                                    Toast.makeText(getContext(), "服务器错误！", Toast.LENGTH_SHORT).show();
+                                } catch (NullPointerException e) {
+                                    Log.e(TAG, e.getMessage());
+                                }
                             }
                         }) {
                             @Override
@@ -211,8 +230,23 @@ public class MeFragment extends Fragment {
                 }
             }
         });
+
+        cancelEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editEmployeeInfo.setText("编辑");
+                employeeName.setEnabled(false);
+                employeeGender.setEnabled(false);
+                employeeTel.setEnabled(false);
+                isOnEdit = false;
+                cancelEdit.setEnabled(false);
+                cancelEdit.setText("");
+                onStart();
+            }
+        });
         return view;
     }
+
 
     @Override
     public void onStart() {

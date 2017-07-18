@@ -75,7 +75,7 @@ public class HistoryFragment extends Fragment {
         historyList = view.findViewById(R.id.lv_history_list);
         final SwipyRefreshLayout refreshHistoryFromBottom = view.findViewById(R.id.srl_refresh_history_from_bottom);
 
-        final RotateAnimation rotate = new RotateAnimation(0,360,
+        final RotateAnimation rotate = new RotateAnimation(0, 360,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate.setDuration(1000);
         rotate.setRepeatCount(Animation.INFINITE);
@@ -179,7 +179,7 @@ public class HistoryFragment extends Fragment {
                                         }
                                         if (historyList.getAdapter() == null) {
                                             adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
-                                            historyList = view.findViewById(R.id.lv_history_list);
+                                            historyList.setAdapter(adapter);
                                         } else {
                                             adapter.notifyDataSetChanged();
                                         }
@@ -227,10 +227,15 @@ public class HistoryFragment extends Fragment {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            if(response != null) {
-                                SharedPreferences.Editor editor = getContext().getSharedPreferences("history", MODE_PRIVATE).edit();
-                                editor.putString("page", response.toString());
-                                editor.apply();
+                            if (response != null) {
+                                try {
+                                    SharedPreferences.Editor editor = getContext().getSharedPreferences("history", MODE_PRIVATE).edit();
+                                    editor.putString("page", response.toString());
+                                    editor.apply();
+                                } catch (OutOfMemoryError e) {
+                                    Log.e(TAG, e.getMessage());
+                                }
+                                new RestoreHistory().doInBackground();
                                 updateHistory.clearAnimation();
                                 updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_done_white_24px));
                                 adapter.notifyDataSetChanged();
@@ -240,7 +245,11 @@ public class HistoryFragment extends Fragment {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     updateHistory.clearAnimation();
-                    updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_off_white_24px));
+                    try {
+                        updateHistory.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_cloud_off_white_24px));
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
 //                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
                 }
             }) {
@@ -269,6 +278,7 @@ public class HistoryFragment extends Fragment {
                 } else {
                     JSONObject JSONHistory = new JSONObject(historyString);
                     JSONArray jsonArray = JSONHistory.getJSONArray(ServerInfo.VISITING_RECORD_KEY);
+                    historyArrayList.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         GuestHistory guestHistory = new GuestHistory(jsonObject.getString("gname"),
@@ -276,6 +286,7 @@ public class HistoryFragment extends Fragment {
                                 jsonObject.getString("gphoto"));
                         Log.d(TAG, guestHistory.getGuestName() + guestHistory.getArriveTime());
                         historyArrayList.add(guestHistory);
+                        adapter = new MessageHistoryAdapter(getContext(), R.layout.one_message_in_list, historyArrayList);
                         Log.d(TAG, guestHistory.getGuestName() + " " + guestHistory.getArriveTime());
                     }
                 }

@@ -153,16 +153,19 @@
                         android:textColorHint="@color/colorPrimary" />
                 </LinearLayout>
             </LinearLayout>
+            <Button
+                android:id="@+id/bt_go_to_select_register_photo"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_button_bar"
+                android:layout_marginTop="@dimen/margin_40"
+                android:layout_marginStart="@dimen/margin_80"
+                android:layout_marginEnd="@dimen/margin_80"
+                android:background="@drawable/rounded_rectangle_blue"
+                android:text="@string/register_next">
+            </Button>
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/bt_go_to_select_register_photo"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_button_bar"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
-        android:text="@string/register_next">
-    </Button>
+
 
 </RelativeLayout>

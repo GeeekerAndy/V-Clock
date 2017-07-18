@@ -31,6 +31,6 @@
     <dimen name="width_24">24dp</dimen>
     <dimen name="margin_18">18dp</dimen>
     <dimen name="margin_35">35dp</dimen>
-    <dimen name="bottom_button_bar">50dp</dimen>
+    <dimen name="bottom_button_bar">40dp</dimen>
 
 </resources>

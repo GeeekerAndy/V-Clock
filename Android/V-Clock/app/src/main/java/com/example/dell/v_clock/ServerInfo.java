@@ -8,7 +8,9 @@ public class ServerInfo {
 
 
     private static String SERVER_URL_2 = "http://121.250.222.75:8080/V-Clock";
-//    private static String SERVER_URL_2 = "http://121.250.222.47:8080/V-Clock";
+
+    private static String SERVER_URL_1 = "http://121.250.222.47:8080/V-Clock";
+
 
     public static String LOGIN_URL = SERVER_URL_2 + "/servlet/ALoginServlet";
     public static String REGISTER_URL = SERVER_URL_2 + "/servlet/ARegisterServlet";

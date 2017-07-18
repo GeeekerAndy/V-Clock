@@ -40,7 +40,7 @@ public class VisitingRecord {
 		if(type.equals("eid")){
 			Matcher m=ifAllNumber.matcher(content);
 			boolean eidBool=m.matches();
-			if(content.length()<5&&eidBool){
+			if(content.length()==4&&eidBool){
 				return true;
 			}
 			else
