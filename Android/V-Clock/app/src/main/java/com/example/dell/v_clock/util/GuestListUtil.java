@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,10 +36,10 @@ public class GuestListUtil {
     //ChildList数据
     public static List<List<Map<String, Object>>> guestChildList;
 
-    //我的嘉宾缓存保存时间 单位 秒
-    private static final int MY_SAVE_TIME = 36000;
-    //全部嘉宾缓存保存时间 单位 秒
-    private static final int ALL_SAVE_TIME = 3600;
+    //我的嘉宾缓存保存时间 单位 秒  默认一天
+    private static final int MY_SAVE_TIME = 86400;
+    //全部嘉宾缓存保存时间 单位 秒  默认一天
+    private static final int ALL_SAVE_TIME = 86400;
     //我的嘉宾 请求tip
     private static final String MY_GUEST_SEARCH_TYPE = "0";
     //全部嘉宾（gname="") 异步搜索 请求tip
@@ -90,6 +91,18 @@ public class GuestListUtil {
         //发出请求
         Log.i(TAG, "向服务器发出 我的嘉宾 请求");
         requestQueue.add(myGuestRequest);
+        //10后若没有收到回复 可再次请求
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                    isMYFreshedable = true;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -111,6 +124,18 @@ public class GuestListUtil {
         //发出请求
         Log.i(TAG, "向服务器发出 全部嘉宾 请求");
         requestQueue.add(allGuestRequest);
+        //10后若没有收到回复 可再次请求
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                    isAllFreshedable = true;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -122,7 +147,6 @@ public class GuestListUtil {
         //更新内存数据
         addToList(guest, MY_GUEST_IDENTITOR);
         isMyFreshed = true;
-
         //移除本地缓存
         removeCache(MY_GUEST_IDENTITOR, context);
     }

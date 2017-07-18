@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -62,6 +64,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //搜索结果 guest对象
     GuestInfo guestInfo;
 
+    List<Map<String, Object>> allGuestList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         et_search = (EditText) findViewById(R.id.et_search);
         et_search.setOnEditorActionListener(this);
+        et_search.addTextChangedListener(textWatcher);
 
         tv_cancel = (TextView) findViewById(R.id.tv_cancel);
         tv_cancel.setOnClickListener(this);
@@ -87,6 +92,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         lv_search_result.setOnItemClickListener(this);
 
+        allGuestList = GuestListUtil.getAllGuestList();
+        List<Map<String, Object>> myGuestList = GuestListUtil.getMyGuestList();
+        for (Map<String, Object> guest : myGuestList) {
+            allGuestList.add(guest);
+        }
     }
 
     @Override
@@ -103,8 +113,16 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            //更新UI  ListView信息
-            refreshGuestList();
+            switch (msg.what) {
+                case 0:
+                    //更新UI  ListView信息
+                    refreshGuestList();
+                    break;
+                case 1:
+                    searchAdapter.notifyDataSetChanged();
+                    break;
+            }
+
         }
     };
 
@@ -112,7 +130,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * 显示搜索结果 刷新ListView
      */
     private void refreshGuestList() {
-
 
         Log.i("Search", "刷新界面");
         if (guestInfo != null) {
@@ -126,7 +143,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             Log.i("Search", "数据更新");
         }
         searchAdapter.notifyDataSetChanged();
-
 
     }
 
@@ -230,29 +246,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(SearchActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
-            //本地搜索 todo 全部嘉宾变为了其他嘉宾  需修改
-            ACache aCache = ACache.get(SearchActivity.this);
-            JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
-            JSONArray otherGuest = aCache.getAsJSONArray(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
-            if (otherGuest != null) {
-                List<Map<String, Object>> allGuestList = GuestListUtil.jsonToList(otherGuest);
-                if (myGuest != null) {
-                    List<Map<String, Object>> myGuestList = GuestListUtil.jsonToList(myGuest);
-                    for (Map<String, Object> guest : myGuestList) {
-                        allGuestList.add(guest);
-                    }
+            //本地搜索
+            String name = et_search.getText().toString();
+            Bitmap photo = null;
+            for (Map<String, Object> guest : allGuestList) {
+                if (guest.get("name").equals(name)) {
+                    photo = (Bitmap) guest.get("avatar");
+                    break;
                 }
-                String name = et_search.getText().toString();
-                Bitmap photo = null;
-                for (Map<String, Object> guest : allGuestList) {
-                    if (guest.get("name").equals(name)) {
-                        photo = (Bitmap) guest.get("avatar");
-                        break;
-                    }
-                }
-                guestInfo = new GuestInfo(name, photo);
-                handler.sendEmptyMessage(0);
             }
+            guestInfo = new GuestInfo(name, photo);
+            handler.sendEmptyMessage(0);
+
         }
     }
 
@@ -297,4 +302,38 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             startActivity(guestInfoIntent);
         }
     }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(final Editable editable) {
+            //
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dataList_guest.clear();
+                    int length = editable.length();
+                    for (Map<String, Object> temp : allGuestList) {
+                        String name = (String) temp.get("name");
+                        String subName = name.substring(0, length);
+                        if (editable.equals(subName)) {
+                            dataList_guest.add(temp);
+                        }
+
+                    }
+                    handler.sendEmptyMessage(1);
+                }
+            }).start();
+
+        }
+    };
 }
