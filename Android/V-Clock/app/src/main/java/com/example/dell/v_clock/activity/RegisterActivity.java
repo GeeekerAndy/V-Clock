@@ -20,6 +20,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.util.CheckLegality;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,8 +59,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
-                if (employeeName.getText().toString().equals("")) {
-                    Toast.makeText(RegisterActivity.this, "姓名为空!", Toast.LENGTH_SHORT).show();
+                if (!CheckLegality.isNameContainSpace(employeeName.getText().toString())) {
+                    Toast.makeText(RegisterActivity.this, "姓名为空或包含空格!", Toast.LENGTH_SHORT).show();
                 } else if(employeeName.getText().toString().length() >= 20) {
                     Toast.makeText(RegisterActivity.this, "姓名长度过长！", Toast.LENGTH_SHORT).show();
                 } else if (employeePhone.getText().length() != 11) {
