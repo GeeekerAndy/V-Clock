@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.util.CheckLegality;
 import com.example.dell.v_clock.util.GuestListUtil;
 
 import java.util.HashMap;
@@ -65,7 +66,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
             //设置Input
             et_modify_content.setInputType(InputType.TYPE_CLASS_NUMBER);
             et_modify_content.setFilters(new InputFilter[]{new InputFilter.LengthFilter(11)});
-        }else if (modify_type.equals("gcompany")) {
+        } else if (modify_type.equals("gcompany")) {
             et_modify_content.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
         }
         modify_content = getIntent().getStringExtra("modify_content");
@@ -106,7 +107,23 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(this, "您并未修改信息！", Toast.LENGTH_SHORT).show();
             return;
         }
-        //TODO 传输修改信息  如果该嘉宾不是没有加入“我的嘉宾”列表 则加入
+        if (modify_type.equals("gtel")) {
+            if (!CheckLegality.isPhoneValid(afterModifyInfo)) {
+                Toast.makeText(this, "手机格式填写不正确！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } else if (modify_type.equals("gcompany")) {
+            if (afterModifyInfo.equals("")) {
+                Toast.makeText(this, "单位不能为空！", Toast.LENGTH_SHORT).show();
+                return;
+            } else if (!CheckLegality.isNameContainSpace(afterModifyInfo)) {
+                Toast.makeText(this, "单位不能包含空格！", Toast.LENGTH_SHORT).show();
+                return;
+            } else if (CheckLegality.isContainSpecialChar(afterModifyInfo)) {
+                Toast.makeText(this, "单位不能包含特殊字符！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         final Map<String, String> modifyMap = new HashMap<>();
         modifyMap.put("tip", "regid;" + modify_type);
         modifyMap.put("gname", guest_name);
@@ -115,10 +132,10 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
         String regid = sp.getString("eid", null);
         modifyMap.put("regid", regid);
         //测试代码
-        Log.i("ModifyActiviyu", "tip:" + "regid;" + modify_type);
-        Log.i("ModifyActiviyu", "gname:" + guest_name);
-        Log.i("ModifyActiviyu", modify_type + ":" + afterModifyInfo);
-        Log.i("ModifyActiviyu", "regid:" + regid);
+        Log.i("ModifyActivity", "tip:" + "regid;" + modify_type);
+        Log.i("ModifyActivity", "gname:" + guest_name);
+        Log.i("ModifyActivity", modify_type + ":" + afterModifyInfo);
+        Log.i("ModifyActivity", "regid:" + regid);
 
         StringRequest modifyRequest = new StringRequest(Request.Method.POST, ServerInfo.MODIFY_GUEST_INFO_URL,
                 new ModifyResponseListener(), new ModifyResponseErrorListener()) {

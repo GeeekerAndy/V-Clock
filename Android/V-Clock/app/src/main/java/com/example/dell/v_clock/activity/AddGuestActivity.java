@@ -32,6 +32,7 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
 import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.CheckLegality;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.MyStringRequest;
@@ -160,13 +161,25 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         if (!guestInfoMap.containsKey("gphoto")) {
             Toast.makeText(this, "请添加一张照片！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (name.equals("") || name.equals(" ")) {
-            Toast.makeText(this, "姓名格式填写不正确！", Toast.LENGTH_SHORT).show();
+        } else if (name.equals("")) {
+            Toast.makeText(this, "姓名不能为空！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (company.equals("") || company.equals(" ")) {
-            Toast.makeText(this, "单位格式填写不正确！", Toast.LENGTH_SHORT).show();
+        } else if (!CheckLegality.isNameContainSpace(name)) {
+            Toast.makeText(this, "姓名不能包含空格！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (phone.length() < 11) {
+        } else if (CheckLegality.isContainSpecialChar(name)) {
+            Toast.makeText(this, "姓名不能包含特殊字符！", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (company.equals("")) {
+            Toast.makeText(this, "单位不能为空！", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (!CheckLegality.isNameContainSpace(company)) {
+            Toast.makeText(this, "单位不能包含空格！", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (CheckLegality.isContainSpecialChar(company)) {
+            Toast.makeText(this, "单位不能包含特殊字符！", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (phone.length() < 11 || !CheckLegality.isPhoneValid(phone)) {
             Toast.makeText(this, "手机格式填写不正确！", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -225,14 +238,14 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             switch (intOfResponse) {
                 case 0:
                     //添加至我的嘉宾
-                    addToMyGuest(regid,name,bmp_photo);
+                    addToMyGuest(regid, name, bmp_photo);
                     //清空输入信息
                     cleanGuestInfo();
                     break;
                 case 1:
                     //此嘉宾已存在
                     Toast.makeText(AddGuestActivity.this, "此嘉宾已存在！", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(AddGuestActivity.this,GuestInfoActivity.class);
+                    Intent intent = new Intent(AddGuestActivity.this, GuestInfoActivity.class);
                     intent.putExtra("gname", name);
                     intent.putExtra("guest_type", 1);
                     startActivity(intent);
@@ -273,6 +286,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
         }).start();
     }
+
     private void addToMyGuest(final String eid, final String guest_name, final Bitmap guest_photo) {
         //添加至“我的嘉宾”
         StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
@@ -287,6 +301,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         };
         requestQueue.add(addRequest);
     }
+
     /**
      *
      */
@@ -323,6 +338,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
+
     /**
      *
      */
@@ -348,6 +364,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(AddGuestActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
         }
     }
+
     /**
      * 从相册中选择照片
      */
