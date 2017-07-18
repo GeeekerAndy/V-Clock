@@ -2,7 +2,6 @@ package com.example.dell.v_clock.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,7 +21,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.activity.AddGuestActivity;
 import com.example.dell.v_clock.activity.GuestInfoActivity;
-import com.example.dell.v_clock.activity.MainActivity;
 import com.example.dell.v_clock.activity.SearchActivity;
 import com.example.dell.v_clock.adapter.GuestListAdapter;
 import com.example.dell.v_clock.util.GuestListUtil;
@@ -69,7 +67,9 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private final int ALL_GUEST_IDENTITOR = 1;
     private final int FRESH_UI = 4;
 
-    private final int FRESHE_INTERVAL = 500;
+    private final int FRESH_INTERVAL = 500;
+
+    private boolean isExit = false;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -110,10 +110,15 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     private void initGuestList() {
         //GroupList只包含两项
         guestGroupList = new ArrayList<>();
-        guestGroupList.add(0, "我的嘉宾");
-        guestGroupList.add(1, "其他嘉宾");
+        guestGroupList.add(MY_GUEST_IDENTITOR, "我的嘉宾");
+        guestGroupList.add(ALL_GUEST_IDENTITOR, "其他嘉宾");
         //childList的信息来源于后台服务器
         //设置适配器
+        if (GuestListUtil.guestChildList == null) {
+            GuestListUtil.guestChildList = new ArrayList<>();
+            GuestListUtil.guestChildList.add(new ArrayList<Map<String, Object>>());
+            GuestListUtil.guestChildList.add(new ArrayList<Map<String, Object>>());
+        }
         guestListAdapter = new GuestListAdapter(this.getContext(), guestGroupList, GuestListUtil.guestChildList);
         guestList.setAdapter(guestListAdapter);
         //缓存对象
@@ -125,6 +130,7 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         //启动线程读取数据
         readCache();
     }
+
 
     /**
      * 启动线程读取缓存数据
@@ -169,6 +175,14 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         refreshChildList();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //todo 停止所有线程
+        isExit = true;
+
+    }
+
     /**
      * 接收Message 更改UI
      */
@@ -195,10 +209,14 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
                     //请求服务器
                     if (identitor == 0) {
                         Log.i(TAG, "我的嘉宾缓存为空，请求服务器");
-                        GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
+                        if (GuestListUtil.isMYFreshedable()) {
+                            GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
+                        }
                     } else if (identitor == 1) {
                         Log.i(TAG, "全部嘉宾缓存为空，请求服务器");
-                        GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
+                        if (GuestListUtil.isAllFreshedable()) {
+                            GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
+                        }
                     }
                 } else {
                     Log.i(TAG, "加载嘉宾缓存——" + identitor);
@@ -211,8 +229,16 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     //下拉刷新 重新请求数据库
     @Override
     public void onRefresh() {
-        GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
-        GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
+        //todo 避免一直刷新 新建线程
+        if (GuestListUtil.isMYFreshedable() && GuestListUtil.isAllFreshedable()) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GuestListUtil.requestMyGuestList(requestQueue, eid, getContext());
+                    GuestListUtil.requestAllGuestList(requestQueue, eid, getContext());
+                }
+            }).start();
+        }
     }
 
     /**
@@ -224,8 +250,8 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             @Override
             public void run() {
                 try {
-                    while (true) {
-                        Thread.sleep(FRESHE_INTERVAL);
+                    while (!isExit) {
+                        Thread.sleep(FRESH_INTERVAL);
                         if (GuestListUtil.isMyFreshed()) {
                             handler.sendEmptyMessage(FRESH_UI);
                             GuestListUtil.setIsMyFreshed(false);

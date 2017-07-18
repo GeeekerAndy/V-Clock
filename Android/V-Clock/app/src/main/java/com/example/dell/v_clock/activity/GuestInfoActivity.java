@@ -418,10 +418,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     transferPhoto();
                     break;
             }
-            //修改成功 若该嘉宾非我的嘉宾 则添加到我的嘉宾
-            if (guest_type == ALL_GUEST) {
-                addToGuest();
-            }
         }
     }
 

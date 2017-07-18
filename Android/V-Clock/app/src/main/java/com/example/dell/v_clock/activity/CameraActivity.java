@@ -73,7 +73,6 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private final int INTERVAL = 50;
     //捕捉画面的次数
     private int captureCount = 0;
-
     //测试使用的ImageView
     ImageView iv_test;
 
@@ -124,7 +123,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         }
         //初始化人脸识别算法
         faceCheck.initAlgorithm(this);
-        //开启扫描线程 识别含有人脸的帧
+        //超时线程
         new Thread(new ScanThread()).start();
     }
 
@@ -222,17 +221,23 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
      */
     @Override
     public void onPreviewFrame(final byte[] bytes, Camera camera) {
-        if (null != mFaceTask) {
-            switch (mFaceTask.getStatus()) {
-                case RUNNING:
-                    return;
-                case PENDING:
-                    mFaceTask.cancel(false);
-                    break;
+
+        try {
+            if (null != mFaceTask) {
+                switch (mFaceTask.getStatus()) {
+                    case RUNNING:
+                        return;
+                    case PENDING:
+                        mFaceTask.cancel(false);
+                        break;
+                }
             }
+
+            mFaceTask = new FaceTask(bytes);
+            mFaceTask.execute((Void) null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        mFaceTask = new FaceTask(bytes);
-        mFaceTask.execute((Void) null);
     }
 
     /**
@@ -433,7 +438,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 //                Log.i("CameraActivity", "eid = " + response);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-//                CameraActivity.this.finish();
+                CameraActivity.this.finish();
             }
             //收到服务器回复 不再等待回复
             isWaited = false;

@@ -68,13 +68,15 @@ public class ImageUtil {
     static Uri tempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "temp.jpg");
 
     /**
-     * 剪裁鱼片
+     * 剪裁图片
      *
      * @param data 图片数据
      */
     public static void startPhotoZoom(Uri data, Activity context, int requestCode) {
         Intent intentCrop = new Intent("com.android.camera.action.CROP");
+
         intentCrop.setDataAndType(data, "image/*");
+        Log.i(TAG,"Uri = "+data);
         //设置剪裁
         intentCrop.putExtra("crop", "true");
         //aspectX aspectY  宽高比例
@@ -83,16 +85,18 @@ public class ImageUtil {
         //outputX outputY  剪裁图片宽高
         intentCrop.putExtra("outputX", 480);
         intentCrop.putExtra("outputY", 640);
+        intentCrop.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intentCrop.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         //MIUI 有问题
 //        intentCrop.putExtra("return-data", "true");
         //先保存
-
-//        Log.i("GuestInfoActiviyu", "tempFile: " + tempFile);
+        //确定保存路径
+        long current_time =  System.currentTimeMillis();
+        tempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" +current_time+ "_temp.jpg");
         intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, tempFile);
         intentCrop.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         Log.i(TAG,"准备剪裁");
         context.startActivityForResult(intentCrop, requestCode);
-        return;
     }
 
 
