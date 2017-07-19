@@ -1,0 +1,474 @@
+<!DOCTYPE HTML>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>V-Clock</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="face recognition" />
+		<meta property="og:title" content="" />
+		<meta property="og:image" content="" />
+		<meta property="og:url" content="" />
+		<meta property="og:site_name" content="" />
+		<meta property="og:description" content="" />
+		<meta name="twitter:title" content="" />
+		<meta name="twitter:image" content="" />
+		<meta name="twitter:url" content="" />
+		<meta name="twitter:card" content="" />
+		<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+
+		<!-- Animate.css -->
+		<link rel="stylesheet" href="css/animate.css">
+		<!-- Icomoon Icon Fonts-->
+		<link rel="stylesheet" href="css/icomoon.css">
+		<!-- Bootstrap  -->
+		<link rel="stylesheet" href="css/bootstrap.css">
+
+		<!-- Magnific Popup -->
+		<link rel="stylesheet" href="css/magnific-popup.css">
+
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.4.6.0.css">
+		<link rel="stylesheet" href="css/amazeui.min.css">
+		<link rel="stylesheet" href="css/amazeui.cropper.css">
+		<link rel="stylesheet" href="css/custom_up_img.css">
+
+		<!-- Theme style  -->
+		<link rel="stylesheet" href="css/style.css">
+
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+
+		<!-- Modernizr JS -->
+		<script src="js/modernizr-2.6.2.min.js"></script>
+		<!-- FOR IE9 below -->
+		<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+	</head>
+
+	<body>
+
+		<div class="fh5co-loader"></div>
+		<div id="page">
+			<nav class="fh5co-nav" role="navigation">
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-2 text-left">
+							<div id="fh5co-logo">
+								<a href="index.html" style="text-decoration: none;"><img src="images/LOGO.png" style="height: 2em;width: 6em;" /> </a>
+							</div>
+						</div>
+						<div class="col-xs-10 text-right menu-1">
+							<ul>
+								<li>
+									<a href="guestsList.html" style="text-decoration: none;">嘉宾列表</a>
+								</li>
+								<li>
+									<a href="message.html" style="text-decoration: none;">消息</a>
+
+								</li>
+
+								<li>
+									<a href="history.html" style="text-decoration: none;">历史记录</a>
+								</li>
+								<li class="has-dropdown" class="active">
+									<a href="PersonalInfo.html" style="text-decoration: none;">设置</a>
+									<ul class="dropdown">
+										<li>
+											<a href="PersonalInfo.html" style="text-decoration: none;">我的</a>
+										</li>
+										<li>
+											<a a href="javascript:void(0);" onclick="zhuxiao()" style="text-decoration: none;">注销</a>
+										</li>
+
+									</ul>
+								</li>
+
+							</ul>
+						</div>
+					</div>
+				</div>
+			</nav>
+			<header id="fh5co-header" class="fh5co-cover fh5co-cover-sm" role="banner" style="background-image:url(images/timg.jpg);" data-stellar-background-ratio="0.5">
+				<div class="overlay"></div>
+				<div class="container">
+					<div class="row">
+						<div class="col-md-7 text-left">
+							<div class="display-t">
+								<div class="display-tc animate-box" data-animate-effect="fadeInUp">
+									<h1 style="font-size: 4.5em;">V-Clock</h1>
+									<h2 style="font-size:2em;">智能人脸识别系统迎宾模块</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div id="fh5co-contact" style="background-color: #F0F5F9;">
+				<div class="container">
+					<div class="container">
+						<div class="row">
+							<div class="col-sm-8 col-sm-offset-2">
+
+								<div class="wizard-container">
+									<div class="card wizard-card" data-color="orange" id="wizardProfile">
+										<div class="wizard-header"></div>
+										<div class="tab-pane" id="about">
+											<div class="row">
+
+												<div class="col-sm-4 col-sm-offset-1">
+													<div class="picture-container">
+														<div class="picture" style="text-align: center; ">
+															<img id="pic3" data-toggle="modal" data-target="#myModal" style="width:180px;height:180px;border-radius:50% ;margin:20px auto;cursor: pointer;">
+														</div>
+														<div class="container">
+															<div class="row">
+																<div class="row form-group">
+
+																	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+																		<div class="modal-dialog">
+																			<div class="modal-content">
+
+																				<div class="modal-header">
+																					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+																					<h4 class="modal-title" id="myModalLabel">上传照片</h4>
+																				</div>
+
+																				<div class="row">
+																					<div id="uploader-demo" style="text-align: center;">
+																						<!--用来存放item-->
+																						<img id="pic" style="width:110px;height:110px;border-radius:50% ;margin:20px auto;cursor: pointer;">
+																					</div>
+																				</div>
+
+																				<div class="modal-footer">
+																					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+																					<button id="register-submit" type="button" class="btn btn-primary">确认</button>
+																				</div>
+
+																			</div>
+																		</div>
+																		<!-- /.modal -->
+																	</div>
+																</div>
+															</div>
+														</div>
+														<h6 align="center" class="box">点击头像更换密码</h6>
+													</div>
+												</div>
+
+												<div class="col-sm-6">
+													<div class="box">
+														<div class="form-group">
+															<label style="font-size:initial; color: #585858;">编号</label>
+															<input id="eid5" type="text" class="form-control" readonly="readonly">
+														</div>
+														<div class="form-group">
+															<label style="font-size:initial; color: #585858;">姓名</label>
+															<input id="ename5" type="text" class="form-control" readonly="readonly">
+														</div>
+														<div class="form-group">
+															<label style="font-size:initial; color: #585858;">性别</label>
+															<!--<input id="esex5" type="text" class="form-control" readonly="readonly">-->
+															<select id="esex5" class="form-control" disabled="disabled">
+																<option>请选择性别</option>
+																<option selected="selected">男</option>
+																<option>女</option>
+															</select>
+														</div>
+														<div class="form-group">
+															<label style="font-size:initial; color: #585858;">联系电话</label>
+															<input id="etel5" type="text" class="form-control" readonly="readonly" onkeydown="checknumL()" onkeyup="checknumL()" onblur="isnum(etel5.value)"> <input id="log" type="text" disabled="disabled" style="border: 0px;background-color: transparent;" />
+															<script>
+																function checknumL() {
+																	var nMax = 11;
+																	var textDom = document
+																		.getElementById("etel5");
+																	var len = textDom.value.length;
+																	if(len > nMax) {
+																		textDom.value = textDom.value.substring(0, nMax);
+																		return;
+																	}
+																	document.getElementById("log").value = "请输入11位有效电话号码！";
+																}
+																checknumL();
+															</script>
+															<!--<script>
+																function isnum(str) {
+																	if(str == "") {
+																	/*	$("#log").attr("color", #DC143C);
+																		document.getElementById("log").value = "手机号不能为空！";*/
+																		  $("#sj").html("手机号码不能为空");
+		                                                                  $("#sj").css("color","red"); 
+																	} else {
+																		var re = /^1[0-9]{10}/;
+																		if(re.test(str)) {
+																			$("#log").attr("color", #00FA9A);
+																	
+																		} else {
+																			$("#log").attr("color ",#DC143C);
+																				document.getElementById("log").value = "手机格式错误!";
+																			}
+																		}
+																	}
+															</script>-->
+														</div>
+														<div class="form-group">
+															<div class="wizard-footer height-wizard">
+																<div class="pull-right">
+																	<button id="modify" type="button" class="btn btn-default">修改信息</button>
+																	<button id="tijiao" type="button" class="btn btn-default" onclick="formSubmitClick()">提交</button>
+																	<button id="delete" type="button" class="btn btn-default" onclick="location.reload()">取消</button>
+																</div>
+																<script>
+																	function formSubmitClick() {
+																		var name = $('#ename5').val();
+																		var sex = $('#esex5').val();
+																		var tel = $('#etel5').val();
+																		var sex2;
+																		if(name == "") {
+																			name = $("#ename5").val();
+																		}
+																		if(tel == "") {
+																			tel = $('#etel5').val();
+																		}
+
+																		$.ajax({
+																			type: "post",
+																			url: "http://121.250.222.75:8080/V-Clock/servlet/WModifyEmployeeInfoServlet",
+																			async: true,
+																			dataType: "json",
+																			xhrFields: {
+																				withCredentials: true
+																			},
+																			data: {
+																				tip: 'ename;esex;etel',
+																				ename: name,
+																				esex: sex,
+																				etel: tel,
+																			},
+																			success: function(
+																				result) {
+																				//																					if(result == '0') {
+																				//																						alert("修改成功！");
+																				//																			
+																				//																						window.location.href = "PersonalInfo.html";
+																				//																					} else {
+																				//																						alert("修改失败！");
+																				//																						//window.location.href = "PersonalInfo.html";
+																				//																					}
+																				if(result == '0') {
+																					alert("修改成功！");
+																					window.location.href = "PersonalInfo.html"; //
+																				} else if(result == '11' || result == '21' || result == '31') {
+																					alert("此修改不被允许!");
+																				} else {
+																					alert("数据错误!");
+																				}
+																			}
+																		});
+																	}
+																</script>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+									<!-- wizard container -->
+								</div>
+							</div>
+							<!-- end row -->
+						</div>
+					</div>
+				</div>
+			<footer id="fh5co-footer" role="contentinfo" style="padding-top:30px;padding-bottom:10px">
+				<div class="container">
+
+					<div class="row copyright">
+						<div class="col-md-12 text-center">
+							<p>
+							<small class="block">项目名称：V-CLOCK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;制作团队：五花八人</small>		
+							</p>
+
+						</div>
+					</div>
+
+				</div>
+			</footer>
+			</div>
+		</div>
+		<div class="gototop js-top">
+			<a href="#" class="js-gotop"><i class="icon-arrow-up"></i>
+			</a>
+		</div>
+
+<!--图片上传框-->
+<div class="am-modal am-modal-no-btn up-frame-bj " tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog up-frame-parent up-frame-radius">
+	<div class="am-modal-hd up-frame-header">
+	   <label>修改头像</label>
+	  <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+	</div>
+	<div class="am-modal-bd  up-frame-body">
+	  <div class="am-g am-fl">
+		<div class="am-form-group am-form-file">
+		  <div class="am-fl">
+			<button type="button" class="am-btn am-btn-default am-btn-sm">
+			  <i class="am-icon-cloud-upload"></i> 选择要上传的文件</button>
+		  </div>
+		  <input type="file" id="inputImage">
+		</div>
+	  </div>
+	  <div class="am-g am-fl" >
+		<div class="up-pre-before up-frame-radius">
+			<img alt="" src="" id="image" >
+		</div>
+		<div class="up-pre-after up-frame-radius">
+		</div>
+	  </div>
+	  <div class="am-g am-fl">
+		<div class="up-control-btns">
+			<span class="am-icon-rotate-left"  onclick="rotateimgleft()"></span>
+			<span class="am-icon-rotate-right" onclick="rotateimgright()"></span>
+			<span class="am-icon-check" id="up-btn-ok"></span>
+		</div>
+	  </div>
+	  
+	</div>
+  </div>
+</div>
+
+<!--警告框-->
+<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert">
+  <div class="am-modal-dialog">
+	<div class="am-modal-hd">信息</div>
+	<div class="am-modal-bd"  id="alert_content">
+			  成功了
+	</div>
+	<div class="am-modal-footer">
+	  <span class="am-modal-btn">确定</span>
+	</div>
+  </div>
+</div>
+
+		<!-- jQuery -->
+		<script src="js/jquery.min.js"></script>
+		<!-- jQuery Easing -->
+		<script src="js/jquery.easing.1.3.js"></script>
+		<!-- Bootstrap -->
+		<script src="js/bootstrap.min.js"></script>
+		<!-- Waypoints -->
+		<script src="js/jquery.waypoints.min.js"></script>
+		<!-- countTo -->
+		<script src="js/jquery.countTo.js"></script>
+		<!-- Magnific Popup -->
+		<script src="js/jquery.magnific-popup.min.js"></script>
+		<script src="js/magnific-popup-options.js"></script>
+		<!-- Stellar -->
+		<script src="js/jquery.stellar.min.js"></script>
+
+
+			<script src="js/amazeui.min.js" charset="utf-8"></script>
+			<script src="js/cropper.min.js" charset="utf-8"></script>
+			<script src="js/custom_up_img.js" charset="utf-8"></script>
+
+		<script src="js/compress.js"></script>
+		<!-- Main -->
+		<script src="js/main.js"></script>
+		<script src="js/jquery-form.js"></script>
+
+		<script src="js/modify.js"></script>
+
+		<script>
+			var strHtml = ""; //存储数据的变量
+			var strHtml1 = ""; //存储数据的变量
+			var strHtml2 = ""; //存储数据的变量
+			var strHtml3 = ""; //存储数据的变量
+			var strHtml4 = ""; //存储数据的变量
+		</script>
+		<script>
+			$(document).ready(function() {
+				$.ajax({
+					type: "post",
+					url: "http://121.250.222.75:8080/V-Clock/servlet/WDisplayEmployeeInfoServlet",
+					async: false,
+					dataType: "json",
+					xhrFields: {
+						withCredentials: true
+					},
+					success: function(result) {
+
+						if(result.tip == '2') {
+							alert("数据库错误！");
+						} else {
+							//var shuju=result.tip;
+							var $left = $("#msg-left");
+							var $midle = $("#msg-midle");
+							var $right = $("#msg-right");
+							$("#pic").attr("src", "data:image/jpeg;base64," + result.ephoto);
+							$("#pic3").attr(
+								"src",
+								"data:image/jpeg;base64," +
+								result.ephoto);
+							$("#eid5").val(result.eid);
+							$("#ename5").val(result.ename);
+							$("#esex5").val(result.esex);
+							//alert($("#esex5").valueOf());
+							$("#etel5").val(result.etel);
+						}
+					}
+				});
+				var getting = {
+					type: 'get',
+					url: 'http://121.250.222.75:8080/V-Clock/servlet/PushMessageServlet',
+					dataType: 'jsonp',
+					jsonp: 'callback',
+					jsonpCallback: "flightHandler",
+					timeout: 0,
+					async: true,
+					xhrFields: {
+						withCredentials: true
+					},
+					complete: function(xhr, status) {
+						$.ajax(getting);
+					},
+					success: function(data) {
+						var strHtml = ""; //存储数据的变量
+						strHtml += "员工编号：" + data.eid + "<br>";
+						strHtml += "嘉宾姓名：" + data.gname + "<br>";
+						strHtml += "到达时间：" + data.arrivingDate;
+						//var k=localStorage.getItem("index");
+						var k = parseInt(localStorage.getItem("index"));
+						k += 1;
+						alert("你有新嘉宾已到达！");
+						localStorage.setItem(k, strHtml);
+						localStorage.setItem("index", k);
+						//localStorage.index=k;
+					}
+				};
+				$.ajax(getting);
+			});
+		</script>
+		<script>
+			function zhuxiao() {
+				event.preventDefault();
+				$.ajax({
+					type: "post",
+					url: "http://121.250.222.75:8080/V-Clock/servlet/WLogoutServlet",
+					async: true,
+					dataType: "json",
+					success: function() {}
+				});
+				window.location.href = "index.html";
+			}
+		</script>
+	</body>
+
+</html>
