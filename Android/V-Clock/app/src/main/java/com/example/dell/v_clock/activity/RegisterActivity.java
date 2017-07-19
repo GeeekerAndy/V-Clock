@@ -1,32 +1,19 @@
 package com.example.dell.v_clock.activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
-import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.util.CheckLegality;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The staff can register account here.
@@ -59,12 +46,12 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
-                if (!CheckLegality.isNameContainSpace(employeeName.getText().toString())) {
-                    Toast.makeText(RegisterActivity.this, "姓名为空或包含空格!", Toast.LENGTH_SHORT).show();
+                if ((CheckLegality.isContainSpecialChar(employeeName.getText().toString()) || CheckLegality.isContainSpace(employeeName.getText().toString()))) {
+                    Toast.makeText(RegisterActivity.this, "Oops, 姓名格式错误！", Toast.LENGTH_SHORT).show();
                 } else if(employeeName.getText().toString().length() >= 20) {
-                    Toast.makeText(RegisterActivity.this, "姓名长度过长！", Toast.LENGTH_SHORT).show();
-                } else if (employeePhone.getText().length() != 11) {
-                    Toast.makeText(RegisterActivity.this, "手机号格式错误！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Oops, 姓名长度过长！", Toast.LENGTH_SHORT).show();
+                } else if (!CheckLegality.isPhoneValid(employeePhone.getText().toString())) {
+                    Toast.makeText(RegisterActivity.this, "Oops, 手机号格式错误！", Toast.LENGTH_SHORT).show();
                 } else {
                     //The information of employee if legal. Judge whether employee tel is registered.
                     // 数据已合法。判断工作人员手机是否被注册。异步检测保留

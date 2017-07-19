@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:background="@color/colorPrimary"
+            android:background="@null"
             android:text="@string/fragment_me_edit"
             android:textColor="@color/white"/>
     </RelativeLayout>
@@ -45,15 +45,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <RelativeLayout
-                android:layout_width="187dp"
-                android:layout_height="250dp"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
                 android:layout_margin="@dimen/margin_10"
                 android:layout_gravity="center">
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/iv_employee_avatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/gray"/>
+                    android:background="@color/white"/>
                 <ImageButton
                     android:id="@+id/imb_change_pwd"
                     android:layout_width="wrap_content"

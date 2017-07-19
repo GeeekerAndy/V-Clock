@@ -115,7 +115,7 @@ public class GetMessageService extends Service {
                 while (true) {
 //                    Log.d(TAG, "发送消息请求");
                     requestQueue.add(jsonObjectRequest);
-                    SystemClock.sleep(7 * 1000);
+                    SystemClock.sleep(6 * 1000);
                 }
             }
         }).start();

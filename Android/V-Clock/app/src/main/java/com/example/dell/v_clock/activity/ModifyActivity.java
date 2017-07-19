@@ -116,7 +116,7 @@ public class ModifyActivity extends AppCompatActivity implements View.OnClickLis
             if (afterModifyInfo.equals("")) {
                 Toast.makeText(this, "单位不能为空！", Toast.LENGTH_SHORT).show();
                 return;
-            } else if (!CheckLegality.isNameContainSpace(afterModifyInfo)) {
+            } else if (!CheckLegality.isContainSpace(afterModifyInfo)) {
                 Toast.makeText(this, "单位不能包含空格！", Toast.LENGTH_SHORT).show();
                 return;
             } else if (CheckLegality.isContainSpecialChar(afterModifyInfo)) {

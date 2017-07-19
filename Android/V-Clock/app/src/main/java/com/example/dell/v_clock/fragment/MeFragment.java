@@ -91,11 +91,11 @@ public class MeFragment extends Fragment {
         eid = sp.getString("eid", null);
         final MessageDBHelper dbHelper = new MessageDBHelper(getContext());
         requestQueue = Volley.newRequestQueue(getContext());
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         final Button cancelEdit = view.findViewById(R.id.bt_cancel_edit_employee_info);
 
         Button signOut = view.findViewById(R.id.bt_sign_out);
-        signOut.setOnClickListener(new View.OnClickListener() {
+        signOut.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -171,16 +171,16 @@ public class MeFragment extends Fragment {
                     cancelEdit.setText("取消");
                     isOnEdit = true;
                 } else if (isOnEdit) {
-                    if (!CheckLegality.isNameContainSpace(employeeName.getText().toString())) {
-                        Toast.makeText(getContext(), "姓名为空或包含空格！", Toast.LENGTH_SHORT).show();
+                    if (CheckLegality.isContainSpecialChar(employeeName.getText().toString()) || CheckLegality.isContainSpace(employeeName.getText().toString())) {
+                        Toast.makeText(getContext(), "Oops, 姓名格式错误！", Toast.LENGTH_SHORT).show();
                         employeeName.setEnabled(true);
                         employeeName.requestFocus();
                         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(employeeName, InputMethodManager.SHOW_IMPLICIT);
                     } else if (!(employeeGender.getText().toString().equals("男") || employeeGender.getText().toString().equals("女"))) {
-                        Toast.makeText(getContext(), "性别只能为男或女！", Toast.LENGTH_SHORT).show();
-                    } else if (employeeTel.getText().length() < 11) {
-                        Toast.makeText(getContext(), "手机号格式错误！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Oops, 性别只能为男或女！", Toast.LENGTH_SHORT).show();
+                    } else if (!CheckLegality.isPhoneValid(employeeTel.getText().toString())) {
+                        Toast.makeText(getContext(), "Oops, 手机号格式错误！", Toast.LENGTH_SHORT).show();
                     } else {
                         editEmployeeInfo.setText("编辑");
                         employeeName.setEnabled(false);
