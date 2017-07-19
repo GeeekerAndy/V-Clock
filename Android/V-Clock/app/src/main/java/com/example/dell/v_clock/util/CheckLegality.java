@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * Created by andy on 7/17/17.
+ *
  */
 
 public class CheckLegality {

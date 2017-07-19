@@ -55,22 +55,13 @@ public class SearchAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         if (view == null) {
             view = layoutInflater.inflate(resource, null);
-            for (int j = 0; j < dataList_guest.size(); j++) {
-                ImageView avatar = view.findViewById(to[0]);
-                TextView name = view.findViewById(to[1]);
-                //
-                avatar.setBackground(new BitmapDrawable((Bitmap) dataList_guest.get(j).get(from[0])));
-                name.setText(dataList_guest.get(j).get(from[1]).toString());
-            }
-
-        } else {
-            for (int j = 0; j < dataList_guest.size(); j++) {
-                ImageView avatar = view.findViewById(to[0]);
-                TextView name = view.findViewById(to[1]);
-                avatar.setBackground(new BitmapDrawable((Bitmap) dataList_guest.get(j).get(from[0])));
-                name.setText(dataList_guest.get(j).get(from[1]).toString());
-            }
         }
+
+        ImageView avatar = view.findViewById(to[0]);
+        TextView name = view.findViewById(to[1]);
+        avatar.setBackground(new BitmapDrawable((Bitmap) dataList_guest.get(i).get(from[0])));
+        name.setText(dataList_guest.get(i).get(from[1]).toString());
+
         return view;
     }
 }

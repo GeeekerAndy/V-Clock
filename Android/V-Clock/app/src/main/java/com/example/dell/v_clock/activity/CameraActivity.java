@@ -20,6 +20,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private SurfaceView mSurfaceView;
     //与SurfaceView搭配使用
     private SurfaceHolder mSurfaceHolder;
+    private FrameLayout frameLayout;
     //后台运行任务 用于处理实时帧数据
     private FaceTask mFaceTask;
     //人脸检测算法调用对象
@@ -61,6 +63,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     private boolean isMatch = false;
     //是否在等待匹配结果
     private boolean isWaited = false;
+    private boolean isEnded = false;
     //登录访问URL
     private final String LOGIN_URL = ServerInfo.LOGIN_URL;
     //访问服务器请求队列
@@ -86,6 +89,8 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         mSurfaceHolder = mSurfaceView.getHolder();
         mSurfaceHolder.addCallback(this);
+
+        frameLayout = (FrameLayout) findViewById(R.id.frame_camera);
 
         //拍照过程屏幕处于高亮
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -132,6 +137,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         super.onPause();
         releaseCamera();
         faceCheck.exitTask();
+        isEnded = true;
     }
 
     /**
@@ -278,16 +284,27 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             FaceAttr faceAttr = faceCheck.detectFace(bmp_rotated, width, height);
             //测试一下数据是否可以显示
             if (faceAttr.isIncludeFace()) {
+                //绘制矩形框
+                Message msg2 = handler.obtainMessage();
+                msg2.arg1 = 2;
+                msg2.obj = faceAttr.getFaceRect();
+                handler.sendMessage(msg2);
+                //改变ImageView的显示
                 Message msg = handler.obtainMessage();
                 msg.arg1 = 0;
                 msg.obj = bmp_rotated;
                 handler.sendMessage(msg);
+
                 //传输图片与用户手机号
                 if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
                     isWaited = true;
 //                    Log.i("Transger", "向服务器发送数据");
                     transferPhoneImg(bmp_rotated);
                 }
+            } else {
+                Message msg = handler.obtainMessage();
+                msg.arg1 = 3;
+                handler.sendMessage(msg);
             }
             return null;
         }
@@ -300,10 +317,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
 
         @Override
         public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-
+            while (!Thread.currentThread().isInterrupted() || !isEnded) {
                 try {
-                    //每0.1秒截取一帧
+                    //每interval毫秒截取一帧
                     Thread.sleep(INTERVAL);
                     if ((captureCount++ >= OVERTIME / INTERVAL) && !isMatch) {
                         //超时检测 发送超时Message
@@ -356,6 +372,16 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                     Toast.makeText(CameraActivity.this, "登录失败,请检查手机号是否输入正确！", Toast.LENGTH_SHORT).show();
                     CameraActivity.this.finish();
                     break;
+                case 2:
+                    //绘制矩形框
+                    //todo  绘制人脸框
+                    int[] faceRect = (int[]) msg.obj;
+                    faceCheck.drawFaceFrame(CameraActivity.this, frameLayout, mSurfaceView, 640, 480, faceRect);
+                    break;
+                case 3:
+                    int[] faceRect2 = {0, 0, 0, 0};
+                    faceCheck.drawFaceFrame(CameraActivity.this, frameLayout, mSurfaceView, 640, 480, faceRect2);
+
             }
 
         }
@@ -420,6 +446,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 }
             } else if (lengthOfResponse == 4 && intOfResponse >= 0) {
                 isMatch = true;
+                isEnded = true;
                 //TODO 有待测试  登录成功 setOneShotPreview() NullPointer
                 try {
                     mFaceTask.cancel(true);

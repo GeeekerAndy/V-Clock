@@ -315,7 +315,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(AddGuestActivity.this, "添加成功！", Toast.LENGTH_LONG).show();
                     //更新内存
                     GuestInfo guestInfo = new GuestInfo(name, bmp_photo);
-                    GuestListUtil.addToMyGuest(guestInfo, AddGuestActivity.this);
+                    GuestListUtil.addGuest(guestInfo, AddGuestActivity.this);
                     break;
                 case 1:
                     //此嘉宾已存在
@@ -386,7 +386,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                     }
                     iv_photo.setImageBitmap(bmp_photo);
                     ibt_plus.setVisibility(View.INVISIBLE);
-                    iv_photo.setBackgroundResource(R.color.gray_group_bar);
+                    iv_photo.setBackgroundResource(R.color.gray_light);
                     String str_photo = ImageUtil.convertImage(bmp_photo);
                     guestInfoMap.put("gphoto", str_photo);
                     break;

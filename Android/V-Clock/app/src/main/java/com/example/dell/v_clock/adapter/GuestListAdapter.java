@@ -23,10 +23,13 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.example.dell.v_clock.util.GuestListUtil;
+import com.org.afinal.simplecache.ACache;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -46,7 +49,9 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
     //上下文对象
     private Context context;
     //
-    private int child_type = -1;
+    private ACache mACache;
+    //
+    private final int MAX_THREAD_NUM = 10;
 
     private int[] childLayoutIDs = {R.layout.item_children_my_guest, R.layout.item_children_all_guest};
     private int[] guestNameTvIDs = {R.id.tv_my_guest_name, R.id.tv_all_guest_name};
@@ -56,15 +61,19 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
 
     //请求队列
     private RequestQueue requestQueue;
+    //读取缓存图片进程池
+    private ExecutorService executorService;
     String eid;
 
-    public GuestListAdapter(Context context, List<String> groupList, List<List<Map<String, Object>>> childList) {
+    public GuestListAdapter(Context context, List<String> groupList, List<List<Map<String, Object>>> childList, ACache mACache) {
         this.context = context;
         this.groupList = groupList;
         this.childList = childList;
+        this.mACache = mACache;
         requestQueue = Volley.newRequestQueue(context);
         SharedPreferences sp = context.getSharedPreferences("loginInfo", MODE_PRIVATE);
         eid = sp.getString("eid", null);
+        executorService = Executors.newFixedThreadPool(MAX_THREAD_NUM);
     }
 
 
@@ -158,9 +167,23 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
         } else if (childList.get(groupPosition).size() <= childPosition) {
             return view;
         }
-        iv_avatar.setImageBitmap((Bitmap) childList.get(groupPosition).get(childPosition).get("avatar"));
-        tv_name.setText(childList.get(groupPosition).get(childPosition).get("name").toString());
-
+        //预加载未加入内存的头像图片
+        preLoadAvatar(groupPosition, childPosition);
+        //头像为空 则从缓存加载 并释放之前的
+        String name = childList.get(groupPosition).get(childPosition).get("name").toString();
+        tv_name.setText(name);
+        Bitmap avatar = (Bitmap) childList.get(groupPosition).get(childPosition).get("avatar");
+        if (avatar == null) {
+            //读缓存
+            avatar = mACache.getAsBitmap(name + GuestListUtil.AVATAR_CACHE);
+            if (avatar == null) {
+                Log.i(TAG, "******************   " + name + "   的图片为null");
+            }
+            if (childPosition - GuestListUtil.LOAD_AVATAR_NUM >= 0) {
+                childList.get(groupPosition).get(childPosition - GuestListUtil.LOAD_AVATAR_NUM).put("avatar", null);
+            }
+        }
+        iv_avatar.setImageBitmap(avatar);
         img_bt_move.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,7 +200,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
                         case R.id.img_bt_cross_gray:
                             Log.i("GuestAdapter", "点击了叉号");
                             //从我的嘉宾删除
-                            deleteFromMyGuest(eid, guest_name,guest_photo);
+                            deleteFromMyGuest(eid, guest_name, guest_photo);
                             break;
                         case R.id.img_bt_plus_gray:
                             Log.i("GuestAdapter", "点击了加号");
@@ -192,6 +215,39 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
     }
 
     /**
+     * todo 预加载未加入内存的头像图片
+     *
+     * @param groupPosition
+     * @param childPosition
+     */
+    private void preLoadAvatar(final int groupPosition, final int childPosition) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                int preLoadIndex = childPosition + GuestListUtil.LOAD_AVATAR_NUM;
+                if (preLoadIndex < childList.size()) {
+                    Bitmap avatar = (Bitmap) childList.get(groupPosition).get(preLoadIndex).get("avatar");
+                    String name = childList.get(groupPosition).get(preLoadIndex).get("name").toString();
+                    if (avatar == null) {
+                        //预加载
+                        avatar = mACache.getAsBitmap(name + GuestListUtil.AVATAR_CACHE);
+                        //todo
+                        if (avatar == null) {
+                            Log.i(TAG, "******************" + name + "的图片为null");
+                        }
+                        childList.get(groupPosition).get(preLoadIndex).put("avatar", avatar);
+                        //释放之前的
+                        int preReleaseIndex = childPosition - GuestListUtil.LOAD_AVATAR_NUM;
+                        if (preReleaseIndex >= 0) {
+                            childList.get(groupPosition).get(preReleaseIndex).put("avatar", null);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
      * 从我的嘉宾删除
      *
      * @param eid        工作人员工号
@@ -199,7 +255,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
      */
     private void deleteFromMyGuest(final String eid, final String guest_name, final Bitmap guest_photo) {
         //从“我的嘉宾”中移除
-        StringRequest addRequest = new StringRequest(Request.Method.POST, ServerInfo.DELETE_FROM_GUEST_LIST_URL,
+        StringRequest deleteRequest = new StringRequest(Request.Method.POST, ServerInfo.DELETE_FROM_GUEST_LIST_URL,
                 new deleteMyGuestResponseListener(), new AlterGuestResponseErrorListener()) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -209,7 +265,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
                 return myGuestInfoMap;
             }
         };
-        requestQueue.add(addRequest);
+        requestQueue.add(deleteRequest);
         //更新内存
         GuestInfo guestInfo = new GuestInfo(guest_name, guest_photo);
         GuestListUtil.deleteFromMyGuest(guestInfo, context);
@@ -246,7 +302,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
 
         @Override
         public void onResponse(String response) {
-            Log.i("Transfer", "收到服务器回复");
+            Log.i(TAG, "收到服务器回复");
             int intOfResponse = -1;
             try {
                 intOfResponse = Integer.parseInt(response);
@@ -258,6 +314,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
             }
             switch (intOfResponse) {
                 case 0:
+                    Log.i(TAG, "嘉宾添加成功");
                     break;
                 case 1:
 
@@ -278,7 +335,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
 
         @Override
         public void onResponse(String response) {
-            Log.i("Transfer", "收到服务器回复");
+            Log.i(TAG, "收到服务器回复");
             int intOfResponse = -1;
             try {
                 intOfResponse = Integer.parseInt(response);
@@ -290,6 +347,7 @@ public class GuestListAdapter extends BaseExpandableListAdapter {
             }
             switch (intOfResponse) {
                 case 0:
+                    Log.i(TAG, "嘉宾移除成功");
                     break;
                 case 1:
                     break;

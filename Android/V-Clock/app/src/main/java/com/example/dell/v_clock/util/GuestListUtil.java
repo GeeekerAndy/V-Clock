@@ -1,6 +1,7 @@
 package com.example.dell.v_clock.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -21,35 +22,43 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by 王庆伟 on 2017/7/13.
- *
  */
 
 public class GuestListUtil {
-    //我的嘉宾 缓存 键名
-    public static final String MY_GUEST_JSON_ARRAY_CACHE = "myGuestJsonArray";
-    //全部嘉宾 缓存 键名
-    public static final String ALL_GUEST_JSON_ARRAY_CACHE = "allGuestJsonArray";
+    //我的嘉宾姓名 缓存 键名
+    public static final String MY_GUEST_NAME_CACHE = "myGuestJsonArray";
+    //全部嘉宾姓名 缓存 键名
+    public static final String ALL_GUEST_NAME_CACHE = "allGuestJsonArray";
     //ChildList数据
     public static List<List<Map<String, Object>>> guestChildList;
+    //
+    public static final int LOAD_AVATAR_NUM = 20;
+    //
+    public static String AVATAR_CACHE = "bitmap_avatar";
 
-    //我的嘉宾缓存保存时间 单位 秒
-    private static final int MY_SAVE_TIME = 36000;
-    //全部嘉宾缓存保存时间 单位 秒
-    private static final int ALL_SAVE_TIME = 3600;
+    private static final int MY_MAX_THREAD_NUM = 5;
+    private static final int ALL_MAX_THREAD_NUM = 10;
+
+    //我的嘉宾缓存保存时间 单位 秒  默认一天
+    private static final int MY_SAVE_TIME = 86400;
+    //全部嘉宾缓存保存时间 单位 秒  默认一天
+    private static final int ALL_SAVE_TIME = 86400;
     //我的嘉宾 请求tip
     private static final String MY_GUEST_SEARCH_TYPE = "0";
     //全部嘉宾（gname="") 异步搜索 请求tip
     private static final String PARTIAL_NAME_SEARCH_TYPE = "1";
-//    //myGuestJson对象
-//    private static JSONArray myGuestJsonArray = null;
-//    //allGuestJson对象
-//    private static JSONArray allGuestJsonArray = null;
 
     private static final int MY_GUEST_IDENTITOR = 0;
     private static final int ALL_GUEST_IDENTITOR = 1;
+
+
+    private static ExecutorService myExecutorService;
+    private static ExecutorService allExecutorService;
 
     //我的嘉宾是否刷新完成
     private static boolean isMyFreshed = false;
@@ -60,13 +69,15 @@ public class GuestListUtil {
     //我的嘉宾是否可以刷新
     private static boolean isAllFreshedable = true;
     private static String TAG = "GuestListUtil";
-
+    //缓存对象
     private static ACache mACache = null;
 
     static {
         guestChildList = new ArrayList<>();
         guestChildList.add(new ArrayList<Map<String, Object>>());
         guestChildList.add(new ArrayList<Map<String, Object>>());
+        myExecutorService = Executors.newFixedThreadPool(MY_MAX_THREAD_NUM);
+        allExecutorService = Executors.newFixedThreadPool(ALL_MAX_THREAD_NUM);
     }
 
     /**
@@ -76,6 +87,7 @@ public class GuestListUtil {
      * @param eid          eid
      */
     public static void requestMyGuestList(RequestQueue requestQueue, String eid, Context context) {
+        myExecutorService = Executors.newFixedThreadPool(MY_MAX_THREAD_NUM);
         isMyFreshed = false;
         isMYFreshedable = false;
         if (mACache == null) {
@@ -96,6 +108,7 @@ public class GuestListUtil {
      * @param requestQueue requestQueue
      */
     public static void requestAllGuestList(RequestQueue requestQueue, String eid, Context context) {
+        allExecutorService = Executors.newFixedThreadPool(ALL_MAX_THREAD_NUM);
         isAllFreshed = false;
         isAllFreshedable = false;
         if (mACache == null) {
@@ -122,12 +135,12 @@ public class GuestListUtil {
         //更新内存数据
         addToList(guest, MY_GUEST_IDENTITOR);
         isMyFreshed = true;
-
         //移除本地缓存
         removeCache(MY_GUEST_IDENTITOR, context);
     }
 
     /**
+     * 添加到我的嘉宾
      * @param guest   guest
      * @param context context
      */
@@ -179,9 +192,9 @@ public class GuestListUtil {
     private static void removeCache(int identitor, Context context) {
         ACache mACache = ACache.get(context);
         if (identitor == MY_GUEST_IDENTITOR) {
-            mACache.remove(MY_GUEST_JSON_ARRAY_CACHE);
+            mACache.remove(MY_GUEST_NAME_CACHE);
         } else if (identitor == ALL_GUEST_IDENTITOR) {
-            mACache.remove(ALL_GUEST_JSON_ARRAY_CACHE);
+            mACache.remove(ALL_GUEST_NAME_CACHE);
         }
     }
 
@@ -214,21 +227,7 @@ public class GuestListUtil {
                 break;
             }
         }
-        if (guest.getGuest_type() == MY_GUEST_IDENTITOR) {
-            for (Map<String, Object> temp : guestChildList.get(ALL_GUEST_IDENTITOR)) {
-                if (temp.get("name").equals(guest.getGuestName())) {
-                    temp.put("avatar", guest.getGuestBitmapPhoto());
-                    break;
-                }
-            }
-            removeCache(MY_GUEST_IDENTITOR, context);
-            removeCache(ALL_GUEST_IDENTITOR, context);
-        } else {
-            removeCache(ALL_GUEST_IDENTITOR, context);
-        }
         isMyFreshed = true;
-
-        removeCache(guest.getGuest_type(), context);
     }
 
     /**
@@ -242,12 +241,8 @@ public class GuestListUtil {
             try {
                 jsonObjects = response.getJSONArray("GuestList");
                 Log.i(TAG, "收到服务器 我的嘉宾 回复 JsonArray.length = " + jsonObjects.length());
-//                setValueToJason(jsonObjects, myGuestJsonArray);
                 loadChildListData(jsonObjects, MY_GUEST_IDENTITOR);
-                //写缓存
-                refreshCache(jsonObjects, MY_GUEST_IDENTITOR);
             } catch (JSONException e) {
-                //todo
 //                Toast.makeText(context, "数据错误", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
@@ -266,13 +261,9 @@ public class GuestListUtil {
             try {
                 jsonObjects = response.getJSONArray("Guest");
                 Log.i(TAG, "收到服务器 全部嘉宾 回复 JsonArray.length = " + jsonObjects.length());
-//                setValueToJason(jsonObjects, allGuestJsonArray);
                 loadChildListData(jsonObjects, ALL_GUEST_IDENTITOR);
-                //写缓存
-                refreshCache(jsonObjects, ALL_GUEST_IDENTITOR);
             } catch (JSONException e) {
                 Log.i(TAG, "收到服务器 全部嘉宾 数据错误回复");
-                //todo
 //                Toast.makeText(getContext(), "数据错误", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
@@ -280,54 +271,123 @@ public class GuestListUtil {
     }
 
     /**
-     * 写缓存
-     *
-     * @param jsonObjects    jsonObjects
-     * @param guestIdentitor guestIdentitor
-     */
-    private static void refreshCache(final JSONArray jsonObjects, final int guestIdentitor) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (guestIdentitor == MY_GUEST_IDENTITOR) {
-                    mACache.put(MY_GUEST_JSON_ARRAY_CACHE, jsonObjects, MY_SAVE_TIME);
-                } else if (guestIdentitor == ALL_GUEST_IDENTITOR) {
-                    mACache.put(ALL_GUEST_JSON_ARRAY_CACHE, jsonObjects, ALL_SAVE_TIME);
-                }
-
-            }
-        }).start();
-    }
-
-    /**
      * 加载ChildList信息
      *
      * @param guestJsonArray 嘉宾信息
-     * @param i              我的嘉宾：0 ； 全部嘉宾：1
+     * @param identitor      我的嘉宾：0 ； 全部嘉宾：1
      */
-    public static void loadChildListData(JSONArray guestJsonArray, int i) {
+    private static void loadChildListData(final JSONArray guestJsonArray, final int identitor) throws JSONException {
+        //解决guestChildList.(0).clear时，guestChildList.(1)也会清空的问题
         List<Map<String, Object>> temp = new ArrayList<>();
         for (Map<String, Object> t : guestChildList.get(ALL_GUEST_IDENTITOR)) {
             temp.add(t);
         }
 
         if (guestJsonArray != null) {
-            if (guestChildList.size() > i) {
-                guestChildList.get(i).clear();
+            if (guestChildList.size() > identitor) {
+                guestChildList.get(identitor).clear();
             }
+            //将JSonArray转为ArrayList
             List<Map<String, Object>> tempList = jsonToList(guestJsonArray);
-            guestChildList.add(i, tempList);
-            if (i == MY_GUEST_IDENTITOR) {
+            guestChildList.add(identitor, tempList);
+            if (identitor == MY_GUEST_IDENTITOR) {
                 guestChildList.add(ALL_GUEST_IDENTITOR, temp);
-//                Log.i(TAG, "我的嘉宾 数据转换完成 guestChildList.get(0).size() = " + guestChildList.get(i).size());
+                Log.i(TAG, "我的嘉宾 数据转换完成 guestChildList.get(0).size() = " + guestChildList.get(identitor).size());
                 isMyFreshed = true;
                 isMYFreshedable = true;
-            } else if (i == ALL_GUEST_IDENTITOR) {
-//                Log.i(TAG, "全部嘉宾 数据转换完成 guestChildList.get(1).size() = " + guestChildList.get(i).size());
+                //将所有我的嘉宾 姓名 加入姓名列表  并写入缓存
+                putNameCache(identitor);
+            } else if (identitor == ALL_GUEST_IDENTITOR) {
+                Log.i(TAG, "全部嘉宾 数据转换完成 guestChildList.get(1).size() = " + guestChildList.get(identitor).size());
                 isAllFreshed = true;
                 isAllFreshedable = true;
+                //将所有全部嘉宾 姓名 加入姓名列表  并写入缓存
+                putNameCache(identitor);
             }
+            for (int i = 0; i < guestJsonArray.length(); i++) {
+                String name = guestJsonArray.getJSONObject(i).getString("gname");
+                String basePhoto = guestJsonArray.getJSONObject(i).getString("gphoto");
+                Bitmap avatar = ImageUtil.convertImage(basePhoto);
+                //缓存图片
+                CacheAllAvatar(name, avatar, identitor);
+            }
+            ExecutorService[] threadPools = {myExecutorService, allExecutorService};
+            threadPools[identitor].shutdown();
         }
+    }
+
+    /**
+     * 缓存所有图片
+     *
+     * @param name   用户姓名
+     * @param avatar 用户头像
+     */
+    private static void CacheAllAvatar(final String name, final Bitmap avatar, final int identitor) {
+        final ExecutorService[] threadPools = {myExecutorService, allExecutorService};
+        threadPools[identitor].execute(new Runnable() {
+            @Override
+            public void run() {
+                mACache.put(name + AVATAR_CACHE, avatar, MY_SAVE_TIME);
+//                Log.i(TAG, name + "   的头像缓存完成");
+            }
+        });
+    }
+
+    /**
+     * 加载缓存读取的 姓名列表 到 用户列表中
+     *
+     * @param nameList  姓名列表
+     * @param identitor 用户类型标识
+     */
+    public static void loadChildListDataFromCache(ArrayList<String> nameList, final int identitor, final Context context) {
+        for (int i = 0; i < nameList.size(); i++) {
+            Map<String, Object> temp = new HashMap<>();
+            String name = nameList.get(i);
+            temp.put("name", name);
+            Bitmap avatar = null;
+            if (i < 10) {
+                //保证mACache初始化
+                if (mACache == null) {
+                    mACache = ACache.get(context);
+                }
+                avatar = mACache.getAsBitmap(name + AVATAR_CACHE);
+            }
+            temp.put("avatar", avatar);
+            guestChildList.get(identitor).add(temp);
+        }
+        //读缓存图片
+        for (int i = 0; i < guestChildList.size(); i++) {
+            if (i >= LOAD_AVATAR_NUM) {
+                break;
+            }
+            Map<String, Object> tempMap = guestChildList.get(identitor).get(i);
+            tempMap.put("avatar", mACache.getAsBitmap((String) tempMap.get("name")));
+        }
+        if (identitor == MY_GUEST_IDENTITOR) {
+            isMyFreshed = true;
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
+            isAllFreshed = true;
+        }
+    }
+
+
+    /**
+     * 将所有嘉宾 姓名 加入姓名列表  并写入缓存
+     *
+     * @param identitor 嘉宾类型标识
+     */
+    private static void putNameCache(final int identitor) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> guestNameList = new ArrayList<>();
+                String[] nameCaches = {MY_GUEST_NAME_CACHE, ALL_GUEST_NAME_CACHE};
+                for (Map<String, Object> temp : guestChildList.get(identitor)) {
+                    guestNameList.add((String) temp.get("name"));
+                }
+                mACache.put(nameCaches[identitor], guestNameList, MY_SAVE_TIME);
+            }
+        }).start();
     }
 
     /**
@@ -345,19 +405,23 @@ public class GuestListUtil {
      * @return List对象
      */
     public static List<Map<String, Object>> jsonToList(JSONArray jsonObjects) {
-        List<Map<String, Object>> tempList = new ArrayList<>();
+        final List<Map<String, Object>> tempList = new ArrayList<>();
         try {
             for (int i = 0; i < jsonObjects.length(); i++) {
                 Map<String, Object> tempMap = new HashMap();
+                String name = jsonObjects.getJSONObject(i).getString("gname");
                 String basePhoto = jsonObjects.getJSONObject(i).getString("gphoto");
-                //手机号暂时不用
-//              String phone = response.getString("gtel");
-                tempMap.put("avatar", ImageUtil.convertImage(basePhoto));
-                tempMap.put("name", jsonObjects.getJSONObject(i).getString("gname"));
-//                Log.i(TAG,"name = "+jsonObjects.getJSONObject(i).getString("gname"));
+                Bitmap avatar = ImageUtil.convertImage(basePhoto);
+                tempMap.put("name", name);
+                tempMap.put("avatar", avatar);
+                if (i < LOAD_AVATAR_NUM) {
+                    tempMap.put("avatar", avatar);
+                } else {
+                    tempMap.put("avatar", null);
+                }
                 tempList.add(tempMap);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return tempList;
@@ -373,6 +437,7 @@ public class GuestListUtil {
             Log.i("Transfer", "收到服务器回复");
         }
     }
+
     private static class AllGuestListResponseErrorListener implements Response.ErrorListener {
         @Override
         public void onErrorResponse(VolleyError error) {

@@ -180,6 +180,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String phoneNumber = et_phone.getText().toString();
         Log.i("Login", "测试 phoneNumber = " + phoneNumber);
         int lengthOfPhone = phoneNumber.length();
+        //todo
         if (lengthOfPhone < 11) {
             Toast.makeText(LoginActivity.this, "请检查您的手机号是否输入正确！", Toast.LENGTH_SHORT).show();
             return;
