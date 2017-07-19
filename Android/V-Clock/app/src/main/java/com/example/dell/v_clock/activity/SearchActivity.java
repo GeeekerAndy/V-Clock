@@ -27,6 +27,7 @@ import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.adapter.SearchAdapter;
 import com.example.dell.v_clock.object.GuestInfo;
+import com.example.dell.v_clock.util.CheckLegality;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
@@ -104,6 +105,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, names);
         actv_search.setAdapter(adapter);
+        actv_search.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String name = actv_search.getText().toString();
+                if (name.equals("") || CheckLegality.isContainSpecialChar(name)
+                        || CheckLegality.isContainSpace(name)) {
+                    Toast.makeText(SearchActivity.this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
+                }
+                //向后台发送请求
+                transferRequest(name);
+            }
+        });
     }
 
     @Override
@@ -179,7 +192,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         if (i == EditorInfo.IME_ACTION_SEARCH) {
             String name = actv_search.getText().toString();
-            if (name.equals("") || name.equals(" ")) {
+            if (name.equals("") || CheckLegality.isContainSpecialChar(name)
+                    || CheckLegality.isContainSpace(name)) {
                 Toast.makeText(this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
                 return false;
             }

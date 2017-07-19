@@ -154,7 +154,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         } else if (name.equals("")) {
             Toast.makeText(this, "姓名不能为空！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (!CheckLegality.isContainSpace(name)) {
+        } else if (CheckLegality.isContainSpace(name)) {
             Toast.makeText(this, "姓名不能包含空格！", Toast.LENGTH_SHORT).show();
             return;
         } else if (CheckLegality.isContainSpecialChar(name)) {
@@ -163,7 +163,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         } else if (company.equals("")) {
             Toast.makeText(this, "单位不能为空！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (!CheckLegality.isContainSpace(company)) {
+        } else if (CheckLegality.isContainSpace(company)) {
             Toast.makeText(this, "单位不能包含空格！", Toast.LENGTH_SHORT).show();
             return;
         } else if (CheckLegality.isContainSpecialChar(company)) {
@@ -255,19 +255,6 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
      * 等一段时间 后清空输入框信息
      */
     private void cleanGuestInfo() {
-        //添加至“我的嘉宾”
-//        MyStringRequest addRequest = new MyStringRequest(Request.Method.POST, ServerInfo.ADD_TO_GUEST_LIST_URL,
-//                new AddMyGuestResponseListener(), new AddGuestResponseErrorListener()) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> myGuestInfoMap = new HashMap<>();
-//                myGuestInfoMap.put("gname", name);
-//                myGuestInfoMap.put("eid", regid);
-//                return myGuestInfoMap;
-//            }
-//        };
-//        requestQueue.add(addRequest);
-        //等待
         new Thread(new Runnable() {
             @Override
             public void run() {
