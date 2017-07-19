@@ -38,5 +38,6 @@ dependencies {
     compile 'com.android.support:design:26.+'
     compile 'com.android.support:support-vector-drawable:26.+'
     compile 'com.github.omadahealth:swipy:1.2.3@aar'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
     testCompile 'junit:junit:4.12'
 }

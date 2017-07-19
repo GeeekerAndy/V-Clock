@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="@dimen/one_message_height"
     android:padding="3dp">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_my_guest_avatar"
         android:layout_width="@dimen/one_message_height"
         android:layout_height="match_parent"

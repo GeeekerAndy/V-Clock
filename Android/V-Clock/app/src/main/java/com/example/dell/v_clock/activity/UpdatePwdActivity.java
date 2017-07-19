@@ -140,10 +140,10 @@ public class UpdatePwdActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", 3);
-        intent.putExtra("aspectY", 4);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
         intent.putExtra("outputX", 480);
-        intent.putExtra("outputY", 640);
+        intent.putExtra("outputY", 480);
 //        intent.putExtra("return-data", true);
 //you must setup this
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
