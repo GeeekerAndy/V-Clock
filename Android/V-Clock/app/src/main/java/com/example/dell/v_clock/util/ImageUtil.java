@@ -78,11 +78,11 @@ public class ImageUtil {
         //设置剪裁
         intentCrop.putExtra("crop", "true");
         //aspectX aspectY  宽高比例
-        intentCrop.putExtra("aspectX", 3);
-        intentCrop.putExtra("aspectY", 4);
+        intentCrop.putExtra("aspectX", 1);
+        intentCrop.putExtra("aspectY", 1);
         //outputX outputY  剪裁图片宽高
         intentCrop.putExtra("outputX", 480);
-        intentCrop.putExtra("outputY", 640);
+        intentCrop.putExtra("outputY", 480);
         //MIUI 有问题
 //        intentCrop.putExtra("return-data", "true");
         //先保存

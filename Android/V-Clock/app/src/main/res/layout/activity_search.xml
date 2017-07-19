@@ -14,8 +14,8 @@
         android:background="@color/colorPrimary"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/et_search"
+        <AutoCompleteTextView
+            android:id="@+id/actv_search"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_30"
             android:layout_centerVertical="true"
@@ -23,6 +23,7 @@
             android:layout_marginStart="@dimen/margin_20"
             android:layout_toStartOf="@+id/tv_cancel"
             android:background="@drawable/rounded_rectangle_white"
+            android:completionThreshold="1"
             android:hint="@string/search"
             android:imeOptions="actionSearch"
             android:inputType="text"
@@ -47,9 +48,9 @@
     <ListView
         android:id="@+id/lv_search_result"
         android:layout_width="match_parent"
-        android:listSelector="@color/gray_light"
         android:layout_height="wrap_content"
-        android:layout_below="@id/relative_search2">
+        android:layout_below="@id/relative_search2"
+        android:listSelector="@color/gray_light">
 
     </ListView>
 

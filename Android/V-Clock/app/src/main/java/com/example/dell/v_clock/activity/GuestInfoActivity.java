@@ -30,6 +30,7 @@ import com.example.dell.v_clock.object.GuestInfo;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
+import com.org.afinal.simplecache.ACache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,10 +116,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
         eid = sp.getString("eid", null);
         //加载嘉宾信息
         loadGuestInfo();
-
-        //TODO 测试ACache
-//        ACache mACache = ACache.get(this);
-//        Log.i("GuestInfoActivity",mACache.getAsString("test"));
     }
 
     /**
@@ -127,17 +124,11 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
     private void loadGuestInfo() {
         //从上个Activity中，通过Intent获取嘉宾姓名、类型
         guest_name = getIntent().getStringExtra("gname");
-//        Bundle temp = getIntent().getExtras();
-//        guest_photo = temp.getParcelable("gphoto");
         guest_type = getIntent().getIntExtra("guest_type", MY_GUEST);
-
-//        if (guest_photo == null) {
-//         Log.i("GuestInfoActivity","guest_photo = null");
-//        }
-
-//        iv_photo.setImageBitmap(guest_photo);
+        ACache aCache = ACache.get(this);
+        Bitmap bitmap = aCache.getAsBitmap(guest_name + GuestListUtil.AVATAR_CACHE);
         tv_name.setText(guest_name);
-
+        iv_photo.setImageBitmap(bitmap);
         //发送查询嘉宾信息的请求
         Map<String, String> searchInfo = new HashMap<>();
         searchInfo.put("gname", guest_name);
@@ -212,9 +203,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             return;
         }
         switch (view.getId()) {
-//            case R.id.img_bt_info_back://返回上个页面
-//                finish();
-//                break;
             case R.id.tv_guest_add://根据嘉宾类型 选择不同操作
                 if (guest_type == MY_GUEST) {
                     //将该嘉宾从我的嘉宾中移除
@@ -343,6 +331,9 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                         guestInfo.setGuest_type(guest_type);
                         GuestListUtil.modifyPhoto(guestInfo, GuestInfoActivity.this);
                         isPhotoChanged = false;
+                        //更改缓存信息
+                        ACache aCache = ACache.get(GuestInfoActivity.this);
+                        aCache.put(guest_name + GuestListUtil.AVATAR_CACHE, guest_photo);
                     }
                     break;
                 case 1:
@@ -409,12 +400,12 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     break;
                 case PHOTO_REQUEST_CODE://返回相册选择的图片
                     //剪裁图片
-                    Log.i(TAG,"返回了选择的图片");
+                    Log.i(TAG, "返回了选择的图片");
                     ImageUtil.startPhotoZoom(data.getData(), this, CROP_REQUEST_CODE);
                     break;
                 case CROP_REQUEST_CODE://返回剪裁后的图片
                     //更改显示、上传图片
-                    Log.i(TAG,"返回了剪裁的图片");
+                    Log.i(TAG, "返回了剪裁的图片");
                     transferPhoto();
                     break;
             }
@@ -464,8 +455,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                 if (tip.equals("2")) {
                     //数据错误
                     Toast.makeText(GuestInfoActivity.this, "数据错误", Toast.LENGTH_SHORT).show();
-                    //TODO   隔一段时间再刷新
-//                    refreshData();
                 } else if (tip.equals("0")) {
                     //接收成功
                     Log.i("Search", "接收成功");
@@ -480,9 +469,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                     handler.sendEmptyMessage(0);
                 }
             } catch (JSONException e) {
-//                Toast.makeText(GuestInfoActivity.this, "该嘉宾未添加！", Toast.LENGTH_SHORT).show();
-                //TODO   隔一段时间再刷新
-//                refreshData();
                 e.printStackTrace();
             }
         }
@@ -497,8 +483,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
             Log.i("Transfer", "收到服务器回复");
             //提示网络连接失败
             Toast.makeText(GuestInfoActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
-            //todo  隔一段时间再刷新
-//            refreshData();
         }
     }
 
@@ -537,8 +521,6 @@ public class GuestInfoActivity extends AppCompatActivity implements View.OnClick
                         //更改内存中的GuestList
                         GuestListUtil.addToMyGuest(guestInfo, GuestInfoActivity.this);
                     }
-                    //todo 本地缓存
-
                     break;
                 case 1:
                     if (guest_type == MY_GUEST) {

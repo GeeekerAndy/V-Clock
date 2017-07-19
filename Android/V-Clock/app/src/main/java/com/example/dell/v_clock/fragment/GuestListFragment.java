@@ -293,7 +293,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             case R.id.bt_search:
                 Log.i("Guest", "点击了搜索按钮");
                 Intent search_intent = new Intent(getContext(), SearchActivity.class);
-                search_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(search_intent);
                 break;
             case R.id.img_bt_add:
@@ -322,7 +321,6 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
         Intent guestInfoIntent = new Intent(getContext(), GuestInfoActivity.class);
         guestInfoIntent.putExtra("guest_type", groupPosition);
         guestInfoIntent.putExtra("gname", name);
-        //todo  传照片
         startActivity(guestInfoIntent);
         return false;
     }

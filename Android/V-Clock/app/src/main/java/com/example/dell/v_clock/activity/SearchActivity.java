@@ -7,14 +7,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +32,6 @@ import com.example.dell.v_clock.util.ImageUtil;
 import com.example.dell.v_clock.util.JSONObjectRequestMapParams;
 import com.org.afinal.simplecache.ACache;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,7 +47,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     //显示搜索结果的的列表
     ListView lv_search_result;
     //搜索框
-    EditText et_search;
+    AutoCompleteTextView actv_search;
     //数据源
     List<Map<String, Object>> dataList_guest;
     //数据对应的标识
@@ -63,18 +61,20 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     //搜索结果 guest对象
     GuestInfo guestInfo;
-
-    List<Map<String, Object>> allGuestList;
-
+    //我的嘉宾 用于提示信息
+    ArrayList<String> myGuestNameList;
+    //我的嘉宾 用于提示信息
+    ArrayList<String> allGuestNameList;
+    //缓存存取对象
+    ACache aCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        et_search = (EditText) findViewById(R.id.et_search);
-        et_search.setOnEditorActionListener(this);
-        et_search.addTextChangedListener(textWatcher);
+        actv_search = (AutoCompleteTextView) findViewById(R.id.actv_search);
+        actv_search.setOnEditorActionListener(this);
 
         tv_cancel = (TextView) findViewById(R.id.tv_cancel);
         tv_cancel.setOnClickListener(this);
@@ -89,14 +89,21 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         searchAdapter = new SearchAdapter(this, dataList_guest, R.layout.item_search_guest, from, to);
         lv_search_result.setAdapter(searchAdapter);
 
-
         lv_search_result.setOnItemClickListener(this);
 
-        allGuestList = GuestListUtil.getAllGuestList();
-        List<Map<String, Object>> myGuestList = GuestListUtil.getMyGuestList();
-        for (Map<String, Object> guest : myGuestList) {
-            allGuestList.add(guest);
+        aCache = ACache.get(this);
+        myGuestNameList = (ArrayList<String>) aCache.getAsObject(GuestListUtil.MY_GUEST_NAME_CACHE);
+        allGuestNameList = (ArrayList<String>) aCache.getAsObject(GuestListUtil.ALL_GUEST_NAME_CACHE);
+        int srcLength = myGuestNameList.size() + allGuestNameList.size();
+        String[] names = new String[srcLength];
+        for (int i = 0; i < myGuestNameList.size(); i++) {
+            names[i] = myGuestNameList.get(i);
         }
+        for (int i = myGuestNameList.size(); i < srcLength; i++) {
+            names[i] = allGuestNameList.get(i - myGuestNameList.size());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, names);
+        actv_search.setAdapter(adapter);
     }
 
     @Override
@@ -139,7 +146,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             tempMap.put(from[1], guestInfo.getGuestName());
             dataList_guest.clear();
             dataList_guest.add(tempMap);
-            et_search.setText("");
+            actv_search.setText("");
             Log.i("Search", "数据更新");
         }
         searchAdapter.notifyDataSetChanged();
@@ -171,7 +178,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         if (i == EditorInfo.IME_ACTION_SEARCH) {
-            String name = et_search.getText().toString();
+            String name = actv_search.getText().toString();
             if (name.equals("") || name.equals(" ")) {
                 Toast.makeText(this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
                 return false;
@@ -230,7 +237,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             } catch (JSONException e) {
                 Toast.makeText(SearchActivity.this, "该嘉宾未添加！", Toast.LENGTH_SHORT).show();
-                et_search.setText("");
+                actv_search.setText("");
                 handler.sendEmptyMessage(0);
                 e.printStackTrace();
             }
@@ -247,17 +254,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             //提示网络连接失败
             Toast.makeText(SearchActivity.this, "服务器连接失败", Toast.LENGTH_SHORT).show();
             //本地搜索
-            String name = et_search.getText().toString();
-            Bitmap photo = null;
-            for (Map<String, Object> guest : allGuestList) {
-                if (guest.get("name").equals(name)) {
-                    photo = (Bitmap) guest.get("avatar");
-                    break;
-                }
-            }
+            String name = actv_search.getText().toString();
+            Bitmap photo = aCache.getAsBitmap(name + GuestListUtil.AVATAR_CACHE);
             guestInfo = new GuestInfo(name, photo);
             handler.sendEmptyMessage(0);
-
         }
     }
 
@@ -272,79 +272,22 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        //todo ..........
-//        if (guestInfo != null) {
-//            String guestName = guestInfo.getGuestName();
-//            Bitmap guestPhoto = guestInfo.getGuestBitmapPhoto();
-//            int guest_type = 1;
-//            ACache aCache = ACache.get(this);
-//            JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
-//            if (myGuest != null) {
-//                List<Map<String, Object>> myGuestList = GuestListUtil.jsonToList(myGuest);
-//                for (Map<String, Object> guest : myGuestList) {
-//                    if (guest.get("name").equals(guestName)) {
-//                        guest_type = 0;
-//                        break;
-//                    }
-//                }
-//            }
-//            Intent guestInfoIntent = new Intent(this, GuestInfoActivity.class);
-//            guestInfoIntent.putExtra("guest_type", guest_type);
-//            guestInfoIntent.putExtra("gname", guestName);
-            //todo  传照片
-//            Bundle bd_photo = new Bundle();
-//            bd_photo.putParcelable("gphoto", guestPhoto);
-//            guestInfoIntent.putExtra("photoBundle", bd_photo);
-//            if (guestPhoto == null) {
-//                Log.i("SearchActivity","guest_photo = null");
-//            }else {
-//                Log.i("GuestActivity","guest_photo != null");
-//            }
-//            startActivity(guestInfoIntent);
-//        }
+        if (guestInfo != null) {
+            String guestName = guestInfo.getGuestName();
+            int guest_type = 1;
+            //判断用户的类型
+            if (myGuestNameList != null) {
+                for (String name : myGuestNameList) {
+                    if (name.equals(guestName)) {
+                        guest_type = 0;
+                        break;
+                    }
+                }
+            }
+            Intent guestInfoIntent = new Intent(this, GuestInfoActivity.class);
+            guestInfoIntent.putExtra("guest_type", guest_type);
+            guestInfoIntent.putExtra("gname", guestName);
+            startActivity(guestInfoIntent);
+        }
     }
-
-    private TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-        public void afterTextChanged(final Editable editable) {
-            //
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    dataList_guest.clear();
-//                    int length = editable.length();
-//                    for (Map<String, Object> temp : allGuestList) {
-//                        String name = (String) temp.get("name");
-//                        Log.i("Search", name);
-//                        String subName = null;
-//                        try {
-//                            if (name.length() > length) {
-//                                subName = name.substring(0, length);
-//                                Log.i("Search", subName);
-//                                if (editable.toString().equals(subName)) {
-//                                    dataList_guest.add(temp);
-//                                }
-//                            }
-//
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    Log.i("Search","dataList.length = "+dataList_guest.size());
-//                    handler.sendEmptyMessage(1);
-//                }
-//            }).start();
-
-        }
-    };
 }

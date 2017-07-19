@@ -140,6 +140,7 @@ public class GuestListUtil {
     }
 
     /**
+     * 添加到我的嘉宾
      * @param guest   guest
      * @param context context
      */
@@ -226,21 +227,7 @@ public class GuestListUtil {
                 break;
             }
         }
-        if (guest.getGuest_type() == MY_GUEST_IDENTITOR) {
-            for (Map<String, Object> temp : guestChildList.get(ALL_GUEST_IDENTITOR)) {
-                if (temp.get("name").equals(guest.getGuestName())) {
-                    temp.put("avatar", guest.getGuestBitmapPhoto());
-                    break;
-                }
-            }
-            removeCache(MY_GUEST_IDENTITOR, context);
-            removeCache(ALL_GUEST_IDENTITOR, context);
-        } else {
-            removeCache(ALL_GUEST_IDENTITOR, context);
-        }
         isMyFreshed = true;
-
-        removeCache(guest.getGuest_type(), context);
     }
 
     /**
