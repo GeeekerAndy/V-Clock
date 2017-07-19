@@ -272,24 +272,25 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (guestInfo != null) {
-            String guestName = guestInfo.getGuestName();
-            Bitmap guestPhoto = guestInfo.getGuestBitmapPhoto();
-            int guest_type = 1;
-            ACache aCache = ACache.get(this);
-            JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
-            if (myGuest != null) {
-                List<Map<String, Object>> myGuestList = GuestListUtil.jsonToList(myGuest);
-                for (Map<String, Object> guest : myGuestList) {
-                    if (guest.get("name").equals(guestName)) {
-                        guest_type = 0;
-                        break;
-                    }
-                }
-            }
-            Intent guestInfoIntent = new Intent(this, GuestInfoActivity.class);
-            guestInfoIntent.putExtra("guest_type", guest_type);
-            guestInfoIntent.putExtra("gname", guestName);
+        //todo ..........
+//        if (guestInfo != null) {
+//            String guestName = guestInfo.getGuestName();
+//            Bitmap guestPhoto = guestInfo.getGuestBitmapPhoto();
+//            int guest_type = 1;
+//            ACache aCache = ACache.get(this);
+//            JSONArray myGuest = aCache.getAsJSONArray(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+//            if (myGuest != null) {
+//                List<Map<String, Object>> myGuestList = GuestListUtil.jsonToList(myGuest);
+//                for (Map<String, Object> guest : myGuestList) {
+//                    if (guest.get("name").equals(guestName)) {
+//                        guest_type = 0;
+//                        break;
+//                    }
+//                }
+//            }
+//            Intent guestInfoIntent = new Intent(this, GuestInfoActivity.class);
+//            guestInfoIntent.putExtra("guest_type", guest_type);
+//            guestInfoIntent.putExtra("gname", guestName);
             //todo  传照片
 //            Bundle bd_photo = new Bundle();
 //            bd_photo.putParcelable("gphoto", guestPhoto);
@@ -299,8 +300,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //            }else {
 //                Log.i("GuestActivity","guest_photo != null");
 //            }
-            startActivity(guestInfoIntent);
-        }
+//            startActivity(guestInfoIntent);
+//        }
     }
 
     private TextWatcher textWatcher = new TextWatcher() {
@@ -317,22 +318,32 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void afterTextChanged(final Editable editable) {
             //
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    dataList_guest.clear();
-                    int length = editable.length();
-                    for (Map<String, Object> temp : allGuestList) {
-                        String name = (String) temp.get("name");
-                        String subName = name.substring(0, length);
-                        if (editable.equals(subName)) {
-                            dataList_guest.add(temp);
-                        }
-
-                    }
-                    handler.sendEmptyMessage(1);
-                }
-            }).start();
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    dataList_guest.clear();
+//                    int length = editable.length();
+//                    for (Map<String, Object> temp : allGuestList) {
+//                        String name = (String) temp.get("name");
+//                        Log.i("Search", name);
+//                        String subName = null;
+//                        try {
+//                            if (name.length() > length) {
+//                                subName = name.substring(0, length);
+//                                Log.i("Search", subName);
+//                                if (editable.toString().equals(subName)) {
+//                                    dataList_guest.add(temp);
+//                                }
+//                            }
+//
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    Log.i("Search","dataList.length = "+dataList_guest.size());
+//                    handler.sendEmptyMessage(1);
+//                }
+//            }).start();
 
         }
     };

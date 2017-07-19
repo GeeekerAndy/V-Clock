@@ -299,7 +299,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
                 if (!isMatch && !isWaited) {//只有手机号与人脸还没匹配 并且 此时没有在等待服务器回应时，才会发送数据
                     isWaited = true;
 //                    Log.i("Transger", "向服务器发送数据");
-//                    transferPhoneImg(bmp_rotated);
+                    transferPhoneImg(bmp_rotated);
                 }
             } else {
                 Message msg = handler.obtainMessage();

@@ -109,8 +109,8 @@ public class MeFragment extends Fragment {
                                 GuestListUtil.clearList();
                                 //删除本地缓存
                                 ACache aCache = ACache.get(getContext());
-                                aCache.remove(GuestListUtil.ALL_GUEST_JSON_ARRAY_CACHE);
-                                aCache.remove(GuestListUtil.MY_GUEST_JSON_ARRAY_CACHE);
+                                aCache.remove(GuestListUtil.ALL_GUEST_NAME_CACHE);
+                                aCache.remove(GuestListUtil.MY_GUEST_NAME_CACHE);
 
                                 //删除本地存储eid和历史记录，未读消息的数据库
                                 SharedPreferences.Editor editor = sp.edit();
