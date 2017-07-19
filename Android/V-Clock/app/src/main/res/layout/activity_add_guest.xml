@@ -48,7 +48,7 @@
             android:layout_height="@dimen/height_0"
             android:layout_weight="5">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_guest_photo"
                 android:layout_width="@dimen/height_200"
                 android:layout_height="@dimen/height_200"

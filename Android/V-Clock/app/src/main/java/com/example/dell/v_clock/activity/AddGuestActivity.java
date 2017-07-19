@@ -386,7 +386,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
                     }
                     iv_photo.setImageBitmap(bmp_photo);
                     ibt_plus.setVisibility(View.INVISIBLE);
-                    iv_photo.setBackgroundResource(R.color.gray_group_bar);
+                    iv_photo.setBackgroundResource(R.color.gray_light);
                     String str_photo = ImageUtil.convertImage(bmp_photo);
                     guestInfoMap.put("gphoto", str_photo);
                     break;

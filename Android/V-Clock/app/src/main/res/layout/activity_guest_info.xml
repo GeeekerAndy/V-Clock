@@ -57,7 +57,7 @@
             android:layout_weight="4"
             android:background="@color/white">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_guest_info_photo"
                 android:layout_width="@dimen/height_200"
                 android:layout_height="@dimen/height_200"
