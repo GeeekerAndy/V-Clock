@@ -3,13 +3,9 @@ package com.example.dell.v_clock.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,17 +26,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dell.v_clock.R;
 import com.example.dell.v_clock.ServerInfo;
-import com.example.dell.v_clock.adapter.GuestListAdapter;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.example.dell.v_clock.util.CheckLegality;
 import com.example.dell.v_clock.util.GuestListUtil;
 import com.example.dell.v_clock.util.ImageUtil;
-import com.example.dell.v_clock.util.MyStringRequest;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -164,7 +154,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         } else if (name.equals("")) {
             Toast.makeText(this, "姓名不能为空！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (!CheckLegality.isNameContainSpace(name)) {
+        } else if (!CheckLegality.isContainSpace(name)) {
             Toast.makeText(this, "姓名不能包含空格！", Toast.LENGTH_SHORT).show();
             return;
         } else if (CheckLegality.isContainSpecialChar(name)) {
@@ -173,7 +163,7 @@ public class AddGuestActivity extends AppCompatActivity implements View.OnClickL
         } else if (company.equals("")) {
             Toast.makeText(this, "单位不能为空！", Toast.LENGTH_SHORT).show();
             return;
-        } else if (!CheckLegality.isNameContainSpace(company)) {
+        } else if (!CheckLegality.isContainSpace(company)) {
             Toast.makeText(this, "单位不能包含空格！", Toast.LENGTH_SHORT).show();
             return;
         } else if (CheckLegality.isContainSpecialChar(company)) {

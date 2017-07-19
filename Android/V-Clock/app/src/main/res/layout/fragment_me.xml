@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:background="@color/colorPrimary"
+            android:background="@null"
             android:text="@string/fragment_me_edit"
             android:textColor="@color/white"/>
     </RelativeLayout>

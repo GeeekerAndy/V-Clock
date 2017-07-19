@@ -17,11 +17,11 @@ public class CheckLegality {
      * @param name 输入的姓名字符串
      * @return true 不包含空格；false 包含空格
      */
-    public static boolean isNameContainSpace(String name) {
+    public static boolean isContainSpace(String name) {
         if (name.contains(" ") || name.length() < 1) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -47,6 +47,9 @@ public class CheckLegality {
      * @return true 手机号合法；false 手机号不合法
      */
     public static boolean isPhoneValid(String phone) {
+        if(phone.length() < 11) {
+            return false;
+        }
         String[] phoneHeads = {"13", "14", "15", "17", "18",};
         String temp = phone.substring(0, 2);
         Log.i("CheckLegality", "phoneHead = " + temp);
@@ -57,5 +60,4 @@ public class CheckLegality {
         }
         return false;
     }
-
 }

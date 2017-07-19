@@ -32,7 +32,7 @@ public class ImageUtil {
             byte[] decodeBytes = Base64.decode(
                     base64Str.substring(base64Str.indexOf(",") + 1),
                     Base64.DEFAULT);
-             bitmap = BitmapFactory.decodeByteArray(decodeBytes, 0, decodeBytes.length);
+            bitmap = BitmapFactory.decodeByteArray(decodeBytes, 0, decodeBytes.length);
         } catch (OutOfMemoryError e) {
             Log.e(TAG, e.getMessage());
         }
@@ -95,7 +95,7 @@ public class ImageUtil {
         tempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" +current_time+ "_temp.jpg");
         intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, tempFile);
         intentCrop.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        Log.i(TAG,"准备剪裁");
+        Log.i(TAG, "准备剪裁");
         context.startActivityForResult(intentCrop, requestCode);
     }
 
