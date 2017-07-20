@@ -140,6 +140,7 @@ public class MessageListFragment extends Fragment {
         //Restore unread Message
         //恢复唯独未读消息
         GuestMessage[] guestMessages = new restoreMessageList().doInBackground();
+        guestMessageList.clear();
         for (int i = 0; i < guestMessages.length; i++) {
             guestMessageList.add(guestMessages[i]);
         }
