@@ -44,6 +44,9 @@ public class GuestListUtil {
     private static final int MY_MAX_THREAD_NUM = 5;
     private static final int ALL_MAX_THREAD_NUM = 10;
 
+    private static ArrayList<String> myGuestNameList;
+    private static ArrayList<String> allGuestNameList;
+
     //我的嘉宾缓存保存时间 单位 秒  默认一天
     private static final int MY_SAVE_TIME = 86400;
     //全部嘉宾缓存保存时间 单位 秒  默认一天
@@ -66,8 +69,13 @@ public class GuestListUtil {
     private static boolean isAllFreshed = false;
     //我的嘉宾是否可以刷新
     private static boolean isMYFreshedable = true;
-    //我的嘉宾是否可以刷新
+    //其他嘉宾是否可以刷新
     private static boolean isAllFreshedable = true;
+    //我的嘉宾是否可以刷新
+    private static boolean isMYNameLoad = false;
+    //其他嘉宾是否可以刷新
+    private static boolean isAllNameLoad = false;
+    //
     private static String TAG = "GuestListUtil";
     //缓存对象
     private static ACache mACache = null;
@@ -78,6 +86,8 @@ public class GuestListUtil {
         guestChildList.add(new ArrayList<Map<String, Object>>());
         myExecutorService = Executors.newFixedThreadPool(MY_MAX_THREAD_NUM);
         allExecutorService = Executors.newFixedThreadPool(ALL_MAX_THREAD_NUM);
+        myGuestNameList = new ArrayList<>();
+        allGuestNameList = new ArrayList<>();
     }
 
     /**
@@ -105,6 +115,8 @@ public class GuestListUtil {
     }
 
     /**
+     * 向服务器请求其他嘉宾
+     *
      * @param requestQueue requestQueue
      */
     public static void requestAllGuestList(RequestQueue requestQueue, String eid, Context context) {
@@ -131,41 +143,48 @@ public class GuestListUtil {
      *
      * @param guest 嘉宾信息
      */
-    public static void addGuest(GuestInfo guest, Context context) {
-        //更新内存数据
+    public static void addGuest(GuestInfo guest) {
+        //更新内存数据 及缓存数据
         addToList(guest, MY_GUEST_IDENTITOR);
         isMyFreshed = true;
-        //移除本地缓存
-        removeCache(MY_GUEST_IDENTITOR, context);
     }
 
     /**
      * 添加到我的嘉宾
+     *
      * @param guest   guest
      * @param context context
      */
     public static void addToMyGuest(GuestInfo guest, Context context) {
-        //更新内存数据
+        //更新内存数据 及缓存数据
         //添加至我的嘉宾
         addToList(guest, MY_GUEST_IDENTITOR);
         //从其他嘉宾中删除
         removeFromList(guest, ALL_GUEST_IDENTITOR);
         isMyFreshed = true;
         isAllFreshed = true;
-        //移除本地缓存
-        removeCache(MY_GUEST_IDENTITOR, context);
-        removeCache(ALL_GUEST_IDENTITOR, context);
     }
 
     /**
+     * 向内存及缓存 指定的列表中 添加嘉宾
+     *
      * @param guest     guest
      * @param identitor myGuestIdentitor
      */
     private static void addToList(GuestInfo guest, int identitor) {
+        //更新内存
         Map<String, Object> temp = new HashMap<>();
         temp.put("name", guest.getGuestName());
         temp.put("avatar", guest.getGuestBitmapPhoto());
         guestChildList.get(identitor).add(temp);
+        //更新缓存
+        if (identitor == MY_GUEST_IDENTITOR) {
+            myGuestNameList.add(guest.getGuestName());
+            mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
+            allGuestNameList.add(guest.getGuestName());
+            mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
+        }
     }
 
     /**
@@ -175,28 +194,45 @@ public class GuestListUtil {
      * @param identitor identitor
      */
     private static void removeFromList(GuestInfo guestInfo, int identitor) {
-        int index;
+        //更新内存
         for (Map<String, Object> temp : guestChildList.get(identitor)) {
             if (temp.get("name").equals(guestInfo.getGuestName())) {
-                index = guestChildList.get(identitor).indexOf(temp);
-                guestChildList.get(identitor).remove(index);
+                guestChildList.get(identitor).remove(temp);
                 break;
+            }
+        }
+        //更新缓存
+        if (identitor == MY_GUEST_IDENTITOR) {
+            for (String name : myGuestNameList) {
+                if (name.equals(guestInfo.getGuestName())) {
+                    myGuestNameList.remove(name);
+                    mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
+                    break;
+                }
+            }
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
+            for (String name : allGuestNameList) {
+                if (name.equals(guestInfo.getGuestName())) {
+                    allGuestNameList.remove(name);
+                    mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
+                    break;
+                }
             }
         }
     }
 
-    /**
-     * @param identitor identitor
-     * @param context   context
-     */
-    private static void removeCache(int identitor, Context context) {
-        ACache mACache = ACache.get(context);
-        if (identitor == MY_GUEST_IDENTITOR) {
-            mACache.remove(MY_GUEST_NAME_CACHE);
-        } else if (identitor == ALL_GUEST_IDENTITOR) {
-            mACache.remove(ALL_GUEST_NAME_CACHE);
-        }
-    }
+//    /**
+//     * @param identitor identitor
+//     * @param context   context
+//     */
+//    private static void removeCache(int identitor, Context context) {
+//        ACache mACache = ACache.get(context);
+//        if (identitor == MY_GUEST_IDENTITOR) {
+//            mACache.remove(MY_GUEST_NAME_CACHE);
+//        } else if (identitor == ALL_GUEST_IDENTITOR) {
+//            mACache.remove(ALL_GUEST_NAME_CACHE);
+//        }
+//    }
 
     /**
      * 从我的嘉宾中移除
@@ -210,9 +246,6 @@ public class GuestListUtil {
         addToList(guest, ALL_GUEST_IDENTITOR);
         isMyFreshed = true;
         isAllFreshed = true;
-        //删除缓存
-        removeCache(MY_GUEST_IDENTITOR, context);
-        removeCache(ALL_GUEST_IDENTITOR, context);
     }
 
     /**
@@ -224,6 +257,7 @@ public class GuestListUtil {
         for (Map<String, Object> temp : guestChildList.get(guest.getGuest_type())) {
             if (temp.get("name").equals(guest.getGuestName())) {
                 temp.put("avatar", guest.getGuestBitmapPhoto());
+                mACache.put(guest.getGuestName() + AVATAR_CACHE, guest.getGuestBitmapPhoto());
                 break;
             }
         }
@@ -340,6 +374,9 @@ public class GuestListUtil {
      * @param identitor 用户类型标识
      */
     public static void loadChildListDataFromCache(ArrayList<String> nameList, final int identitor, final Context context) {
+        if (guestChildList.size() > identitor) {
+            guestChildList.get(identitor).clear();
+        }
         for (int i = 0; i < nameList.size(); i++) {
             Map<String, Object> temp = new HashMap<>();
             String name = nameList.get(i);
@@ -368,6 +405,29 @@ public class GuestListUtil {
         } else if (identitor == ALL_GUEST_IDENTITOR) {
             isAllFreshed = true;
         }
+        //如果数据不为空 则清空
+        if (isMYNameLoad) {
+            myGuestNameList.clear();
+            isMYNameLoad = false;
+        }
+        if (isAllNameLoad) {
+            allGuestNameList.clear();
+            isAllNameLoad = false;
+        }
+        //复制姓名列表
+        if (identitor == MY_GUEST_IDENTITOR) {
+            for (String name : nameList) {
+                myGuestNameList.add(name);
+            }
+            isMYNameLoad = true;
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
+            for (String name : nameList) {
+                allGuestNameList.add(name);
+            }
+            isAllNameLoad = true;
+        }
+
+
     }
 
 
@@ -380,12 +440,24 @@ public class GuestListUtil {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<String> guestNameList = new ArrayList<>();
-                String[] nameCaches = {MY_GUEST_NAME_CACHE, ALL_GUEST_NAME_CACHE};
-                for (Map<String, Object> temp : guestChildList.get(identitor)) {
-                    guestNameList.add((String) temp.get("name"));
+                if (identitor == MY_GUEST_IDENTITOR) {
+                    if (myGuestNameList.size() > 0) {
+                        myGuestNameList.clear();
+                    }
+                    for (Map<String, Object> temp : guestChildList.get(identitor)) {
+                        myGuestNameList.add((String) temp.get("name"));
+                    }
+                    mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList, MY_SAVE_TIME);
+                } else if (identitor == ALL_GUEST_IDENTITOR) {
+                    if (allGuestNameList.size() > 0) {
+                        allGuestNameList.clear();
+                    }
+                    for (Map<String, Object> temp : guestChildList.get(identitor)) {
+                        allGuestNameList.add((String) temp.get("name"));
+                    }
+                    mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList, MY_SAVE_TIME);
                 }
-                mACache.put(nameCaches[identitor], guestNameList, MY_SAVE_TIME);
+
             }
         }).start();
     }
@@ -396,6 +468,10 @@ public class GuestListUtil {
     public static void clearList() {
         guestChildList.clear();
         guestChildList = null;
+        myGuestNameList.clear();
+        myGuestNameList = null;
+        allGuestNameList.clear();
+        allGuestNameList = null;
     }
 
     /**

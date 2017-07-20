@@ -59,7 +59,7 @@ public class SearchAdapter extends BaseAdapter {
 
         ImageView avatar = view.findViewById(to[0]);
         TextView name = view.findViewById(to[1]);
-        avatar.setBackground(new BitmapDrawable((Bitmap) dataList_guest.get(i).get(from[0])));
+        avatar.setImageBitmap((Bitmap) dataList_guest.get(i).get(from[0]));
         name.setText(dataList_guest.get(i).get(from[1]).toString());
 
         return view;
