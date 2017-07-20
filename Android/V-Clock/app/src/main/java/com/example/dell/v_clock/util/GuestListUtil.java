@@ -115,6 +115,8 @@ public class GuestListUtil {
     }
 
     /**
+     * 向服务器请求其他嘉宾
+     *
      * @param requestQueue requestQueue
      */
     public static void requestAllGuestList(RequestQueue requestQueue, String eid, Context context) {
