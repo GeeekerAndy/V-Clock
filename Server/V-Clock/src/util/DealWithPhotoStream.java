@@ -10,7 +10,7 @@ import faceAPI.CheckingPhoto;
  * 处理嘉宾到访时摄像头传输的帧
  */
 public class DealWithPhotoStream {
-    public String dealWithPhotoStream(String photoStr) throws Exception{
+    public synchronized String dealWithPhotoStream(String photoStr) throws Exception{
     	String gname="";
     	gname=cp.doesThePersonExist(photoStr, 1);
     	if("0".endsWith(gname)){
@@ -35,7 +35,7 @@ public class DealWithPhotoStream {
     		   lastGuest="";
     	   }
        };
-       timer.schedule(task, 100000L,100000L);
+       timer.schedule(task, 100000L,100000L); 
     }
     public boolean getChange(){
     	return change;

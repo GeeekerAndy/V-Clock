@@ -84,7 +84,6 @@ public class SessionListener implements HttpSessionListener{
 		 */
 
 		System.out.println("delete session!");
-
         String sessionID=event.getSession().getId();
         String sql = "delete from session where sessionid=? ";
 

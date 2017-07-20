@@ -154,7 +154,7 @@ public class RecognizeFace {
 		JSONObject object = JSONObject.fromObject(result);
 		if(object.getString("res_code").equals("1067")){
 			return null;
-		}else if(object.getString("face")==null){
+		}else if(null==object.getString("face")){
 			return null;
 		}else{
 			String faceContent = object.getString("face");

@@ -1,5 +1,6 @@
 package util;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,7 +53,7 @@ public class Guest {
 
 	public boolean codeLegitimate(String type, String content) {
 		String allNumber = "^[0-9_]+$";// 纯数字正则表达式
-		String existNumber = "^[\u4e00-\u9fa5a-zA-Z·]+$";//姓名正则表达式
+		String existNumber = "^[\u4e00-\u9fa5a-zA-Z·]+$";// 姓名正则表达式
 		Pattern ifAllNumber = Pattern.compile(allNumber);
 		Pattern validteName = Pattern.compile(existNumber);
 		if (type.equals("gtel")) {
@@ -63,12 +64,11 @@ public class Guest {
 			} else
 				return false;
 
-
 		} else if (type.equals("gname")) {
 			Matcher m2 = validteName.matcher(content);
 			boolean enameBool = m2.matches();
 			System.out.println("validate:" + enameBool);
-			if (content.length() < 20 && enameBool) {
+			if (content.length() <= 20 && enameBool) {
 
 				return true;
 			} else
@@ -82,8 +82,13 @@ public class Guest {
 				return true;
 			} else
 				return false;
-		} else if (type.equals("gphoto") || type.equals("gsex")
-				|| type.equals("gcompany"))
+		} else if (type.equals("gcompany")) {
+			if (content.length() <= 20)
+				return true;
+			else
+				return false;
+
+		} else if (type.equals("gphoto") || type.equals("gsex"))
 			return true;
 		else
 			return false;
@@ -94,13 +99,14 @@ public class Guest {
 			String gcompany, String gphoto, String regid) {
 		// 返回值： 0(新建嘉宾成功),1(该嘉宾已存在),2(数据错误)
 		if (!codeLegitimate("gname", gname) || !codeLegitimate("gtel", gtel)
-				|| !codeLegitimate("regid", regid))
+				|| !codeLegitimate("regid", regid)||!codeLegitimate("gcompany", gcompany))
 			return "2";
 		ResultSet rs;
 		boolean success;
 		// 根据嘉宾姓名和照片，判断该嘉宾是否已存在
 		String sql1 = "select * from guest where gname=?";
 		try {
+			c.setAutoCommit(false);
 			// String gphototip=checking.doesThePersonExist(gphoto,1);
 			pstmt = c.prepareStatement(sql1);
 			pstmt.setString(1, gname);
@@ -113,13 +119,14 @@ public class Guest {
 				return "1";
 			} else {
 				// 若该嘉宾不存在，在数据库中新建记录
+				String filePath=gi.generateImg(gname, gphoto, 1);
 				String sql2 = "insert into guest(gname,gsex,gtel,gcompany,gphoto,regid) values(?,?,?,?,?,?)";
 				PreparedStatement pstmts = c.prepareStatement(sql2);
 				pstmts.setString(1, gname);
 				pstmts.setString(2, gsex);
 				pstmts.setString(3, gtel);
 				pstmts.setString(4, gcompany);
-				pstmts.setString(5, gi.generateImg(gname, gphoto, 1));// 在服务器本地生成该嘉宾的照片,存储照片路径
+				pstmts.setString(5, filePath);// 在服务器本地生成该嘉宾的照片,存储照片路径
 				pstmts.setString(6, regid);
 				if (pstmts.executeUpdate() == 1)
 					success = true;
@@ -131,10 +138,21 @@ public class Guest {
 				// return "0";
 				if (success) {
 					// 在crowd of guest中加入该嘉宾
-					atc.add(gphoto, gname, 1);
-					System.out.println("crowd of guest:" + gname);
-					return "0";
+					boolean added=atc.add(gphoto, gname, 1);
+					if(added){ 
+						c.commit();
+						System.out.println("crowd of guest:" + gname);
+						return "0";
+					}else{
+						File img=new File(filePath);
+						img.delete();
+						c.rollback();
+						return "2";
+					}
 				} else {
+					File img=new File(filePath);
+					img.delete();
+					c.rollback();
 					return "2";
 				}
 
@@ -157,22 +175,22 @@ public class Guest {
 		boolean success;
 		String sql = "";
 		sql = "update guest set " + infoType + "=? where gname=? ";
+		// System.out.println("modify guest sql:"+sql);
 		pstmt = c.prepareStatement(sql);
 		if ("gphoto".equals(infoType)) {
-			//先判断要更新的照片是不是属于该嘉宾本人
-			String sql2="select gphoto from Guest where gname=?";
-			pstmt=c.prepareStatement(sql2);
-			pstmt.setString(1, gname);	
-			conn.setRs(pstmt.executeQuery());
-			if(conn.getRs().next()){
-				String path=conn.getRs().getString("gphoto");
-				boolean bool=checking.isTheSamePerson(information,path);
-				if(!bool){
+			// 先判断要更新的照片是不是属于该嘉宾本人
+			String sql2 = "select gphoto from Guest where gname=?";
+			PreparedStatement pstmts = c.prepareStatement(sql2);
+			pstmts.setString(1, gname);
+			ResultSet rs = pstmts.executeQuery();
+			if (rs.next()) {
+				String path = rs.getString("gphoto");
+				boolean bool = checking.isTheSamePerson(information, path);
+				if (!bool) {
 					System.out.println("嘉宾更新照片不匹配");
 					return "1";
 				}
-			}
-			else
+			} else
 				return "1";
 			pstmt.setString(1, gi.generateImg(gname, information, 1));// 这里能够自动覆盖原路径图片
 			pstmt.setString(2, gname);

@@ -90,8 +90,8 @@ public class WCreateNewGuestServlet extends HttpServlet {
 				//for (int i = 0; i < guests.gmessage.length; i++) {
 					for (int i = 0; i < guests.gmessage.length-1; i++) {
 					glist[i] = request.getParameter(guests.gmessage[i]);
-					if (i != guests.gmessage.length - 2)
-						System.out.println(guests.gmessage[i] + ":" + glist[i]);
+//					if (i != guests.gmessage.length - 2)
+//						System.out.println(guests.gmessage[i] + ":" + glist[i]);
 				}
 				glist[guests.gmessage.length-1]=(String)
 				session.getAttribute("eid");

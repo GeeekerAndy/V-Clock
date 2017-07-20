@@ -72,8 +72,8 @@ public class ADeleteFromGuestListServlet extends HttpServlet {
 
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
-		boolean validate=SessionListener.getInstance().verifySession(request);
-		if(validate){
+//		boolean validate=SessionListener.getInstance().verifySession(request);
+//		if(validate){
 		Employee emp=new Employee();
 //		String userTel=(String) session.getAttribute("etel");
 //		String userPhoto=(String) session.getAttribute("ephoto");
@@ -82,8 +82,8 @@ public class ADeleteFromGuestListServlet extends HttpServlet {
 //				String loginBool=emp.checkuser(userTel, userPhoto);
 //				if(loginBool.equals("0")){
 					String gname=request.getParameter("gname");
-					//String eid=request.getParameter("eid");
-					String eid=(String) session.getAttribute("eid");
+					String eid=request.getParameter("eid");
+					//String eid=(String) session.getAttribute("eid");
 					System.out.println("(gname+eid):"+gname+"+"+eid);
 					GuestList guestList=new GuestList();
 					String tip=guestList.deleteFromGuestList(gname, eid);
@@ -92,7 +92,7 @@ public class ADeleteFromGuestListServlet extends HttpServlet {
 					out.write(tip);
 					out.flush();
 					out.close();
-				}
+//				}
 //				else
 //					System.out.println("No Legitimate(2)");
 //			} catch (Exception e) {

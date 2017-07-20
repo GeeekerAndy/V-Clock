@@ -18,7 +18,7 @@ import util.GetHttpMessage;
 public class PushServletService {
 	// private static GetHttpMessage ghm=new GetHttpMessage();
 	// 异步Servlet上下文队列.
-	private final  Map<User, AsyncContext> ASYNC_CONTEXT_MAP = new ConcurrentHashMap<User, AsyncContext>();
+	private final Map<User, AsyncContext> ASYNC_CONTEXT_MAP = new ConcurrentHashMap<User, AsyncContext>();
 
 	// 消息队列.
 	private final BlockingQueue<JSONObject> TEXT_MESSAGE_QUEUE = new LinkedBlockingQueue<JSONObject>();
@@ -44,40 +44,42 @@ public class PushServletService {
 	 *            异步Servlet上下文.
 	 */
 	public synchronized void addAsyncContext(final AsyncContext asyncContext) {
-//		try {
-//			Thread.sleep(100);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// Thread.sleep(100);
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
 		// user.setEid((String)req.getSession().getAttribute("eid"));
 		// System.out.println((String)req.getSession().getAttribute("eid"));
-		boolean isMobile=GetHttpMessage.check(req.getHeader("USER-AGENT"));
-		if(isMobile){
+		boolean isMobile = GetHttpMessage.check(req.getHeader("USER-AGENT"));
+		if (isMobile) {
 			user.setEid(req.getParameter("eid"));
-		}else{
-			user.setEid((String)req.getSession().getAttribute("eid"));
+			System.out.println("mobile eid:" + req.getParameter("eid"));
+		} else {
+			String eid = (String) req.getSession().getAttribute("eid");
+			if (null != eid)
+				user.setEid(eid);
 		}
-		
-		// user.setEid("0000");
-		user.setMobile(isMobile);
-		// System.out.println(user.getEid()+"............");
-		// System.out.println(ASYNC_CONTEXT_MAP.size()+"---------");
-		//boolean isAdd = true;
-		for (Entry<User, AsyncContext> entry : ASYNC_CONTEXT_MAP.entrySet()) {
-			if (entry.getKey().getEid().equals(user.getEid())
-					&& entry.getKey().getMobile() == user.getMobile()) {
-				ASYNC_CONTEXT_MAP.remove(entry.getKey());
+		if (null != user.getEid()) {
+			user.setMobile(isMobile);
+			for (Entry<User, AsyncContext> entry : ASYNC_CONTEXT_MAP.entrySet()) {
+				//System.out.println(entry.getKey().getEid() + "---------"
+						//+ user.getEid());
+				if (entry.getKey().getEid().equals(user.getEid())
+						&& entry.getKey().getMobile() == user.getMobile()) {
+					ASYNC_CONTEXT_MAP.remove(entry.getKey());
+				}
 			}
-			
-		}
-		System.out.println("============"+ASYNC_CONTEXT_MAP.size()+"==========");
-		if (null != user ) {
-			System.out.println("****" + req.getHeader("USER-AGENT"));
-			System.out.println("客户端注册成功！");
-			ASYNC_CONTEXT_MAP.put(user, asyncContext);
+			System.out.println("============" + ASYNC_CONTEXT_MAP.size()
+					+ "==========");
+			if (null != user) {
+				System.out.println("****" + req.getHeader("USER-AGENT"));
+				System.out.println("客户端注册成功！");
+				ASYNC_CONTEXT_MAP.put(user, asyncContext);
+			}
 		}
 	}
 
@@ -94,11 +96,11 @@ public class PushServletService {
 
 		HttpServletRequest req = (HttpServletRequest) asyncContext.getRequest();
 		User user = new User();
-		boolean isMobile=GetHttpMessage.check(req.getHeader("USER-AGENT"));
-		if(isMobile){
+		boolean isMobile = GetHttpMessage.check(req.getHeader("USER-AGENT"));
+		if (isMobile) {
 			user.setEid(req.getParameter("eid"));
-		}else{
-			user.setEid((String)req.getSession().getAttribute("eid"));
+		} else {
+			user.setEid((String) req.getSession().getAttribute("eid"));
 		}
 		user.setMobile(isMobile);
 		if (null != user) {
@@ -191,20 +193,19 @@ public class PushServletService {
 					// }
 					for (Entry<User, AsyncContext> entry : ASYNC_CONTEXT_MAP
 							.entrySet()) {
-						// System.out.println(entry.getKey().getEid());
-						//try{
-							HttpServletRequest req = (HttpServletRequest) entry
-									.getValue().getRequest();
-							if (eid.equals(entry.getKey().getEid())
-									) {
+						// try{
+						HttpServletRequest req = (HttpServletRequest) entry
+								.getValue().getRequest();
+						if (eid.equals(entry.getKey().getEid())) {
 
-								pushMessage(message, entry.getKey());
-								ASYNC_CONTEXT_MAP.remove(entry.getKey());
-								// Thread.sleep(100);
-							}
-						//}catch(Exception ex){	//这里是暂时的解决方法，连接释放后对象没有被成功从Map里移除，正式的解决方法可以重写User类的equals方法实现
-							//	//remove方法是使用equals方法判断键值是否相等的
-						//}
+							pushMessage(message, entry.getKey());
+							ASYNC_CONTEXT_MAP.remove(entry.getKey());
+							// Thread.sleep(100);
+						}
+						// }catch(Exception ex){
+						// //这里是暂时的解决方法，连接释放后对象没有被成功从Map里移除，正式的解决方法可以重写User类的equals方法实现
+						// //remove方法是使用equals方法判断键值是否相等的
+						// }
 					}
 					Thread.sleep(1000);// 暂停100ms，停止的这段时间让用户有足够时间连接到服务器 1000 安卓
 
@@ -265,11 +266,11 @@ class User {
 	public void setEid(String eid) {
 		this.eid = eid;
 	}
-	
-	//重写equals方法
+
+	// 重写equals方法
 	@Override
-	public boolean equals(Object obj){
-		if(this.eid.equals(((User)obj).eid))
+	public boolean equals(Object obj) {
+		if (this.eid.equals(((User) obj).eid))
 			return true;
 		else
 			return false;
