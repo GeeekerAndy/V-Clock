@@ -3,6 +3,7 @@ package com.example.dell.v_clock.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -93,30 +94,36 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         lv_search_result.setOnItemClickListener(this);
 
         aCache = ACache.get(this);
-        myGuestNameList = (ArrayList<String>) aCache.getAsObject(GuestListUtil.MY_GUEST_NAME_CACHE);
-        allGuestNameList = (ArrayList<String>) aCache.getAsObject(GuestListUtil.ALL_GUEST_NAME_CACHE);
-        int srcLength = myGuestNameList.size() + allGuestNameList.size();
-        String[] names = new String[srcLength];
-        for (int i = 0; i < myGuestNameList.size(); i++) {
-            names[i] = myGuestNameList.get(i);
+        //避免在写缓存时  读取发生错误
+        synchronized (this) {
+            myGuestNameList = (ArrayList<String>) aCache.getAsObject(GuestListUtil.MY_GUEST_NAME_CACHE);
+            allGuestNameList = (ArrayList<String>) aCache.getAsObject(GuestListUtil.ALL_GUEST_NAME_CACHE);
         }
-        for (int i = myGuestNameList.size(); i < srcLength; i++) {
-            names[i] = allGuestNameList.get(i - myGuestNameList.size());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, names);
-        actv_search.setAdapter(adapter);
-        actv_search.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String name = actv_search.getText().toString();
-                if (name.equals("") || CheckLegality.isContainSpecialChar(name)
-                        || CheckLegality.isContainSpace(name)) {
-                    Toast.makeText(SearchActivity.this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
-                }
-                //向后台发送请求
-                transferRequest(name);
+        //缓存提示功能
+        if (myGuestNameList != null && allGuestNameList != null) {
+            int srcLength = myGuestNameList.size() + allGuestNameList.size();
+            String[] names = new String[srcLength];
+            for (int i = 0; i < myGuestNameList.size(); i++) {
+                names[i] = myGuestNameList.get(i);
             }
-        });
+            for (int i = myGuestNameList.size(); i < srcLength; i++) {
+                names[i] = allGuestNameList.get(i - myGuestNameList.size());
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, names);
+            actv_search.setAdapter(adapter);
+            actv_search.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    String name = actv_search.getText().toString();
+                    if (name.equals("") || CheckLegality.isContainSpecialChar(name)
+                            || CheckLegality.isContainSpace(name)) {
+                        Toast.makeText(SearchActivity.this, "请输入正确的姓名！", Toast.LENGTH_SHORT).show();
+                    }
+                    //向后台发送请求
+                    transferRequest(name);
+                }
+            });
+        }
     }
 
     @Override
@@ -270,8 +277,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             //本地搜索
             String name = actv_search.getText().toString();
             Bitmap photo = aCache.getAsBitmap(name + GuestListUtil.AVATAR_CACHE);
-            guestInfo = new GuestInfo(name, photo);
-            handler.sendEmptyMessage(0);
+            if (photo != null) {
+                guestInfo = new GuestInfo(name, photo);
+                handler.sendEmptyMessage(0);
+            }
         }
     }
 

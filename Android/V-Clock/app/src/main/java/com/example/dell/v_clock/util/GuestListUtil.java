@@ -11,6 +11,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.dell.v_clock.ServerInfo;
+import com.example.dell.v_clock.activity.SearchActivity;
+import com.example.dell.v_clock.fragment.GuestListFragment;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.org.afinal.simplecache.ACache;
 
@@ -98,6 +100,7 @@ public class GuestListUtil {
      */
     public static void requestMyGuestList(RequestQueue requestQueue, String eid, Context context) {
         myExecutorService = Executors.newFixedThreadPool(MY_MAX_THREAD_NUM);
+        myGuestNameList = new ArrayList<>();
         isMyFreshed = false;
         isMYFreshedable = false;
         if (mACache == null) {
@@ -121,6 +124,7 @@ public class GuestListUtil {
      */
     public static void requestAllGuestList(RequestQueue requestQueue, String eid, Context context) {
         allExecutorService = Executors.newFixedThreadPool(ALL_MAX_THREAD_NUM);
+        allGuestNameList = new ArrayList<>();
         isAllFreshed = false;
         isAllFreshedable = false;
         if (mACache == null) {
@@ -447,7 +451,9 @@ public class GuestListUtil {
                     for (Map<String, Object> temp : guestChildList.get(identitor)) {
                         myGuestNameList.add((String) temp.get("name"));
                     }
-                    mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList, MY_SAVE_TIME);
+                    synchronized (SearchActivity.class) {
+                        mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList, MY_SAVE_TIME);
+                    }
                 } else if (identitor == ALL_GUEST_IDENTITOR) {
                     if (allGuestNameList.size() > 0) {
                         allGuestNameList.clear();
@@ -455,7 +461,10 @@ public class GuestListUtil {
                     for (Map<String, Object> temp : guestChildList.get(identitor)) {
                         allGuestNameList.add((String) temp.get("name"));
                     }
-                    mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList, MY_SAVE_TIME);
+                    synchronized (SearchActivity.class) {
+                        mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList, MY_SAVE_TIME);
+                    }
+
                 }
 
             }
