@@ -206,16 +206,15 @@ public class GuestListUtil {
             for (String name : myGuestNameList) {
                 if (name.equals(guestInfo.getGuestName())) {
                     myGuestNameList.remove(name);
-                    mACache.put(MY_GUEST_NAME_CACHE,myGuestNameList);
+                    mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
                     break;
                 }
             }
-        }else if(identitor == ALL_GUEST_IDENTITOR)
-        {
+        } else if (identitor == ALL_GUEST_IDENTITOR) {
             for (String name : allGuestNameList) {
                 if (name.equals(guestInfo.getGuestName())) {
                     allGuestNameList.remove(name);
-                    mACache.put(ALL_GUEST_NAME_CACHE,allGuestNameList);
+                    mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
                     break;
                 }
             }
@@ -258,6 +257,7 @@ public class GuestListUtil {
         for (Map<String, Object> temp : guestChildList.get(guest.getGuest_type())) {
             if (temp.get("name").equals(guest.getGuestName())) {
                 temp.put("avatar", guest.getGuestBitmapPhoto());
+                mACache.put(guest.getGuestName() + AVATAR_CACHE, guest.getGuestBitmapPhoto());
                 break;
             }
         }
@@ -374,6 +374,9 @@ public class GuestListUtil {
      * @param identitor 用户类型标识
      */
     public static void loadChildListDataFromCache(ArrayList<String> nameList, final int identitor, final Context context) {
+        if (guestChildList.size() > identitor) {
+            guestChildList.get(identitor).clear();
+        }
         for (int i = 0; i < nameList.size(); i++) {
             Map<String, Object> temp = new HashMap<>();
             String name = nameList.get(i);
@@ -438,11 +441,17 @@ public class GuestListUtil {
             @Override
             public void run() {
                 if (identitor == MY_GUEST_IDENTITOR) {
+                    if (myGuestNameList.size() > 0) {
+                        myGuestNameList.clear();
+                    }
                     for (Map<String, Object> temp : guestChildList.get(identitor)) {
                         myGuestNameList.add((String) temp.get("name"));
                     }
                     mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList, MY_SAVE_TIME);
                 } else if (identitor == ALL_GUEST_IDENTITOR) {
+                    if (allGuestNameList.size() > 0) {
+                        allGuestNameList.clear();
+                    }
                     for (Map<String, Object> temp : guestChildList.get(identitor)) {
                         allGuestNameList.add((String) temp.get("name"));
                     }
@@ -459,6 +468,10 @@ public class GuestListUtil {
     public static void clearList() {
         guestChildList.clear();
         guestChildList = null;
+        myGuestNameList.clear();
+        myGuestNameList = null;
+        allGuestNameList.clear();
+        allGuestNameList = null;
     }
 
     /**
