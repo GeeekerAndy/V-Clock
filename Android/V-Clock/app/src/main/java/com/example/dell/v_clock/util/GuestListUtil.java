@@ -12,7 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.dell.v_clock.ServerInfo;
 import com.example.dell.v_clock.activity.SearchActivity;
-import com.example.dell.v_clock.fragment.GuestListFragment;
 import com.example.dell.v_clock.object.GuestInfo;
 import com.org.afinal.simplecache.ACache;
 
@@ -148,9 +147,32 @@ public class GuestListUtil {
      * @param guest 嘉宾信息
      */
     public static void addGuest(GuestInfo guest) {
-        //更新内存数据 及缓存数据
-        addToList(guest, MY_GUEST_IDENTITOR);
+        //更新内存数据
+        addToMemoryList(guest, MY_GUEST_IDENTITOR);
         isMyFreshed = true;
+        //更新缓存数据
+        addToCacheList(guest,MY_GUEST_IDENTITOR);
+    }
+
+    /**
+     * 更新缓存数据
+     * @param guest
+     * @param identitor
+     */
+    private static void addToCacheList(final GuestInfo guest, final int identitor) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //更新缓存
+                if (identitor == MY_GUEST_IDENTITOR) {
+                    myGuestNameList.add(guest.getGuestName());
+                    mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
+                } else if (identitor == ALL_GUEST_IDENTITOR) {
+                    allGuestNameList.add(guest.getGuestName());
+                    mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -160,13 +182,47 @@ public class GuestListUtil {
      * @param context context
      */
     public static void addToMyGuest(GuestInfo guest, Context context) {
-        //更新内存数据 及缓存数据
+        //更新内存数据
         //添加至我的嘉宾
-        addToList(guest, MY_GUEST_IDENTITOR);
+        addToMemoryList(guest, MY_GUEST_IDENTITOR);
         //从其他嘉宾中删除
-        removeFromList(guest, ALL_GUEST_IDENTITOR);
+        removeFromMemoryList(guest, ALL_GUEST_IDENTITOR);
         isMyFreshed = true;
         isAllFreshed = true;
+        //及缓存数据
+        addToCacheList(guest,MY_GUEST_IDENTITOR);
+        removeFromCacheList(guest,ALL_GUEST_IDENTITOR);
+    }
+
+    /**
+     *  缓存数据
+     * @param guest
+     * @param identitor
+     */
+    private static void removeFromCacheList(final GuestInfo guest, final int identitor) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //更新缓存
+                if (identitor == MY_GUEST_IDENTITOR) {
+                    for (String name : myGuestNameList) {
+                        if (name.equals(guest.getGuestName())) {
+                            myGuestNameList.remove(name);
+                            mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
+                            break;
+                        }
+                    }
+                } else if (identitor == ALL_GUEST_IDENTITOR) {
+                    for (String name : allGuestNameList) {
+                        if (name.equals(guest.getGuestName())) {
+                            allGuestNameList.remove(name);
+                            mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
+                            break;
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 
     /**
@@ -175,20 +231,12 @@ public class GuestListUtil {
      * @param guest     guest
      * @param identitor myGuestIdentitor
      */
-    private static void addToList(GuestInfo guest, int identitor) {
+    private static void addToMemoryList(GuestInfo guest, int identitor) {
         //更新内存
         Map<String, Object> temp = new HashMap<>();
         temp.put("name", guest.getGuestName());
         temp.put("avatar", guest.getGuestBitmapPhoto());
         guestChildList.get(identitor).add(temp);
-        //更新缓存
-        if (identitor == MY_GUEST_IDENTITOR) {
-            myGuestNameList.add(guest.getGuestName());
-            mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
-        } else if (identitor == ALL_GUEST_IDENTITOR) {
-            allGuestNameList.add(guest.getGuestName());
-            mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
-        }
     }
 
     /**
@@ -197,30 +245,12 @@ public class GuestListUtil {
      * @param guestInfo guestInfo
      * @param identitor identitor
      */
-    private static void removeFromList(GuestInfo guestInfo, int identitor) {
+    private static void removeFromMemoryList(GuestInfo guestInfo, int identitor) {
         //更新内存
         for (Map<String, Object> temp : guestChildList.get(identitor)) {
             if (temp.get("name").equals(guestInfo.getGuestName())) {
                 guestChildList.get(identitor).remove(temp);
                 break;
-            }
-        }
-        //更新缓存
-        if (identitor == MY_GUEST_IDENTITOR) {
-            for (String name : myGuestNameList) {
-                if (name.equals(guestInfo.getGuestName())) {
-                    myGuestNameList.remove(name);
-                    mACache.put(MY_GUEST_NAME_CACHE, myGuestNameList);
-                    break;
-                }
-            }
-        } else if (identitor == ALL_GUEST_IDENTITOR) {
-            for (String name : allGuestNameList) {
-                if (name.equals(guestInfo.getGuestName())) {
-                    allGuestNameList.remove(name);
-                    mACache.put(ALL_GUEST_NAME_CACHE, allGuestNameList);
-                    break;
-                }
             }
         }
     }
@@ -245,11 +275,14 @@ public class GuestListUtil {
      */
     public static void deleteFromMyGuest(GuestInfo guest, Context context) {
         //更新内存数据
-        removeFromList(guest, MY_GUEST_IDENTITOR);
+        removeFromMemoryList(guest, MY_GUEST_IDENTITOR);
         //添加至其他嘉宾
-        addToList(guest, ALL_GUEST_IDENTITOR);
+        addToMemoryList(guest, ALL_GUEST_IDENTITOR);
         isMyFreshed = true;
         isAllFreshed = true;
+        //更新缓存数据
+        removeFromCacheList(guest,MY_GUEST_IDENTITOR);
+        addToCacheList(guest,ALL_GUEST_IDENTITOR);
     }
 
     /**
