@@ -74,6 +74,9 @@ public class WDisplayVisitingRecordServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		boolean validate = SessionListener.getInstance().verifySession(request);
 		if (validate) {
+
+			System.out.println("display visiting");
+
 			// Employee emp=new Employee();
 			// String userTel=(String) session.getAttribute("etel");
 			// String userPhoto=(String) session.getAttribute("ephoto");
@@ -98,7 +101,7 @@ public class WDisplayVisitingRecordServlet extends HttpServlet {
 			}
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			// System.out.println(json.toString());
+
 			out.append(json.toString());
 			out.flush();
 			out.close();

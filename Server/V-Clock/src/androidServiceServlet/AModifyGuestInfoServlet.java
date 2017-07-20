@@ -78,6 +78,7 @@ public class AModifyGuestInfoServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String result = "", loginBool = "";
 		HttpSession session = request.getSession(false);
+
 		Employee emp = new Employee();
 		// String userTel=(String) session.getAttribute("etel");
 		// String userPhoto=(String) session.getAttribute("ephoto");
@@ -126,6 +127,7 @@ public class AModifyGuestInfoServlet extends HttpServlet {
 		out.flush();
 		out.close();
 		// }
+
 		// else
 		// System.out.println("No Legitimate(2)");
 		// }

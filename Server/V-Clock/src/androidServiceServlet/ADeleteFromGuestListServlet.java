@@ -12,18 +12,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+
 import util.Employee;
 import util.GuestList;
 import util.SessionListener;
 
 public class ADeleteFromGuestListServlet extends HttpServlet {
 
+
 	/**
 	 * Constructor of the object.
 	 */
 	public ADeleteFromGuestListServlet() {
 		super();
-		// c = conn.con();
+		//c = conn.con();
 	}
 
 	/**
@@ -34,26 +36,22 @@ public class ADeleteFromGuestListServlet extends HttpServlet {
 		// Put your code here
 	}
 
+
 	/**
 	 * The doGet method of the servlet. <br>
-	 * 
+	 *
 	 * This method is called when a form has its tag value method equals to get.
 	 * 
-	 * @param request
-	 *            the request send by the client to the server
-	 * @param response
-	 *            the response send by the server to the client
-	 * @throws ServletException
-	 *             if an error occurred
-	 * @throws IOException
-	 *             if an error occurred
+	 * @param request the request send by the client to the server
+	 * @param response the response send by the server to the client
+	 * @throws ServletException if an error occurred
+	 * @throws IOException if an error occurred
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		doPost(request, response);
+		doPost(request,response);
 	}
-
 	/**
 	 * The doPost method of the servlet. <br>
 	 * 
@@ -74,34 +72,36 @@ public class ADeleteFromGuestListServlet extends HttpServlet {
 
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
-		Employee emp = new Employee();
-		// String userTel=(String) session.getAttribute("etel");
-		// String userPhoto=(String) session.getAttribute("ephoto");
-		// if(userTel!=null&&userPhoto!=null){
-		// try {
-		// String loginBool=emp.checkuser(userTel, userPhoto);
-		// if(loginBool.equals("0")){
-		String gname = request.getParameter("gname");
-		String eid = request.getParameter("eid");
-		// String eid = (String) session.getAttribute("eid");
-		System.out.println("(gname+eid):" + gname + "+" + eid);
-		GuestList guestList = new GuestList();
-		String tip = guestList.deleteFromGuestList(gname, eid);
-		response.setCharacterEncoding("UTF-8");
-		PrintWriter out = response.getWriter();
-		out.write(tip);
-		out.flush();
-		out.close();
-		// }
-		// else
-		// System.out.println("No Legitimate(2)");
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
-		// else
-		// System.out.println("No Legitimate(1)");
+//		boolean validate=SessionListener.getInstance().verifySession(request);
+//		if(validate){
+		Employee emp=new Employee();
+//		String userTel=(String) session.getAttribute("etel");
+//		String userPhoto=(String) session.getAttribute("ephoto");
+//		if(userTel!=null&&userPhoto!=null){
+//			try {
+//				String loginBool=emp.checkuser(userTel, userPhoto);
+//				if(loginBool.equals("0")){
+					String gname=request.getParameter("gname");
+					String eid=request.getParameter("eid");
+					//String eid=(String) session.getAttribute("eid");
+					System.out.println("(gname+eid):"+gname+"+"+eid);
+					GuestList guestList=new GuestList();
+					String tip=guestList.deleteFromGuestList(gname, eid);
+					response.setCharacterEncoding("UTF-8");
+					PrintWriter out = response.getWriter();
+					out.write(tip);
+					out.flush();
+					out.close();
+//				}
+//				else
+//					System.out.println("No Legitimate(2)");
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		else
+//			System.out.println("No Legitimate(1)");
 
 	}
 

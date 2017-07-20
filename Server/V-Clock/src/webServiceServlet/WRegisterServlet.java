@@ -64,7 +64,7 @@ public class WRegisterServlet extends HttpServlet implements Employees{
 		String[] elist=new String[emessage.length];
 		for(int i=1;i<elist.length;i++){
 			elist[i]=request.getParameter(emessage[i]);
-			System.out.println(elist[i]);
+			//System.out.println(elist[i]);
 		}
 		Employee emp=new Employee();
 		String tip="";

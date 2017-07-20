@@ -1,0 +1,850 @@
+<!DOCTYPE HTML>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>V-Clock</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="face recognition" />
+		<meta name="keywords" content="free website templates, free html5, free template, free bootstrap, free website template, html5, css3, mobile first, responsive" />
+
+		<!-- Facebook and Twitter integration -->
+		<meta property="og:title" content="" />
+		<meta property="og:image" content="" />
+		<meta property="og:url" content="" />
+		<meta property="og:site_name" content="" />
+		<meta property="og:description" content="" />
+		<meta name="twitter:title" content="" />
+		<meta name="twitter:image" content="" />
+		<meta name="twitter:url" content="" />
+		<meta name="twitter:card" content="" />
+
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+
+		<!-- Animate.css -->
+		<link rel="stylesheet" href="css/animate.css">
+		<!-- Icomoon Icon Fonts-->
+		<link rel="stylesheet" href="css/icomoon.css">
+
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.4.6.0.css">
+		<link rel="stylesheet" href="css/amazeui.min.css">
+		<link rel="stylesheet" href="css/amazeui.cropper.css">
+		<link rel="stylesheet" href="css/custom_up_img.css">
+
+		<!-- Bootstrap  -->
+		<link rel="stylesheet" href="css/bootstrap.css">
+
+		<!-- Magnific Popup -->
+		<link rel="stylesheet" href="css/magnific-popup.css">
+
+		<!-- Theme style  -->
+		<link rel="stylesheet" href="css/style.css">
+
+		<!-- Modernizr JS -->
+		<script src="js/modernizr-2.6.2.min.js"></script>
+		<!-- FOR IE9 below -->
+		<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+	</head>
+
+	<body>
+
+		<div class="fh5co-loader"></div>
+
+		<div id="page">
+			<nav class="fh5co-nav" role="navigation">
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-2 text-left">
+							<div id="fh5co-logo">
+								<a href="index.html"><img src="images/LOGO.png" style="height: 2em;width: 6em;" /> </a>
+							</div>
+						</div>
+						<div class="col-xs-10 text-right menu-1">
+							<ul>
+								<li class="active">
+									<a href="guestsList.html">嘉宾列表</a>
+								</li>
+								<li class="has-dropdown">
+									<a href="message.html">消息</a>
+
+								</li>
+
+								<li>
+									<a href="history.html">历史记录</a>
+								</li>
+								<li class="has-dropdown">
+									<a href="PersonalInfo.html">设置</a>
+									<ul class="dropdown">
+										<li>
+											<a href="PersonalInfo.html">我的</a>
+										</li>
+										<li>
+											<a href="index.html">注销</a>
+										</li>
+
+									</ul>
+								</li>
+
+							</ul>
+						</div>
+					</div>
+
+				</div>
+			</nav>
+
+			<header id="fh5co-header" class="fh5co-cover fh5co-cover-sm" role="banner" style="background-image:url(images/timg.jpg); " data-stellar-background-ratio="0.5">
+				<div class="overlay" ></div>
+				<div class="container">
+					<div class="row">
+						<div class="col-md-7 text-left">
+							<div class="display-t">
+								<div class="display-tc animate-box" data-animate-effect="fadeInUp">
+									<h1 style="font-size: 4.5em;">V-Clock</h1>
+									<h2 style="font-size:2em;">智能人脸识别系统迎宾模块</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<div id="fh5co-blog" class="fh5co-bg-section">
+				<div class="container">
+					<div class="row animate-box row-pb-md" data-animate-effect="fadeInUp" style="padding-bottom: 0px;">
+						<div class="fh5co-heading" style="margin-top: 0px;">
+							<br />
+							<h2 style="text-align: center;">我的嘉宾</h2>
+						</div>
+					</div>
+
+					<div class="row">
+						<div id="msg-left" class="col-md-4 col-sm-4 animate-box" data-animate-effect="fadeInUp">
+
+						</div>
+						<div id="msg-mid" class="col-md-4 col-sm-4 animate-box" data-animate-effect="fadeInUp">
+
+						</div>
+						<div id="msg-right" class="col-md-4 col-sm-4 animate-box" data-animate-effect="fadeInUp">
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="fh5co-services">
+				<div class="container">
+
+					<div class="row">
+
+						<div class="input-group">
+							<input id="gsearch" type="text" class="form-control" style="height: 40px;">
+							<span class="input-group-btn">
+                             <button id="search-submit" class="btn btn-default" type="button" >搜索嘉宾</button>
+                            </span>
+						</div>
+						<!-- /input-group -->
+
+					</div>
+
+					<br />
+					<div class="row ">
+						<div class="col-lg-2 "> </div>
+						<div class="col-lg-8 ">
+							<ul id="search-list" class="list-group ">
+
+							</ul>
+						</div>
+						<div class="col-lg-2 "> </div>
+					</div>
+
+					<br />
+					<div class="row " style="padding-top: 0px;padding-bottom: 2%;">
+						<div class="col-md-8 col-md-offset-2 text-left animate-box" data-animate-effect="fadeInUp">
+							<div class="fh5co-heading" style="margin-bottom: 0px;">
+								<h2 style="text-align: center;margin-top: 10%;">全部嘉宾</h2>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-4"> </div>
+						<button type="button" id="add" class="btn btn-primary col-lg-4" data-toggle="button">点此直接添加嘉宾</button>
+						<div class="col-lg-4 "> </div>
+					</div>
+
+					<!--
+                     	直接添加嘉宾模态框
+                     -->
+					<label id="addModal-btn" data-toggle="modal" data-target="#addModal" style="display:none"></label>
+					<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">	&times;	</button>
+									<h4 class="modal-title" id="myModalLabel">
+					添加嘉宾
+				</h4>
+								</div>
+								<div class="modal-body">
+									<form role="form">
+										<div class="form-group">
+											<br/>
+
+											<div class="row">
+												<div id="uploader-demo" style="text-align: center;">
+													<!--用来存放item-->
+													<img id="gpicV" src="images/person.jpg" style="width:100px;height:100px;border-radius:50% ;margin:20px auto;cursor: pointer;">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="gnameV" type="text" class="form-control input-lg" placeholder="嘉宾姓名">
+												</div>
+												<div class="col-lg-2">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-4">
+													<select id="gsexV" class="form-control">
+														<option>请选择性别</option>
+														<option>男</option>
+														<option>女</option>
+
+													</select>
+												</div>
+												<div class="col-lg-6">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="gtelV" type="text" class="form-control input-lg" placeholder="手机号" onkeyup="checknumL()" onkeydown="checknumL()">
+													<input id="addlimit" type="text" disabled="disabled" style="border: 0px;background: #FFFFFF;font-size: 0.8em;margin-left: 5%;" />
+
+												</div>
+												<div class="col-lg-2">
+
+												</div>
+
+											</div>
+
+											<div class="row" style="margin-top: 10px;">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="gcompanyV" type="text" class="form-control input-lg" placeholder="嘉宾单位">
+												</div>
+												<div class="col-lg-2">
+												</div>
+											</div>
+
+											<br/>
+										</div>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+									<button id="add-submit" type="button" class="btn btn-primary">
+					确认
+				</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal -->
+
+					</div>
+
+					<script>
+						function checknumL() {
+							var nMax = 11;
+							var textDom = document.getElementById("gtelV");
+							var len = textDom.value.length;
+							if(len > nMax) {
+								textDom.value = textDom.value.substring(0, nMax);
+								return;
+							}
+							document.getElementById("addlimit").value = "你还可以输入" + (nMax - len) + "个字";
+						}
+						checknumL();
+					</script>
+
+					<!--         搜索结果                          -->
+					<label id="searchModal-btn" data-toggle="modal" data-target="#searchModal" style="display:none"></label>
+					<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">	&times;	</button>
+									<h4 class="modal-title" id="myModalLabel"> 嘉宾信息
+					
+				</h4>
+								</div>
+								<div class="modal-body">
+									<form role="form">
+										<div class="form-group">
+											<br/>
+
+											<div class="row">
+												<div id="uploader-demo" style="text-align: center;">
+													<!--用来存放item-->
+													<img id="mpic" src="images/person.jpg" style="width:100px;height:100px;border-radius:50% ;margin:20px auto;cursor: pointer;">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="mname" type="text" class="form-control input-lg" readonly="readonly" value="嘉宾姓名">
+												</div>
+												<div class="col-lg-2">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-4">
+													<select id="msex" class="form-control" disabled="disabled">
+														<option>请选择性别</option>
+														<option selected="selected">男</option>
+														<option>女</option>
+
+													</select>
+												</div>
+												<div class="col-lg-6">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="mtel" type="text" class="form-control input-lg" value="12345678909" readonly="readonly" onkeydown="checknum()" onkeyup="checknum()">
+													<input id="limit" type="text" disabled="disabled" style="border: 0px;background: #FFFFFF;font-size: 0.8em; margin-left: 5%;" />
+
+												</div>
+												<div class="col-lg-2">
+
+												</div>
+
+											</div>
+											<div class="row">
+												<div class="col-lg-2"> </div>
+												<div class="col-lg-8">
+												</div>
+												<div class="col-lg-2"> </div>
+											</div>
+
+											<div class="row" style="margin-top: 10px;">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="mcompany" type="text" class="form-control input-lg" value="山东大学" readonly="readonly">
+												</div>
+												<div class="col-lg-2">
+												</div>
+											</div>
+
+											<br/>
+										</div>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button id="modify" type="button" class="btn btn-default">修改嘉宾信息
+				</button>
+									<button id="addtoListconfirm-submit" type="button" class="btn btn-primary">
+					确认添加
+				</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal -->
+
+					</div>
+
+
+					<script>
+						function checknum() {
+							var nMax = 11;
+							var textDom = document.getElementById("mtel");
+							var len = textDom.value.length;
+							if(len > nMax) {
+								textDom.value = textDom.value.substring(0, nMax);
+								return;
+							}
+							document.getElementById("limit").value = "你还可以输入" + (nMax - len) + "个字";
+						}
+						checknum();
+					</script>
+
+
+
+
+					<!--         修改和删除我的嘉宾                        -->
+					<label id="modMyguest-btn" data-toggle="modal" data-target="#modMyguest" style="display:none"></label>
+					<div class="modal fade" id="modMyguest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">	&times;	</button>
+									<h4 class="modal-title" id="myModalLabel"> 嘉宾信息
+					
+				</h4>
+								</div>
+								<div class="modal-body">
+									<form role="form">
+										<div class="form-group">
+											<br/>
+
+											<div class="row">
+												<div id="uploader-demo" style="text-align: center;">
+													<!--用来存放item-->
+													<img id="mgpic" src="images/person.jpg" style="width:100px;height:100px;border-radius:50% ;margin:20px auto;cursor: pointer;">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="mgname" type="text" class="form-control input-lg"  value="嘉宾姓名" readonly="readonly">
+												</div>
+												<div class="col-lg-2">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-4">
+													<select id="mgsex" class="form-control" >
+														<option>请选择性别</option>
+														<option selected="selected">男</option>
+														<option>女</option>
+
+													</select>
+												</div>
+												<div class="col-lg-6">
+												</div>
+											</div>
+
+											<br/>
+											<div class="row">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="mgtel" type="text" class="form-control input-lg" value="12345678909" onkeydown="checknumV()" onkeyup="checknumV()">
+													<input id="mglimit" type="text" style="border: 0px;background: #FFFFFF;font-size: 0.8em; margin-left: 5%;" />
+
+												</div>
+												<div class="col-lg-2">
+
+												</div>
+
+											</div>
+											<div class="row">
+												<div class="col-lg-2"> </div>
+												<div class="col-lg-8">
+												</div>
+												<div class="col-lg-2"> </div>
+											</div>
+
+											<div class="row" style="margin-top: 10px;">
+												<div class="col-lg-2">
+												</div>
+												<div class="col-lg-8">
+													<input id="mgcompany" type="text" class="form-control input-lg" value="山东大学" >
+												</div>
+												<div class="col-lg-2">
+												</div>
+											</div>
+
+											<br/>
+										</div>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button id="modMyguest-sumbit" type="button" class="btn btn-default">保存修改
+				</button>
+									<button id="deleteMyguest-submit" type="button" class="btn btn-primary">
+					从“我的嘉宾”中删除
+				</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal -->
+
+					</div>
+
+					<script>
+						function checknumV() {
+							var nMax = 11;
+							var textDom = document.getElementById("mgtel");
+							var len = textDom.value.length;
+							if(len > nMax) {
+								textDom.value = textDom.value.substring(0, nMax);
+								return;
+							}
+							document.getElementById("mglimit").value = "你还可以输入" + (nMax - len) + "个字";
+						}
+						checknumV();
+					</script>
+
+
+
+					<!--
+	               确认框
+                              -->
+					<label id="modifyconfirm-btn" data-toggle="modal" data-target="#modifyconfirm" style="display:none"></label>
+					<div class="modal fade" id="modifyconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">	&times;	</button>
+									<h4 class="modal-title" id="myModalLabel"> 确认信息
+					
+				</h4>
+								</div>
+								<div class="modal-body">
+									<form role="form">
+										<div class="form-group" style="text-align: center;">
+											<br/>
+											<h4> 是否确认修改该嘉宾信息？</h4>
+
+										</div>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button id="nomodify-submit" type="button" class="btn btn-default">放弃修改并添加
+				</button>
+									<button id="modify-submit" type="button" class="btn btn-primary">
+					保存修改并添加
+				</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal -->
+
+					</div>
+
+					<!--
+					删除确认
+					-->
+					<label id="delete-confirm-btn" data-toggle="modal" data-target="#delete-confirm" style="display:none"></label>
+					<div class="modal fade" id="delete-confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">	&times;	</button>
+									<h4 class="modal-title" id="myModalLabel"> 确认信息
+					
+				</h4>
+								</div>
+								<div class="modal-body">
+									<form role="form">
+										<div class="form-group" style="text-align: center;">
+											<br/>
+											<h4> 您修改过该嘉宾信息，是否确认修改？ </h4>
+
+										</div>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button id="nomodifyDelete-submit" type="button" class="btn btn-default">直接删除
+				</button>
+									<button id="modifyDelete-submit" type="button" class="btn btn-primary">
+					保存修改并删除
+				</button>
+								</div>
+							</div>
+							<!-- /.modal-content -->
+						</div>
+						<!-- /.modal -->
+
+					</div>
+
+<!--图片上传框-->
+<div class="am-modal am-modal-no-btn up-frame-bj " tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog up-frame-parent up-frame-radius">
+	<div class="am-modal-hd up-frame-header">
+	   <label>修改头像</label>
+	  <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+	</div>
+	<div class="am-modal-bd  up-frame-body">
+	  <div class="am-g am-fl">
+		<div class="am-form-group am-form-file">
+		  <div class="am-fl">
+			<button type="button" class="am-btn am-btn-default am-btn-sm">
+			  <i class="am-icon-cloud-upload"></i> 选择要上传的文件</button>
+		  </div>
+		  <input type="file" id="inputImage">
+		</div>
+	  </div>
+	  <div class="am-g am-fl" >
+		<div class="up-pre-before up-frame-radius">
+			<img alt="" src="" id="image" >
+		</div>
+		<div class="up-pre-after up-frame-radius">
+		</div>
+	  </div>
+	  <div class="am-g am-fl">
+		<div class="up-control-btns">
+			<span class="am-icon-rotate-left"  onclick="rotateimgleft()"></span>
+			<span class="am-icon-rotate-right" onclick="rotateimgright()"></span>
+			<span class="am-icon-check" id="up-btn-ok"></span>
+		</div>
+	  </div>
+	  
+	</div>
+  </div>
+</div>
+
+<!--警告框-->
+<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert">
+  <div class="am-modal-dialog">
+	<div class="am-modal-hd">信息</div>
+	<div class="am-modal-bd"  id="alert_content">
+			  成功了
+	</div>
+	<div class="am-modal-footer">
+	  <span class="am-modal-btn">确定</span>
+	</div>
+  </div>
+</div>
+
+					<br />
+					<br />
+					<div class="row ">
+						<div class="col-lg-2 "> </div>
+						<div class="col-lg-8 ">
+							<ul id="guest-list" class="list-group ">
+
+							</ul>
+						</div>
+						<div class="col-lg-2 "> </div>
+					</div>
+
+					<br />
+					<br />
+			<footer id="fh5co-footer" role="contentinfo" style="padding-top:30px;padding-bottom:10px">
+				<div class="container">
+
+					<div class="row copyright">
+						<div class="col-md-12 text-center">
+							<p>
+							<small class="block">项目名称：V-CLOCK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;制作团队：五花八人</small>		
+							</p>
+
+						</div>
+					</div>
+
+				</div>
+			</footer>
+			</div>
+
+			<div class="gototop js-top ">
+				<a href="# " class="js-gotop "><i class="icon-arrow-up "></i></a>
+			</div>
+
+			<!-- jQuery -->
+			<script src="js/jquery.min.js "></script>
+			<!-- jQuery Easing -->
+			<script src="js/jquery.easing.1.3.js "></script>
+			<!-- Bootstrap -->
+			<script src="js/bootstrap.min.js "></script>
+			<!-- Waypoints -->
+			<script src="js/jquery.waypoints.min.js "></script>
+			<!-- countTo -->
+			<script src="js/jquery.countTo.js "></script>
+			<!-- Magnific Popup -->
+			<script src="js/jquery.magnific-popup.min.js "></script>
+			<script src="js/magnific-popup-options.js "></script>
+			<!-- Stellar -->
+			<script src="js/jquery.stellar.min.js "></script>
+
+			<script src="js/amazeui.min.js" charset="utf-8"></script>
+			<script src="js/cropper.min.js" charset="utf-8"></script>
+			<script src="js/custom_up_img.js" charset="utf-8"></script>
+
+			<script src="js/compress.js" type="text/javascript" charset="utf-8"></script>
+			<!-- Main -->
+			<script src="js/guestsList.js"></script>
+			<script src="js/main.js "></script>
+
+			<script>
+			$(document).ready(function() {
+				$.ajax({
+					type: "post",
+					url: "http://121.250.222.75:8080/V-Clock/servlet/WSearchGuestServlet",
+					data: {
+						tip: '0',
+						//eid: '0002',
+					},
+					xhrFields: {                       
+						withCredentials: true                   
+					},
+					success: function(result) {
+						$.ajax({
+							type: "post",
+							url: "http://121.250.222.75:8080/V-Clock/servlet/WSearchGuestServlet",
+							data: {
+								tip: "1",
+								gname: ""
+							},
+							xhrFields: {                       
+								withCredentials: true                   
+							},
+							success: function(result) {
+								var obj = result.Guest;
+								var guest_list = $("#guest-list");
+								$.each(obj, function(infoIndex, info) {
+									var li = $(
+										'<li class="list-group-item " style="font-size: 1.2em;">' +
+										"<img onclick='modifyGuestListItem(\"" + info.gname + "\")' style='height: 40px; width: 40px;border-radius:50% ;margin:5px auto;margin-right: 30px;margin-left: 20px;' src='data:image/jpeg;base64," + info.gphoto + "'>" +
+										info.gname +
+										"</li>");
+									li.appendTo(guest_list);
+								});
+							},
+							dataType: "json"
+						});
+						//console.log(result);
+						//var str = JSON.parse(result);
+						//var str=result.toJSONString();
+						var obj = result.GuestList;
+						//alert(obj);
+						var $left = $("#msg-left");
+						var $midle = $("#msg-mid");
+						var $right = $("#msg-right");
+						$.each(obj, function(infoIndex, info) {
+							var strHtml = ""; //存储数据的变量
+							var strHtml0 = "";
+							var strHtml1 = ""; //存储数据的变量					
+							strHtml = info.gname;
+							strHtml0 = info.gtel;
+							strHtml1 = info.gphoto;
+							var div = $("<div class='fh5co-post'>" +
+								"<div class='row'>" +
+								"<div class='col-xs-3'>" +
+								"<p class='author'><img onclick='showMyGuestModal(\"" + strHtml + "\")' style='height: 50px; width: 50px;' src='data:image/jpeg;base64," + strHtml1 + "'></p>" +
+								"</div>" +
+								"<div class='col-xs-9'>" +
+								"<h4 style='color: #000000;margin-bottom:10px;'>" + strHtml + "</h4>" +
+								"<p>联系电话:" + strHtml0 + "</p>" +
+								"</div>" +
+								"</div>" +
+								"</div>");
+							if(infoIndex % 3 == 0) {
+								div.appendTo($left);
+							} else if(infoIndex % 3 == 1) {
+								div.appendTo($midle);
+							} else {
+								div.appendTo($right);
+							}
+
+							//	div.appendTo("ce");
+
+						});
+					},
+					dataType: "json"
+					});
+						var getting = {
+					type: 'get',
+					url: 'http://121.250.222.75:8080/V-Clock/servlet/PushMessageServlet',
+					dataType: 'jsonp',
+					jsonp: 'callback',
+					jsonpCallback: "flightHandler",
+					timeout: 0,
+					async:true,
+					xhrFields: {
+						withCredentials: true
+					},
+					complete: function(xhr, status) {
+						$.ajax(getting);
+					},
+					success: function(data) {
+						var strHtml = ""; //存储数据的变量
+						strHtml += "员工编号：" + data.eid + "<br>";
+						strHtml += "嘉宾姓名：" + data.gname + "<br>";
+						strHtml += "到达时间：" + data.arrivingDate;
+						//var k=localStorage.getItem("index");
+						 var k =parseInt(localStorage.getItem("index"));
+						 k+=1;
+						alert("你有新嘉宾已到达！");
+					    localStorage.setItem(k, strHtml);
+						localStorage.setItem("index",k);
+						//localStorage.index=k;
+					}
+				};
+				//alert("ajax");
+				$.ajax(getting);
+				});
+			</script>
+			<!--	<script>
+			 window.onbeforeunload = function(){
+      $.ajax({
+				type:"post",
+				url:"http://121.250.222.75:8080/V-Clock/servlet/WLogoutServlet",
+				async:true,
+				dataType: "json",
+				success:function(){
+					
+				}
+			});
+    };
+			
+			
+
+			</script>
+			-->
+
+			<!--		<script type="text/javascript">
+window.onbeforeunload=onclose;
+function onclose()
+{
+if(event.clientX>document.body.clientWidth&&event.clientY<0||event.altKey)
+{
+ $.ajax({
+				type:"post",
+				url:"http://121.250.222.75:8080/V-Clock/servlet/WLogoutServlet",
+				async:true,
+				dataType: "json",
+				success:function(){
+					
+				}
+			});
+}
+}
+</script>
+-->
+
+	</body>
+
+</html>

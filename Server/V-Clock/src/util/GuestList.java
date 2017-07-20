@@ -40,7 +40,7 @@ public class GuestList {
 		if(type.equals("gname")){
 			Matcher m1=ifExistNumber.matcher(content);
 			boolean gnameBool=m1.matches();
-			if(content.length()<20&&gnameBool){
+			if(content.length()<=20&&gnameBool){
 				return true;
 			}
 			else
@@ -65,8 +65,10 @@ public class GuestList {
 	 * 返回值：0（添加成功），1（此嘉宾已在该工作人员邀请名单中），null（数据错误）
 	 */
 	public String addToGuestList(String gname,String eid){
+		System.out.println(gname+"%%%"+eid);
 		if(!codeLegitimate("gname",gname)||!codeLegitimate("eid",eid))
 			return "2";
+		//System.out.println("%%%%%%%%%%%");
 		String sql="select * from guestlist where gname=? and eid=?";
 		try {
 			pstmt=c.prepareStatement(sql);

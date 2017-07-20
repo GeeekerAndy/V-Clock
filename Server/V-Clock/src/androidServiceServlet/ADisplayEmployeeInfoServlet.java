@@ -74,6 +74,7 @@ public class ADisplayEmployeeInfoServlet extends HttpServlet {
 		// boolean appBool=userAgent.matches(".*V-Clock.*");
 		response.setCharacterEncoding("UTF-8");
 		HttpSession session = request.getSession(false);
+
 		// String sessionId=session.getId();
 		Employee emp = new Employee();
 		// if(session.isNew()){
@@ -95,6 +96,7 @@ public class ADisplayEmployeeInfoServlet extends HttpServlet {
 		out.flush();
 		out.close();
 		// }
+
 		// else
 		// System.out.println("No Legitimate(2)");
 		// } catch (Exception e) {

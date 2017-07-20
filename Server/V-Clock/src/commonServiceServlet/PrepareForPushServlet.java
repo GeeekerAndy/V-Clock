@@ -105,7 +105,8 @@ public class PrepareForPushServlet extends HttpServlet {
 					ResultSet rs2 = pstmt.executeQuery();
 					String arrivingDate;
 					if (rs2.next()) {
-						arrivingDate = rs2.getString("max(arrivingdate)");
+						arrivingDate =rs2.getString("max(arrivingdate)");
+						arrivingDate=arrivingDate.substring(0,arrivingDate.length()-2);
 						// 设置传给PushMessageServlet的request内容
 						// 将嘉宾到访记录传至PushMessageServlet进行处理
 						request.getRequestDispatcher(

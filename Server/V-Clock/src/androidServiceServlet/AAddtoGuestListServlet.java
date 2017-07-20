@@ -16,6 +16,7 @@ public class AAddtoGuestListServlet extends HttpServlet {
 	/**
 	 * Constructor of the object.
 	 */
+
 	private GetHttpMessage ghm = new GetHttpMessage();
 
 	public AAddtoGuestListServlet() {
@@ -70,6 +71,7 @@ public class AAddtoGuestListServlet extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession(false);
+
 		Employee emp = new Employee();
 		// String userTel=(String) session.getAttribute("etel");
 		// String userPhoto=(String) session.getAttribute("ephoto");
@@ -88,6 +90,7 @@ public class AAddtoGuestListServlet extends HttpServlet {
 		out.flush();
 		out.close();
 		// }
+
 		// else
 		// System.out.println("No Legitimate(2)");
 		// } catch (Exception e) {

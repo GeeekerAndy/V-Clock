@@ -94,18 +94,23 @@ public class WModifyGuestInfoServlet extends HttpServlet {
 			try {
 				String informationType = request.getParameter("tip");
 				System.out.println("informationType:" + informationType);
-				//String[] infoList = informationType.split(";");
-				 String[] temp = informationType.split(";");
-				 String[] infoList=new String[temp.length];
-				 infoList[0]=(String) session.getAttribute("eid");
-				 for(int i=1;i<infoList.length;i++){
-				 infoList[i]=temp[i-1];
-				 }
+				// String[] infoList = informationType.split(";");
+				String[] temp = informationType.split(";");
+				String[] infoList = new String[temp.length + 1];
+				infoList[0] = "regid";
+				for (int i = 1; i < infoList.length; i++) {
+					infoList[i] = temp[i - 1];
+				}
 				String gname = request.getParameter("gname");
 				System.out.println("gname:" + gname);
 				guest.getC().setAutoCommit(false);
 				for (int i = 0; i < infoList.length; i++) {
-					String info = request.getParameter(infoList[i]);
+					String info="";
+					if(i==0){
+						info = (String)session.getAttribute("eid");
+					}else{
+						info = request.getParameter(infoList[i]);
+					}
 					result += guest.modifyInfo(gname, info, infoList[i]);
 				}
 				guest.getC().commit();

@@ -62,15 +62,22 @@ public class Employee implements objects.Employees{
 	 * 获取数据库中的最大eid作为赋予新id的基础
 	 */
 	public void getLastEid(){
-		String sql="select count(eid) from employee";
+		//String sql="select count(eid) from employee";
+		String sql="select eid from employee";
+		int max=0;
 		try {
 			pstmt=c.prepareStatement(sql);
 			conn.setRs(pstmt.executeQuery());
-			if(conn.getRs().next()){
-				eidnumber=conn.getRs().getInt("count(eid)")+1;
+//			if(conn.getRs().next()){
+			while(conn.getRs().next()){
+				int temp=Integer.parseInt(conn.getRs().getString("eid"));
+				if(temp>max)
+					max=temp;
+//				eidnumber=conn.getRs().getInt("count(eid)")+1;				
 			}
-			else
-				eidnumber=1;
+			eidnumber=max+1;
+//			else
+//				eidnumber=1;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,7 +107,7 @@ public class Employee implements objects.Employees{
 		else if(type.equals("ename")){
 			Matcher m2=ifExistNumber.matcher(content);
 			boolean enameBool=m2.matches();
-			if(content.length()<20&&enameBool){
+			if(content.length()<=20&&enameBool){
 				return true;
 			}
 			else

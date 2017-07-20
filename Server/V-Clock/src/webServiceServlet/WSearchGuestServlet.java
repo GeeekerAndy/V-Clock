@@ -94,7 +94,9 @@ public class WSearchGuestServlet extends HttpServlet {
 				// System.out.println("searchGuestList:"+searchGuestList.toString());
 			} else if (tip.equals("1")) {// 某搜索对应的嘉宾列表
 				String gname = request.getParameter("gname");
+
 				JSONArray temp = guest.searchGuestForWeb(gname);
+
 				JSONObject searchGuest = new JSONObject();
 				if (temp == null)
 					searchGuest.put("tip", "2");

@@ -70,6 +70,8 @@ public class AModifyEmployeeInfoServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
+
+
 		Employee emp = new Employee();
 		// String userTel=(String) session.getAttribute("etel");
 		// String userPhoto=(String) session.getAttribute("ephoto");
@@ -119,6 +121,7 @@ public class AModifyEmployeeInfoServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		// }
+
 		// else
 		// System.out.println("No Legitimate(1)");
 	}

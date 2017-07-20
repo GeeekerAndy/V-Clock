@@ -78,10 +78,12 @@ public class WLoginServlet extends HttpServlet {
 			
 			if(eid.length()==4){
 				HttpSession session=request.getSession();
-				if(session.isNew()){
+				System.out.println("&&&&&"+session.isNew());
+			    if(session.isNew()){
+					System.out.println(eid);
 					session.setAttribute("eid", eid);
 					SessionListener.getInstance().addToDB(session);
-				}
+			    }
 				//session.setAttribute("eid", eid);
 				
 				

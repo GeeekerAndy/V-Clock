@@ -70,6 +70,7 @@ public class ASearchGuestServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession(false);
+
 		String tip = request.getParameter("tip");
 		System.out.println("tip(SearchGuestServlet):" + tip);
 		Guest guest = new Guest();
@@ -114,6 +115,7 @@ public class ASearchGuestServlet extends HttpServlet {
 		out.flush();
 		out.close();
 		// }
+
 		// Employee emp=new Employee();
 		// String userTel=(String) session.getAttribute("etel");
 		// String userPhoto=(String) session.getAttribute("ephoto");
