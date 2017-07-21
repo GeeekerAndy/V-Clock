@@ -48,19 +48,22 @@
                 android:layout_width="240dp"
                 android:layout_height="240dp"
                 android:layout_margin="@dimen/margin_10"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:background="@color/white">
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/iv_employee_avatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/white"/>
+                    android:padding="@dimen/margin_20"
+                    android:src="@drawable/ic_person_48px"/>
                 <ImageButton
                     android:id="@+id/imb_change_pwd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_20"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
-                    android:background="@color/colorWhite"
+                    android:background="@null"
                     android:src="@drawable/ic_photo_camera_black_24dp"/>
             </RelativeLayout>
 

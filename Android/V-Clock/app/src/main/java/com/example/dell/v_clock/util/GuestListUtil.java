@@ -625,11 +625,6 @@ public class GuestListUtil {
         GuestListUtil.isAllFreshed = isAllFreshed;
     }
 
-    /**
-     *
-     * @param context
-     * @return
-     */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
