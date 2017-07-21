@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -31,6 +32,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -171,20 +173,22 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onResume() {
         super.onResume();
+        //启动刷新线程的 标志 重置
+        isExit = false;
         if (!GuestListUtil.isNetworkAvailable(getContext())) {
             Toast.makeText(getContext(), "当前网络不可用!", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }
         //启动线程 若向数据库请求数据 检测是否完成
+        Log.i(TAG,"启动刷新线程");
         refreshChildList();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         //停止所有线程
         isExit = true;
-
     }
 
     /**
@@ -261,8 +265,10 @@ public class GuestListFragment extends Fragment implements View.OnClickListener,
             @Override
             public void run() {
                 try {
+                    Log.i(TAG,"进入刷新线程");
                     while (!isExit) {
                         Thread.sleep(FRESH_INTERVAL);
+                        Log.i(TAG,"刷新检查 - 是否更新界面");
                         if (GuestListUtil.isMyFreshed()) {
                             handler.sendEmptyMessage(FRESH_UI);
                             GuestListUtil.setIsMyFreshed(false);
