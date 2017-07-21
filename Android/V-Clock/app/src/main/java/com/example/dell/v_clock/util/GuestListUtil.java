@@ -151,11 +151,12 @@ public class GuestListUtil {
         addToMemoryList(guest, MY_GUEST_IDENTITOR);
         isMyFreshed = true;
         //更新缓存数据
-        addToCacheList(guest,MY_GUEST_IDENTITOR);
+        addToCacheList(guest, MY_GUEST_IDENTITOR);
     }
 
     /**
      * 更新缓存数据
+     *
      * @param guest
      * @param identitor
      */
@@ -190,12 +191,13 @@ public class GuestListUtil {
         isMyFreshed = true;
         isAllFreshed = true;
         //及缓存数据
-        addToCacheList(guest,MY_GUEST_IDENTITOR);
-        removeFromCacheList(guest,ALL_GUEST_IDENTITOR);
+        addToCacheList(guest, MY_GUEST_IDENTITOR);
+        removeFromCacheList(guest, ALL_GUEST_IDENTITOR);
     }
 
     /**
-     *  缓存数据
+     * 缓存数据
+     *
      * @param guest
      * @param identitor
      */
@@ -281,8 +283,8 @@ public class GuestListUtil {
         isMyFreshed = true;
         isAllFreshed = true;
         //更新缓存数据
-        removeFromCacheList(guest,MY_GUEST_IDENTITOR);
-        addToCacheList(guest,ALL_GUEST_IDENTITOR);
+        removeFromCacheList(guest, MY_GUEST_IDENTITOR);
+        addToCacheList(guest, ALL_GUEST_IDENTITOR);
     }
 
     /**
@@ -429,8 +431,11 @@ public class GuestListUtil {
             temp.put("avatar", avatar);
             guestChildList.get(identitor).add(temp);
         }
+        if (identitor >= guestChildList.size()) {
+            return;
+        }
         //读缓存图片
-        for (int i = 0; i < guestChildList.size(); i++) {
+        for (int i = 0; i < guestChildList.get(identitor).size(); i++) {
             if (i >= LOAD_AVATAR_NUM) {
                 break;
             }
@@ -620,6 +625,11 @@ public class GuestListUtil {
         GuestListUtil.isAllFreshed = isAllFreshed;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
